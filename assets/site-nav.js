@@ -7,10 +7,11 @@
   var SUBJECTS = [
     { id: 'digital-logic',  label: 'Digital Logic',   href: base + 'subjects/digital-logic.html',  status: 'live' },
     { id: 'c-programming',  label: 'C Programming',   href: base + 'subjects/c-programming.html',  status: 'live' },
-    { id: 'data-structures', label: 'Data Structures', href: base + 'subjects/data-structures.html', status: 'soon' },
-    { id: 'algorithms',     label: 'Algorithms',      href: base + 'subjects/algorithms.html',     status: 'soon' },
+    { id: 'data-structures', label: 'Data Structures', href: base + 'subjects/data-structures.html', status: 'live' },
+    { id: 'algorithms',     label: 'Algorithms',      href: base + 'subjects/algorithms.html',     status: 'live' },
     { id: 'linear-algebra', label: 'Linear Algebra',  href: base + 'subjects/linear-algebra.html', status: 'live' },
     { id: 'calculus',       label: 'Calculus',        href: base + 'subjects/calculus.html',       status: 'live' },
+    { id: 'probability-statistics', label: 'Probability & Stats', href: base + 'subjects/probability-statistics.html', status: 'live' },
     { id: 'aptitude',       label: 'Aptitude',        href: base + 'subjects/aptitude.html',       status: 'live' },
     { id: 'analysis',       label: 'Trend Analysis',  href: base + 'subjects/analysis.html',       status: 'live' }
   ];
