@@ -2,11 +2,22 @@
 
 ## Structure
 ```
-index.html              → hub page (subject cards, countdown, links)
-assets/site-nav.js       → shared top nav bar, injected on every page
-subjects/digital-logic.html
-subjects/analysis.html
+index.html                    → hub page (subject cards, countdown, links)
+assets/site-nav.js             → shared top nav bar, injected on every page
+subjects/digital-logic.html    → live
+subjects/linear-algebra.html   → live
+subjects/calculus.html         → live
+subjects/aptitude.html         → live
+subjects/analysis.html         → live (20-year PYQ trend analysis)
+subjects/c-programming.html    → coming soon placeholder
+subjects/data-structures.html  → coming soon placeholder
+subjects/algorithms.html       → coming soon placeholder
 ```
+
+The old combined "C, Data Structures & Algorithms" subject has been split into three
+separate subjects (`c-programming`, `data-structures`, `algorithms`) so each can be
+filled in and go live independently. Each currently ships as a lightweight
+"coming soon" page listing its planned syllabus coverage.
 
 ## Deploy (GitHub Pages — free, works great for this)
 1. Create a new GitHub repo, e.g. `gate-prep`.

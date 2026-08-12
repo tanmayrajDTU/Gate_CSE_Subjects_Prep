@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C Programming — Coming Soon | GATE CSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1c2c; --bg-deep:#071523; --panel:#0f2438; --panel-alt:#153351;
+  --line:#22516f; --line-soft:#1a3c56; --grid-line:rgba(90,209,230,0.06);
+  --cyan:#5ad1e6; --cyan-dim:#3a8fa3; --amber:#f2a65a; --coral:#ff8272; --mint:#6fe6b8;
+  --text:#e7f1f5; --text-dim:#8fadc0; --text-faint:#5b7d92;
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif; --disp:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
+    var(--bg);
+  color:var(--text); font-family:var(--sans); line-height:1.6; min-height:100vh;
+}
+a{color:var(--cyan); text-decoration:none;}
+h1,h2{font-family:var(--disp); font-weight:600; letter-spacing:-0.01em;}
+.wrap{max-width:760px; margin:0 auto; padding:100px 24px 100px;}
+.eyebrow{font-family:var(--mono); font-size:12px; color:var(--cyan); letter-spacing:.18em; text-transform:uppercase; margin-bottom:18px; display:block;}
+h1{font-size:clamp(30px,4.5vw,44px); line-height:1.12; margin-bottom:18px;}
+.status-badge{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint);
+  background:rgba(143,173,192,0.1); border:1px solid var(--line-soft); border-radius:20px;
+  padding:5px 14px; margin-bottom:26px;
+}
+.status-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
+p.lede{font-size:16.5px; color:var(--text-dim); max-width:600px; margin-bottom:34px;}
+
+.card{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:10px;
+  padding:24px 26px; margin-bottom:16px;
+}
+.card .label{font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:14px;}
+.chips{display:flex; flex-wrap:wrap; gap:10px;}
+.chip{
+  font-family:var(--mono); font-size:12px; color:var(--text-dim);
+  border:1px solid var(--line); padding:6px 13px; border-radius:20px; background:var(--bg-deep);
+}
+
+.back{
+  display:inline-flex; align-items:center; gap:8px; margin-top:38px;
+  font-family:var(--mono); font-size:13px; color:var(--text-dim);
+}
+.back:hover{color:var(--cyan);}
+</style>
+</head>
+<body>
+<script>window.SITE_NAV_CONFIG={current:'c-programming', base:'../'};</script>
+<script src="../assets/site-nav.js"></script>
+
+<div class="wrap">
+  <span class="eyebrow">GATE CSE 2027 · Subject 02a</span>
+  <div class="status-badge"><span class="dot"></span> Coming soon</div>
+  <h1>C Programming</h1>
+  <p class="lede">Notes for this subject haven't been written yet — this page is a placeholder so the subject shows up in navigation and on the hub. Blueprint-style notes with worked examples and PYQ practice will land here, following the same structure as the live subjects.</p>
+
+  <div class="card">
+    <span class="label">Planned coverage — official syllabus scope</span>
+    <div class="chips">
+      <span class="chip">Variables, data types &amp; operators</span>
+      <span class="chip">Control flow (if/else, loops, switch)</span>
+      <span class="chip">Functions &amp; recursion</span>
+      <span class="chip">Arrays &amp; strings</span>
+      <span class="chip">Pointers &amp; pointer arithmetic</span>
+      <span class="chip">Structures &amp; unions</span>
+      <span class="chip">Storage classes &amp; scope</span>
+      <span class="chip">Dynamic memory allocation</span>
+      <span class="chip">File I/O</span>
+      <span class="chip">Output/pointer-tracing PYQs</span>
+    </div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to hub</a>
+</div>
+</body>
+</html>
