@@ -6,7 +6,7 @@
   // status: "live" | "soon"
   var SUBJECTS = [
     { id: 'digital-logic',  label: 'Digital Logic',   href: base + 'subjects/digital-logic.html',  status: 'live' },
-    { id: 'c-programming',  label: 'C Programming',   href: base + 'subjects/c-programming.html',  status: 'soon' },
+    { id: 'c-programming',  label: 'C Programming',   href: base + 'subjects/c-programming.html',  status: 'live' },
     { id: 'data-structures', label: 'Data Structures', href: base + 'subjects/data-structures.html', status: 'soon' },
     { id: 'algorithms',     label: 'Algorithms',      href: base + 'subjects/algorithms.html',     status: 'soon' },
     { id: 'linear-algebra', label: 'Linear Algebra',  href: base + 'subjects/linear-algebra.html', status: 'live' },

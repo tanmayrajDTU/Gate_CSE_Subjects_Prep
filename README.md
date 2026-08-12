@@ -9,7 +9,7 @@ subjects/linear-algebra.html   → live
 subjects/calculus.html         → live
 subjects/aptitude.html         → live
 subjects/analysis.html         → live (20-year PYQ trend analysis)
-subjects/c-programming.html    → coming soon placeholder
+subjects/c-programming.html    → live
 subjects/data-structures.html  → coming soon placeholder
 subjects/algorithms.html       → coming soon placeholder
 ```
