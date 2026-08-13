@@ -586,8 +586,8 @@ Bijective functions (needs m=n): n!</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Can a simple graph exist with degree sequence (3,3,3,1)?</summary>
           <div class="ans">
-            <p>Sum = 3+3+3+1 = 10, which is even, so it passes the basic handshake check. But checking the number of odd-degree vertices: all four degrees are odd (3,3,3,1) — that's 4 odd-degree vertices, which is even, so this particular check also passes; further construction (Erdős–Gallai) would be needed to fully confirm realizability, but the necessary parity condition holds.</p>
-            <p class="final">Answer: Passes the necessary parity checks (sum even, odd-degree count even)</p>
+            <p>Sum = 3+3+3+1 = 10 (even) and the odd-degree vertex count is 4 (even), so it passes both parity checks — but passing parity is necessary, not sufficient. Applying Havel–Hakimi: remove the first 3, subtract 1 from the next three degrees: (3,3,1) → (2,2,0). Remove the new first term (2), subtract 1 from the next two: (2,0) → (1,−1). A negative degree is impossible, so the sequence is not graphical. (Intuitively: on 4 vertices, three vertices of degree 3 must each connect to all other 3 vertices, forcing the 4th vertex to degree 3 as well — degree 1 is unreachable.)</p>
+            <p class="final">Answer: No — despite passing the parity checks, Havel–Hakimi reduces (3,3,3,1) to an invalid (1,−1), so no simple graph exists with this degree sequence</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Find the chromatic number of the complete graph K₅.</summary>

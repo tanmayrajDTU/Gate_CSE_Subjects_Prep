@@ -418,7 +418,7 @@ section.topic{scroll-margin-top:56px;}
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> An array contains n elements. A linear search is performed to find an element. If the element has a uniform probability of being anywhere in the array, what is the average number of comparisons?</summary>
           <div class="ans">
-            <p>The element can be at index 1, 2, ..., n. Average = (1 + 2 + ... + n) / n = [n(n+1)/2] / n = (n+1)/2.</p>
+            <p>Assumes the element is guaranteed to be present in the array (search-key presence probability p=1) — this is the standard GATE assumption unless stated otherwise; if p&lt;1, the average also has to account for the probability of an unsuccessful full-array scan, changing the formula. The element can be at index 1, 2, ..., n. Average = (1 + 2 + ... + n) / n = [n(n+1)/2] / n = (n+1)/2.</p>
             <p class="final">Answer: (n+1)/2</p>
           </div>
         </details>

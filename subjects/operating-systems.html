@@ -602,7 +602,7 @@ where h = TLB hit ratio</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Reference string: 1,2,3,4,1,2,5,1,2,3,4,5 with 3 frames, using FIFO. Count the page faults.</summary>
           <div class="ans">
-            <p>Trace: 1F,2F,3F,4F(evict1),1F(evict2),2F(evict3),5F(evict4),1F(evict1),2 hit,3F(evict2),4F(evict5... continuing carefully): faults occur at 1,2,3,4,1,2,5,1 then 2 is a hit(frames:4,1,2→wait recompute)... this trace is a standard textbook example yielding 9 faults with FIFO for 3 frames.</p>
+            <p>FIFO queue trace, 3 frames: 1→fault{1}; 2→fault{1,2}; 3→fault{1,2,3}; 4→fault, evict 1→{2,3,4}; 1→fault, evict 2→{3,4,1}; 2→fault, evict 3→{4,1,2}; 5→fault, evict 4→{1,2,5}; 1→hit; 2→hit; 3→fault, evict 1→{2,5,3}; 4→fault, evict 2→{5,3,4}; 5→hit. Faults occur on 1,2,3,4,1,2,5,3,4 — 9 references miss.</p>
             <p class="final">Answer: 9 page faults (standard result for this classic reference string with 3 frames, FIFO)</p>
           </div>
         </details>

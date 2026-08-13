@@ -364,9 +364,9 @@ A' → β₁ | β₂</div>
             <p class="final">Answer: FIRST sets of the two S-productions both contain "a" → table conflict; ambiguous grammars can never be LL(1)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> Given FIRST(A)={a,b,ε} and FOLLOW(A)={c,d,$}, for the production S→A, which table cells get filled for this production?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> Given FIRST(A)={a,b,ε} and FOLLOW(S)={c,d,$}, for the production S→A, which table cells get filled for this production?</summary>
           <div class="ans">
-            <p>For every terminal in FIRST(A) except ε, add S→A at that column: M[S,a] and M[S,b]. Since ε∈FIRST(A), also add S→A at every column in FOLLOW(A): M[S,c], M[S,d], M[S,$].</p>
+            <p>The rule for a production X→α always looks at FOLLOW of the LHS nonterminal X, not of anything on the right-hand side — here the production is S→A, so the LHS is S and it's FOLLOW(S) that matters (FOLLOW(A) is irrelevant to filling row S). For every terminal in FIRST(A) except ε, add S→A at that column: M[S,a] and M[S,b]. Since ε∈FIRST(A), also add S→A at every column in FOLLOW(S): M[S,c], M[S,d], M[S,$].</p>
             <p class="final">Answer: M[S,a], M[S,b], M[S,c], M[S,d], M[S,$] — five cells total</p>
           </div>
         </details>
