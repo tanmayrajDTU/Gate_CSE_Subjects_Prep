@@ -322,7 +322,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Find the tight bound for T(n) = 3T(n/2) + n².</summary>
           <div class="ans">
             <p>Here, a=3, b=2, f(n)=n². Compare f(n) with n^(log₂3) ≈ n^1.58. Since f(n) = Ω(n^(log₂3 + ε)) (Case 3), and 3(n/2)² = (3/4)n² ≤ cn² for c=3/4 &lt; 1, the result is T(n) = Θ(f(n)).</p>
@@ -391,7 +391,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> How many comparisons are required in the worst case to find an element in a sorted array of 1024 elements using binary search?</summary>
           <div class="ans">
             <p>Worst-case comparisons = ⌈log₂(n+1)⌉ = ⌈log₂(1025)⌉ = 11. Or simply checking bounds: 1024 → 512 → 256 → 128 → 64 → 32 → 16 → 8 → 4 → 2 → 1 → 0.</p>
@@ -468,7 +468,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which sorting algorithm is optimal for an array that is almost sorted (few inversions)?</summary>
           <div class="ans">
             <p>Insertion sort runs in O(n + I) time where I is the number of inversions. For an almost sorted array, I is very small, making insertion sort run in O(n) time.</p>
@@ -553,7 +553,7 @@ Open addressing successful ≈ (1/α)ln(1/(1−α))</div>
   </div>
 
   <div class="practice">
-    <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+    <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
     
     <details class="qcard"><summary><span class="qn">Q1</span> Given a hash table of size 10 and hash function h(k) = k mod 10, insert 15, 25, 35 using linear probing. How many probes are required for 35?</summary>
       <div class="ans">
@@ -630,7 +630,7 @@ If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
   </div>
 
   <div class="practice">
-    <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+    <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
     
     <details class="qcard"><summary><span class="qn">Q1</span> Solve the recurrence T(n) = 2T(n/2) + n log n.</summary>
       <div class="ans">
@@ -713,7 +713,7 @@ If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
   </div>
 
   <div class="practice">
-    <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+    <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
     
     <details class="qcard"><summary><span class="qn">Q1</span> For the Activity Selection problem, what is the optimal sorting criteria to guarantee a greedy choice works?</summary>
       <div class="ans">
@@ -799,7 +799,7 @@ DP[i][j] = min(DP[i][j-1]+1, DP[i-1][j]+1, DP[i-1][j-1] + cost)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> To compute the LCS of two strings of lengths m and n, what is the maximum number of distinct subproblems solved?</summary>
           <div class="ans">
             <p>The DP table size is m × n, meaning there are mn distinct subproblems to solve, each taking O(1) time. The total number of distinct subproblems is strictly bounded by m·n.</p>
@@ -891,7 +891,7 @@ Floyd-Warshall:  O(V³)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which data structure is essential for efficiently implementing Kruskal's algorithm?</summary>
           <div class="ans">
             <p>Kruskal's algorithm needs to rapidly check if adding an edge forms a cycle. A Disjoint Set (Union-Find) data structure does this efficiently in nearly O(1) time.</p>
@@ -978,7 +978,7 @@ Floyd-Warshall:  O(V³)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What is the worst-case time complexity of Quick Sort?</summary>
           <div class="ans">
             <p>When the pivot is consistently the smallest or largest element (e.g., already sorted array), the recurrence is T(n) = T(n−1) + O(n).</p>

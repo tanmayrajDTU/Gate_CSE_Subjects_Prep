@@ -153,7 +153,7 @@
   <button onclick="showPage('trends')">Trends</button>
   <button onclick="showPage('roi')">High ROI</button>
   <button onclick="showPage('taxonomy')">Taxonomy</button>
-  <button onclick="showPage('predictions')">Predictions ⚡</button>
+  <button onclick="showPage('predictions')">Historical Freq.</button>
   <button onclick="showPage('top100')">Top 100 Concepts</button>
 </nav>
 
@@ -163,17 +163,17 @@
 <div class="page active" id="page-overview">
   <div class="hero">
     <h1>GATE CSE · 20-Year Intelligence Report</h1>
-    <p>Evidence-based analysis of 2007–2026 official GATE CSE papers. Every conclusion is derived from actual question-paper data, with marks, frequency, and trend computations across 20 examination cycles.</p>
+    <p>Historical trend analysis of 2007–2026 GATE CSE papers. Statistics shown are based on manual classification of past papers and may contain errors. Historical frequency does not predict the next GATE paper. Use as study-priority guidance, not as guarantees.</p>
     <div class="stats-row">
       <div class="stat"><div class="val">20</div><div class="lbl">Years Analyzed</div></div>
-      <div class="stat"><div class="val">~2,400</div><div class="lbl">Total Questions</div></div>
+      <div class="stat"><div class="val">~2,400</div><div class="lbl">Total Questions (est.)</div></div>
       <div class="stat"><div class="val">100</div><div class="lbl">Marks per Paper</div></div>
       <div class="stat"><div class="val">13</div><div class="lbl">Core Subjects</div></div>
-      <div class="stat"><div class="val">2014</div><div class="lbl">NAT/MSQ Introduced</div></div>
+      <div class="stat"><div class="val">2014</div><div class="lbl">NAT Questions Appeared</div></div>
     </div>
   </div>
 
-  <div class="note">📋 <strong>Methodology Note:</strong> Data synthesized from official GATE CSE question papers 2007–2026. Marks per subject computed from 1-mark and 2-mark question counts. Difficulty ratings derived from official answer keys and community analysis. All trends are statistical; predictions are labelled clearly.</div>
+  <div class="note">📋 <strong>Methodology Note:</strong> Data manually classified from official GATE CSE question papers 2007–2026. Subject marks estimated from 1-mark and 2-mark question counts. Difficulty ratings are subjective estimates, not derived from candidate performance data. The raw dataset underlying these statistics has not been independently validated. All statistics should be treated as approximate. Historical frequency does not predict future papers.</div>
 
   <div class="section-title">EXECUTIVE SUMMARY · SUBJECT RANKINGS BY AVERAGE MARKS</div>
   <div class="card">
@@ -198,7 +198,7 @@
       </tbody>
     </table>
     </div>
-    <div class="note" style="margin-top:12px">📌 Engineering Mathematics and General Aptitude together = ~25 marks. The remaining 75 marks come from core CS subjects. DSA is the single highest-weight CS subject.</div>
+    <div class="note" style="margin-top:12px">📌 <strong>Taxonomy warning:</strong> The subject categories above are NOT mutually exclusive (e.g., "Engineering Mathematics" and "Discrete Mathematics" overlap, "DSA" combines two official syllabus sections). The averages sum to ~111.5 rather than 100 due to this overlap. For the official mutually exclusive classification, see: GA (15), Engineering Mathematics (incl. Discrete Math, Linear Algebra, Calculus, Probability), and the 8 core CS subjects (Digital Logic, COA, Programming & DS, Algorithms, TOC, Compiler Design, OS, DBMS, CN).</div>
   </div>
 
   <div class="section-title">YEAR-WISE MARKS DISTRIBUTION (2016–2026 Snapshot)</div>
@@ -210,12 +210,12 @@
 
   <div class="section-title">BIGGEST INSIGHTS FROM 20 YEARS</div>
   <div class="grid grid-3" style="margin-top:0">
-    <div class="insight-box"><div class="num up">3×</div><div class="desc">DSA weightage increased ~3× from 2007 to 2026, now the undisputed king subject</div></div>
-    <div class="insight-box"><div class="num" style="color:var(--accent2)">2014</div><div class="desc">Introduction of NAT/MSQ shifted difficulty—calculation-heavy questions rose 40%</div></div>
-    <div class="insight-box"><div class="num down">−60%</div><div class="desc">Software Engineering dropped from avg 5 marks to near 2 marks post-2018</div></div>
-    <div class="insight-box"><div class="num" style="color:var(--accent5)">80%</div><div class="desc">~80% of marks come from just 6 subjects: DSA, TOC, CN, OS, DBMS, EngMath + GA</div></div>
-    <div class="insight-box"><div class="num up">+35%</div><div class="desc">Graph algorithms saw a 35% increase in frequency post-2015</div></div>
-    <div class="insight-box"><div class="num" style="color:var(--accent2)">NEVER</div><div class="desc">Dynamic Programming has appeared every single year since 2007 — zero misses</div></div>
+    <div class="insight-box"><div class="num up">High</div><div class="desc">DSA weightage has historically increased over the 20-year period (approx. figures — see methodology note)</div></div>
+    <div class="insight-box"><div class="num" style="color:var(--accent2)">2014</div><div class="desc">NAT-type questions appeared in GATE from 2014; the exact impact on difficulty composition needs validated data</div></div>
+    <div class="insight-box"><div class="num down">Low</div><div class="desc">Software Engineering marks have declined significantly in recent years (approx. figures)</div></div>
+    <div class="insight-box"><div class="num" style="color:var(--accent5)">Top 6</div><div class="desc">DSA, TOC, CN, OS, DBMS, and Engineering Math historically account for the majority of technical marks</div></div>
+    <div class="insight-box"><div class="num up">Rising</div><div class="desc">Graph algorithm questions appear to have increased in recent papers (approx. observation)</div></div>
+    <div class="insight-box"><div class="num" style="color:var(--accent2)">High freq</div><div class="desc">Dynamic Programming has historically high frequency across 2007–2026 papers</div></div>
   </div>
 </div>
 
@@ -443,7 +443,7 @@
         <tr><td>2011</td><td><span class="badge badge-med">Medium</span></td><td>TOC</td><td>DBMS</td><td>Conceptual</td><td></td></tr>
         <tr><td>2012</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>GA</td><td>Numerical</td><td>Considered toughest pre-2014</td></tr>
         <tr><td>2013</td><td><span class="badge badge-med">Medium</span></td><td>CN</td><td>SE</td><td>Mixed</td><td>Networking heavy</td></tr>
-        <tr><td>2014</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>DL</td><td>NAT debut</td><td>First NAT year — shock factor</td></tr>
+        <tr><td>2014</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>DL</td><td>NAT questions appeared</td><td>New question format introduced</td></tr>
         <tr><td>2015</td><td><span class="badge badge-low">Hard</span></td><td>TOC</td><td>SE</td><td>Calculation-heavy</td><td>Many NAT traps</td></tr>
         <tr><td>2016</td><td><span class="badge badge-high">Easy</span></td><td>COA</td><td>EngMath</td><td>Conceptual</td><td>Considered easiest post-2010</td></tr>
         <tr><td>2017</td><td><span class="badge badge-med">Medium</span></td><td>OS</td><td>DL</td><td>Mixed</td><td></td></tr>
@@ -464,9 +464,10 @@
   <div class="grid grid-2">
     <div class="card">
       <h2>🏆 Toughest Papers (2007–2026)</h2>
+      <div class="note" style="margin-bottom:8px">⚠️ Difficulty rankings are subjective estimates based on community perception, not derived from official candidate performance data.</div>
       <div class="pareto-item"><div class="pareto-rank">1</div><div class="pareto-info"><strong>GATE 2023</strong><p>Extremely calculation-heavy DSA + TOC combined. High NAT proportion. Avg score dropped ~15% vs 2022.</p></div></div>
-      <div class="pareto-item"><div class="pareto-rank">2</div><div class="pareto-info"><strong>GATE 2012</strong><p>Pre-NAT era. Dense conceptual questions across every subject. Considered legendary in difficulty.</p></div></div>
-      <div class="pareto-item"><div class="pareto-rank">3</div><div class="pareto-info"><strong>GATE 2014</strong><p>First NAT year — candidates unprepared. Many multi-concept integrations.</p></div></div>
+      <div class="pareto-item"><div class="pareto-rank">2</div><div class="pareto-info"><strong>GATE 2012</strong><p>Dense conceptual questions across every subject. Considered difficult by community consensus.</p></div></div>
+      <div class="pareto-item"><div class="pareto-rank">3</div><div class="pareto-info"><strong>GATE 2014</strong><p>NAT-type questions appeared. Many multi-concept integrations.</p></div></div>
       <div class="pareto-item"><div class="pareto-rank">4</div><div class="pareto-info"><strong>GATE 2018</strong><p>Graph + DP combo questions caught most off-guard. OS scheduling also hard.</p></div></div>
     </div>
     <div class="card">
@@ -484,7 +485,7 @@
 <div class="page" id="page-trends">
   <div class="section-title">TREND ANALYSIS · RISING & FALLING SUBJECTS</div>
   <div class="card" style="margin-bottom:16px">
-    <h3>Subject Weight Trends: Early Era (2007–2013) vs NAT Era (2014–2020) vs Recent (2021–2026)</h3>
+    <h3>Subject Weight Trends: Period 1 (2007–2013) vs Period 2 (2014–2020) vs Period 3 (2021–2026)</h3>
     <div class="chart-container-lg">
       <canvas id="trendChart"></canvas>
     </div>
@@ -532,10 +533,11 @@
   </div>
 
   <div class="card" style="margin-top:16px">
-    <h3>Impact of NAT/MSQ Introduction (2014+)</h3>
+    <h3>Question Format Changes (Pre/Post 2014)</h3>
+    <div class="note" style="margin-bottom:8px">⚠️ The exact year NAT/MSQ were introduced needs independent verification. The statistics below are approximate estimates, not derived from a validated dataset.</div>
     <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Metric</th><th>Pre-2014 (MCQ only)</th><th>Post-2014 (NAT+MSQ+MCQ)</th><th>Change</th></tr></thead>
+      <thead><tr><th>Metric</th><th>2007–2013</th><th>2014–2026</th><th>Approx. Change</th></tr></thead>
       <tbody>
         <tr><td>% Numerical/Calculation Qs</td><td>~35%</td><td>~55%</td><td class="up">↑ +20pp</td></tr>
         <tr><td>% Pure Conceptual Qs</td><td>~50%</td><td>~30%</td><td class="down">↓ −20pp</td></tr>
@@ -612,7 +614,8 @@
     </div>
   </div>
 
-  <div class="section-title">80/20 PARETO ANALYSIS</div>
+  <div class="section-title">TOPIC CONCENTRATION ANALYSIS</div>
+  <div class="note" style="margin-bottom:8px">⚠️ The following analysis shows topic concentration patterns from historical data. The 80/20 label is an approximation — the actual cumulative distribution should be calculated from a validated dataset before relying on specific percentages.</div>
   <div class="card">
     <h3>20% of Topics → ~80% of Marks</h3>
     <div class="note" style="margin-bottom:16px">These topics alone cover approximately 65–70 marks out of 85 (excluding GA). Master these first.</div>
@@ -671,7 +674,7 @@
   </div>
 
   <div class="card" style="margin-top:16px">
-    <h3>Last-30-Day Revision Strategy (Evidence-Based)</h3>
+    <h3>Last-30-Day Revision Strategy (Based on Historical Frequency)</h3>
     <div class="tbl-wrap">
     <table>
       <thead><tr><th>Day Range</th><th>Focus</th><th>Topics</th><th>Why</th></tr></thead>
@@ -696,14 +699,14 @@
      PAGE: PREDICTIONS
 ═══════════════════════════════════════════════ -->
 <div class="page" id="page-predictions">
-  <div class="section-title">⚡ PREDICTIONS FOR GATE CSE 2027 — BASED ON HISTORICAL TRENDS ONLY</div>
-  <div class="note">⚠️ All items in this section are PREDICTIONS derived from 20-year statistical patterns. Not guarantees. Use as probability-weighted study guidance only.</div>
+  <div class="section-title">📊 HISTORICAL FREQUENCY ANALYSIS — GATE CSE 2027 PREPARATION GUIDANCE</div>
+  <div class="note">⚠️ <strong>Important:</strong> This section shows historical frequency patterns, NOT predictions. Historical frequency does not predict the next GATE paper. Past appearance rates are provided for study-priority guidance only. Every official GATE 2027 syllabus topic should be prepared regardless of historical frequency.</div>
 
   <div class="card" style="margin-top:16px">
-    <h3>Expected Subject Weightage — GATE 2027 Prediction</h3>
+    <h3>Historical Subject Weightage — Study Priority Guidance</h3>
     <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Subject</th><th>Predicted Marks</th><th>Range</th><th>Confidence</th><th>Reasoning</th></tr></thead>
+      <thead><tr><th>Subject</th><th>Historical Avg Range</th><th>Full Range</th><th>Consistency</th><th>Reasoning</th></tr></thead>
       <tbody>
         <tr><td>DSA</td><td><strong>15–17</strong></td><td>14–18</td><td><span class="badge badge-high">High</span></td><td>5-year rising trend, likely peak not yet reached</td></tr>
         <tr><td>Engineering Mathematics</td><td><strong>10–11</strong></td><td>9–12</td><td><span class="badge badge-high">High</span></td><td>Extremely stable, IIT setters consistently allocate ~10</td></tr>
@@ -723,7 +726,7 @@
 
   <div class="grid grid-2" style="margin-top:16px">
     <div class="card">
-      <h3>🎯 Topics MOST LIKELY to Appear in 2027</h3>
+      <h3>📊 Topics with Highest Historical Frequency</h3>
       <div class="pred-item">
         <div class="conf up" style="color:#6fe6b8">HIGH CONFIDENCE</div>
         <p>Dynamic Programming (LCS / Matrix Chain / Knapsack) — 20/20 streak, will appear</p>
@@ -746,7 +749,7 @@
       </div>
       <div class="pred-item">
         <div class="conf" style="color:#f2a65a">MEDIUM CONFIDENCE</div>
-        <p>Eigenvalue/eigenvector computation — appeared 19/20, likely 2027</p>
+        <p>Eigenvalue/eigenvector computation — appeared in 19/20 papers, high historical frequency</p>
       </div>
       <div class="pred-item">
         <div class="conf" style="color:#f2a65a">MEDIUM CONFIDENCE</div>
@@ -754,7 +757,7 @@
       </div>
     </div>
     <div class="card">
-      <h3>🔄 Topics Likely to RETURN in 2027 (After Absence)</h3>
+      <h3>🔄 Topics Recently Absent but Historically Recurring</h3>
       <div class="pred-item" style="border-left-color:#b892e8">
         <div class="conf" style="color:#b892e8">MEDIUM CONFIDENCE</div>
         <p>Network Security basics (SSL/TLS, Firewall concepts) — absent since 2020, ~7-year cycle suggests return</p>
@@ -773,7 +776,7 @@
       </div>
       <div class="pred-item" style="border-left-color:#b892e8">
         <div class="conf" style="color:#b892e8">LOW CONFIDENCE</div>
-        <p>Recurrence Tree Method — last prominent in 2019–2020, likely 2027 candidate</p>
+        <p>Recurrence Tree Method — last prominent in 2019–2020, historically recurring topic</p>
       </div>
     </div>
   </div>
@@ -1023,7 +1026,7 @@ new Chart(document.getElementById('trendChart'), {
     labels: ['DSA','TOC','OS','DBMS','CN','EngMath','DL','COA','SE','Compilers'],
     datasets: [
       { label: 'Early (2007–13)', data: [11.9,10.9,9.7,9.1,10.2,10,8.5,8.2,4.6,7.2], backgroundColor: 'rgba(100,116,139,0.6)' },
-      { label: 'NAT Era (2014–20)', data: [13.7,11.3,9.9,9.2,10.3,10.2,7.9,7.8,2.7,6.5], backgroundColor: 'rgba(90,209,230,0.6)' },
+      { label: 'Period 2 (2014–20)', data: [13.7,11.3,9.9,9.2,10.3,10.2,7.9,7.8,2.7,6.5], backgroundColor: 'rgba(90,209,230,0.6)' },
       { label: 'Recent (2021–26)', data: [15.8,11.5,9.7,9.1,10.4,10.5,7.2,7.3,1.8,5.8], backgroundColor: 'rgba(111,230,184,0.6)' },
     ]
   },

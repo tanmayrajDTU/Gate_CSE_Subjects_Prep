@@ -330,7 +330,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> How many states does the minimal DFA need to accept all binary strings divisible by 3 (treating the string as a binary number)?</summary>
           <div class="ans">
             <p>Track the remainder mod 3 as you read bits left to right: state transitions are r → 2r mod 3 on '0' and r → (2r+1) mod 3 on '1'. There are exactly 3 possible remainders (0,1,2), each needing its own state, and none can be merged since they behave differently on future input.</p>
@@ -406,7 +406,7 @@ This string is NOT in L, contradicting the pumping lemma.
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Is L = {aⁿbᵐ : n,m ≥ 0} (any number of a's followed by any number of b's) regular?</summary>
           <div class="ans">
             <p>Yes — this is exactly the language of the regular expression a*b*, so it's regular by definition (no pumping lemma needed to prove regularity — you just exhibit the regex or DFA).</p>
@@ -478,7 +478,7 @@ This string is NOT in L, contradicting the pumping lemma.
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Give a CFG for L = {aⁿbⁿ : n ≥ 0}.</summary>
           <div class="ans">
             <p>Each 'a' must be matched by a corresponding 'b' on the outside — a self-embedding rule handles this naturally: S→aSb wraps one more a...b pair around a smaller instance, with S→ε as the base case.</p>
@@ -567,7 +567,7 @@ Pumping v and y (i=2) increases the count of at most 2 letters, breaking the a=b
       </table>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Is L = {aⁿbⁿcⁿ : n ≥ 0} context-free?</summary>
           <div class="ans">
             <p>No — proved not context-free via the CFL pumping lemma, since any bounded-length pumped window can only touch two of the three letter blocks, so pumping unbalances the counts.</p>
@@ -654,7 +654,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Is a 3-tape TM strictly more powerful (recognizes more languages) than a 1-tape TM?</summary>
           <div class="ans">
             <p>No — every multi-tape TM can be simulated by a single-tape TM (by interleaving the tape contents on one tape), so they recognize exactly the same class of languages. Multi-tape only helps with speed, not with what's computable at all.</p>
@@ -730,7 +730,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Is it decidable whether two given DFAs accept the same language?</summary>
           <div class="ans">
             <p>Yes — DFA equivalence is decidable (e.g., minimize both DFAs and compare, or build a DFA for the symmetric difference and check it accepts nothing). This is a lower-hierarchy decidability result, unaffected by Rice's theorem, which only concerns Turing machines/RE languages.</p>
@@ -837,7 +837,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Is L = {a^n : n is a perfect square} regular?</summary>
           <div class="ans">
             <p>No — using the pumping lemma, for w=a^p (p a perfect square with p≥pumping length), pumping y=a^k changes the length by multiples of k, but perfect squares grow with increasing gaps between them, so some pumped length is guaranteed to land between consecutive squares and land outside L.</p>

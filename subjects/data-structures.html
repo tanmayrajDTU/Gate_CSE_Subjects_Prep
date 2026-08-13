@@ -301,7 +301,7 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What is the time and space complexity of the standard recursive factorial function `fact(n)`?</summary>
           <div class="ans">
             <p>The recurrence is T(n) = T(n-1) + O(1), leading to O(n) time. The recursion depth is n, so the call stack takes O(n) space.</p>
@@ -374,7 +374,7 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Given a 2D array A[1..10][1..15] stored in row-major order with base address 100 and element size 4 bytes, find the address of A[8][6].</summary>
           <div class="ans">
             <p>lr=1, lc=1, Nc=15. Address = 100 + ((8-1)×15 + (6-1))×4 = 100 + (7×15 + 5)×4 = 100 + (105+5)×4 = 100 + 440 = 540.</p>
@@ -451,7 +451,7 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Given a pointer to a node (not the tail) in a singly linked list, what is the time complexity to delete it?</summary>
           <div class="ans">
             <p>Normally O(n) because you need the previous node. However, a common trick is to copy the data from the next node into the current node, then delete the next node, which takes O(1) time.</p>
@@ -527,7 +527,7 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Evaluate postfix expression: 5 3 + 8 2 / *</summary>
           <div class="ans">
             <p>Push 5, 3. Encounter '+': pop 3, 5, compute 5+3=8, push 8. Stack: [8]. Push 8, 2. Encounter '/': pop 2, 8, compute 8/2=4, push 4. Stack: [8, 4]. Encounter '*': pop 4, 8, compute 8*4=32, push 32.</p>
@@ -598,7 +598,7 @@ Dequeue: front = (front + 1) % n</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A circular queue of size n=5 has front=2, rear=4. If we enqueue one element, what are the new front and rear?</summary>
           <div class="ans">
             <p>Enqueue changes rear: rear = (4 + 1) % 5 = 0. Front remains 2.</p>
@@ -676,7 +676,7 @@ Number of NULL pointers in a binary tree with n nodes = n + 1</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> In a binary tree, if the number of internal nodes with 2 children is 15, how many leaf nodes are there?</summary>
           <div class="ans">
             <p>Using the property n₀ = n₂ + 1, the number of leaf nodes n₀ = 15 + 1 = 16.</p>
@@ -753,7 +753,7 @@ Valid values: {−1, 0, 1}</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> The number of possible BSTs with n distinct keys is?</summary>
           <div class="ans">
             <p>It is given by the nth Catalan number: C(2n, n) / (n+1).</p>
@@ -840,7 +840,7 @@ Right child of i = 2i + 1</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What is the index of the last non-leaf node in a 0-indexed heap of size n?</summary>
           <div class="ans">
             <p>The last node is at index n−1. Its parent is ⌊((n−1)−1)/2⌋ = ⌊(n−2)/2⌋ = ⌊n/2⌋ − 1.</p>
@@ -911,7 +911,7 @@ Max edges in directed graph: V(V−1)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> An undirected graph has 10 vertices, each of degree 3. How many edges does it have?</summary>
           <div class="ans">
             <p>By Handshaking Lemma, ∑ degrees = 2|E|. 10 × 3 = 30 = 2|E| ⇒ |E| = 15.</p>
@@ -998,7 +998,7 @@ Max edges in directed graph: V(V−1)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What is the pre-order traversal of a BST if the post-order is 2, 4, 3, 7, 9, 8, 5?</summary>
           <div class="ans">
             <p>Root is last in post-order: 5. BST property splits into left {2,4,3} and right {7,9,8}. Reconstructing yields pre-order: 5, 3, 2, 4, 8, 7, 9.</p>

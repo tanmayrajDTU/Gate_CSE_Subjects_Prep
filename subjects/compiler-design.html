@@ -277,7 +277,7 @@ DFA    --Hopcroft/Moore minimization--> minimal DFA</div>
       <p>Common panic-mode strategies: delete one character and resume, insert a missing character, or skip to the next delimiter (whitespace). Lexical errors are relatively rare because almost any character sequence can form <em>some</em> valid lexeme (e.g. as an identifier).</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which phase of the compiler is responsible for detecting that a variable was used without being declared?</summary>
           <div class="ans">
             <p>Undeclared-variable use is a scope/binding issue, not a grammatical (syntax) one — the sequence of tokens can be perfectly well-formed. This is checked during semantic analysis, which builds and consults the symbol table.</p>
@@ -351,7 +351,7 @@ A' → β₁ | β₂</div>
       <p>Left recursion always creates a table conflict (infinite expansion attempts for the same lookahead). Ambiguous grammars have some string with two parse trees, which manifests as two productions competing for the same table cell.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Eliminate left recursion from: <code>E → E + T | T</code>.</summary>
           <div class="ans">
             <p>Matching the pattern A→Aα|β with α="+T", β="T": rewrite as E→TE', E'→+TE'|ε — the standard transformation moves the recursive part to the right via a new nonterminal E'.</p>
@@ -428,7 +428,7 @@ A' → β₁ | β₂</div>
       <p>A <strong>handle</strong> is a substring on the stack matching some production's RHS, such that reducing it is a step in the reverse of some rightmost derivation. Bottom-up parsing = repeatedly find and reduce the handle ("handle pruning") until only the start symbol remains.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Rank LR(0), SLR(1), LALR(1), and CLR(1) from weakest to strongest in terms of the class of grammars each can parse without conflict.</summary>
           <div class="ans">
             <p>Each adds lookahead precision over the last: LR(0) uses none, SLR(1) approximates with a static FOLLOW set, LALR(1) uses item-specific (but merged) lookaheads, and CLR(1) uses full unmerged item-specific lookaheads.</p>
@@ -509,7 +509,7 @@ A' → β₁ | β₂</div>
       <p>For boolean expressions and control statements, target jump addresses are often unknown when the jump instruction is generated (e.g. the "then" branch hasn't been code-generated yet). <strong>Backpatching</strong> leaves the jump target blank initially and fills it in once the target address becomes known.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> An SDD has the rule <code>E.val = E1.val + T.val</code> where E, E1, T are all on the production's right-hand or left-hand side appropriately (E→E1+T). Is E.val synthesized or inherited?</summary>
           <div class="ans">
             <p>E.val is being computed for the LHS nonterminal E using only attribute values from its children (E1 and T) on the RHS — the defining characteristic of a synthesized attribute (bottom-up information flow).</p>
@@ -595,7 +595,7 @@ A' → β₁ | β₂</div>
       <p>A compiler-wide data structure mapping identifier names to their attributes: type, scope, memory location/offset, size. Implemented typically as a hash table for O(1) average lookup, often organized as nested scopes (a stack of tables, one per active block) to support shadowing.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Why can't a language that supports recursive functions use pure static (fixed-address) allocation for local variables?</summary>
           <div class="ans">
             <p>Static allocation binds each variable to one fixed memory address for the program's entire lifetime. A recursive call creates a new logical instance of the same local variable while the outer call's instance is still active and needed — with only one address available, the inner call would overwrite the outer call's value, corrupting it. Stack allocation solves this by giving each call its own activation record with independent storage.</p>
@@ -662,21 +662,82 @@ A' → β₁ | β₂</div>
         <tr><td>Induction variable elim.</td><td>remove redundant loop counters derivable from another</td></tr>
       </table>
 
-      <h3 class="sub">Data-flow analyses — the two GATE cares about most</h3>
+      <h3 class="sub">Data-flow analyses — the three the GATE 2027 syllabus names</h3>
+      <p>The official GATE 2027 Compiler Design syllabus explicitly lists three data-flow analyses: <strong>constant propagation</strong>, <strong>liveness analysis</strong>, and <strong>common subexpression elimination</strong>. All three follow the same general framework: define GEN/KILL sets for each basic block, then iteratively compute IN/OUT sets across the CFG until a fixed point is reached.</p>
+
       <div class="card pyq">
-        <span class="label">Reaching definitions</span>
-        <p>A definition of variable x <strong>reaches</strong> a point p if there's a path from the definition to p along which x is not redefined. Direction: <strong>forward</strong>. Used to detect, e.g., use of a possibly-uninitialized variable.</p>
+        <span class="label">Reaching definitions (forward analysis)</span>
+        <p>A definition of variable x <strong>reaches</strong> a point p if there's a path from the definition to p along which x is not redefined. Direction: <strong>forward</strong>. Meet operator: <strong>union (∪)</strong> — a definition reaches if it comes along <em>any</em> path. Used to detect use of possibly-uninitialized variables and as the foundation for constant propagation.</p>
+        <div class="eq">OUT[B] = GEN[B] ∪ (IN[B] − KILL[B]) &emsp;&emsp; IN[B] = ∪ OUT[predecessors of B]</div>
       </div>
       <div class="card pyq">
-        <span class="label">Live variable analysis</span>
-        <p>A variable x is <strong>live</strong> at point p if there's a path from p to some use of x along which x is not redefined first. Direction: <strong>backward</strong> (computed from uses back toward definitions) — the opposite direction of reaching definitions. Used for register allocation and dead-code elimination.</p>
+        <span class="label">Live variable analysis (backward analysis)</span>
+        <p>A variable x is <strong>live</strong> at point p if there's a path from p to some use of x along which x is not redefined first. Direction: <strong>backward</strong> (computed from uses back toward definitions). Meet operator: <strong>union (∪)</strong>. Used for register allocation and dead-code/dead-store elimination.</p>
+        <div class="eq">IN[B] = USE[B] ∪ (OUT[B] − DEF[B]) &emsp;&emsp; OUT[B] = ∪ IN[successors of B]</div>
+      </div>
+
+      <h3 class="sub">Constant propagation</h3>
+      <p><strong>Constant propagation</strong> replaces variables with their known constant values at compile time. If every reaching definition of variable x assigns the <em>same</em> constant value c, then every subsequent use of x can be replaced by c. This often enables further optimizations like constant folding (<code>x=5; y=x+3</code> → <code>y=8</code>) and dead-code elimination.</p>
+
+      <div class="card formula">
+        <span class="label">Constant propagation — lattice model</span>
+        <p>Each variable's state at any program point is one of three values on a lattice:</p>
+        <p><strong>⊤ (top/undefined)</strong> — variable not yet assigned on any reaching path<br>
+        <strong>c (constant)</strong> — variable has the same constant value c on all reaching paths<br>
+        <strong>⊥ (bottom/NAC)</strong> — variable has different values on different paths (Not A Constant)</p>
+        <p>The lattice order is: ⊤ &gt; any constant c &gt; ⊥. The <strong>meet operator (∩)</strong> combines values at join points:</p>
+        <div class="eq">c ∩ c = c &emsp;|&emsp; c₁ ∩ c₂ = ⊥ (if c₁ ≠ c₂) &emsp;|&emsp; c ∩ ⊤ = c &emsp;|&emsp; c ∩ ⊥ = ⊥</div>
+      </div>
+
+      <div class="card formula">
+        <span class="label">Transfer function for constant propagation</span>
+        <p>For each statement <code>x = expr</code> in a basic block:</p>
+        <p>• If <code>expr</code> is a constant c → set x = c<br>
+        • If <code>expr</code> involves only variables with known constant values → evaluate and set x = result (constant folding)<br>
+        • If any variable in <code>expr</code> is ⊥ (NAC) → set x = ⊥<br>
+        • If any variable in <code>expr</code> is ⊤ (undefined) → set x = ⊤</p>
+        <p>At <strong>join points</strong> (where multiple CFG paths merge), use the <strong>meet (∩)</strong> operator — this is <em>intersection</em>, not union. A variable is constant only if ALL incoming paths agree on the same value.</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">Worked example — constant propagation on a CFG</span>
+        <p>Consider three basic blocks with edges B1→B2, B1→B3, B2→B4, B3→B4:</p>
+        <p><strong>B1:</strong> <code>x = 5; y = 3</code><br>
+        <strong>B2:</strong> <code>y = 7</code> &emsp;(only reached if condition true)<br>
+        <strong>B3:</strong> <code>y = 7</code> &emsp;(only reached if condition false)<br>
+        <strong>B4:</strong> <code>z = x + y</code></p>
+        <p>At B4's entry (join of B2 and B3): x = 5 from both paths → x is constant 5. y = 7 from B2, y = 7 from B3 → y is constant 7 (both agree). Therefore z = 5 + 7 = 12 — all three variables are constants at B4.</p>
+        <p>But if B3 had <code>y = 9</code> instead, then at B4: y = 7 ∩ 9 = ⊥ (NAC) — y cannot be propagated, and z = ⊥.</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — constant propagation</span>
+        <p>⚠️ At join points, constant propagation uses <strong>intersection (meet/∩)</strong>, not union. A variable is constant only if ALL paths agree on the same value. This is the opposite of reaching definitions (which uses union — a definition reaches if it comes from ANY path). Confusing meet vs join operators is the #1 trap in GATE data-flow questions.</p>
+      </div>
+
+      <h3 class="sub">Common subexpression elimination (CSE)</h3>
+      <p><strong>CSE</strong> identifies expressions that are computed more than once with the same operand values, and replaces redundant recomputations with a stored result. An expression <code>a op b</code> is an <strong>available expression</strong> at point p if every path from the entry to p evaluates <code>a op b</code>, and neither a nor b is redefined after the last such evaluation.</p>
+
+      <div class="card formula">
+        <span class="label">Available expressions analysis (for CSE)</span>
+        <p>Direction: <strong>forward</strong>. Meet operator: <strong>intersection (∩)</strong> — an expression is available only if it's available on ALL incoming paths.</p>
+        <div class="eq">OUT[B] = e_GEN[B] ∪ (IN[B] − e_KILL[B]) &emsp;&emsp; IN[B] = ∩ OUT[predecessors of B]</div>
+        <p><strong>e_GEN[B]</strong>: expressions computed in B whose operands are not subsequently redefined in B.<br>
+        <strong>e_KILL[B]</strong>: all expressions involving any variable defined in B.</p>
+      </div>
+
+      <div class="card formula">
+        <span class="label">CSE worked example</span>
+        <p><strong>Before CSE:</strong> <code>t1 = a + b; c = t1 * d; ... t2 = a + b; e = t2 * f;</code></p>
+        <p><strong>After CSE:</strong> <code>t1 = a + b; c = t1 * d; ... e = t1 * f;</code> (reuse t1, eliminate redundant a+b)</p>
+        <p>CSE requires that neither <code>a</code> nor <code>b</code> was redefined between the two occurrences of <code>a + b</code>.</p>
       </div>
 
       <h3 class="sub">Loop optimization — the highest-value target</h3>
       <p>Loops execute far more often than straight-line code, so optimizing them gives disproportionate speedup. Key targets: identify natural loops (via dominators/back edges in the CFG), hoist loop-invariant computations, and eliminate redundant induction variables.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">8 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Given the 3AC sequence: (1) t1=a+b (2) if t1&gt;0 goto (5) (3) t2=a-b (4) goto (6) (5) t2=a*b (6) print t2 — identify the leaders.</summary>
           <div class="ans">
             <p>Leader rule: instruction 1 (first instruction) is always a leader. Instruction 5 is a leader (target of the goto in line 2). Instruction 3 is a leader (immediately follows the branch at line 2). Instruction 6 is a leader (target of goto at line 4, and also immediately follows instruction 5's fallthrough... but since line 6 is a jump target it qualifies either way).</p>
@@ -708,6 +769,24 @@ A' → β₁ | β₂</div>
           <div class="ans">
             <p>Reaching definitions asks "which earlier definition might still be the current value at this point?" — a question that's naturally answered by propagating information forward from definitions toward later uses. Live variables asks "will this value be used somewhere later?" — a question naturally answered by propagating information backward from uses toward earlier points. The two questions are inherently mirror images (looking forward from a write vs. looking forward to a future read from the current point), which is exactly why one is a forward data-flow problem and the other a backward one.</p>
             <p class="final">Answer: Reaching definitions is forward (definition → later point); live variables is backward (point → later use) — they answer mirror-image questions</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q6</span> In the CFG below, can x be constant-propagated at point P? B1: x=5. B2: x=5. B3 (joins B1,B2): use x at point P.</summary>
+          <div class="ans">
+            <p>At the join point (entry of B3), we apply the meet operator to the values of x from both incoming paths. From B1: x = 5. From B2: x = 5. Meet: 5 ∩ 5 = 5 — both paths agree on the same constant value. Therefore x can be replaced by 5 at point P.</p>
+            <p class="final">Answer: Yes — x = 5 on both incoming paths, so meet gives constant 5</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q7</span> B1: a=3, b=4. B2: a=3, b=7. B3 (joins B1,B2): c = a + b. After constant propagation, what is c at B3?</summary>
+          <div class="ans">
+            <p>At B3 entry: a = 3 ∩ 3 = 3 (constant). b = 4 ∩ 7 = ⊥ (NAC — different values on different paths). Since b is NAC, the expression a + b cannot be fully evaluated. c = ⊥ (not a constant). Only a can be propagated: c = 3 + b.</p>
+            <p class="final">Answer: c is NAC (⊥) — a can be propagated as 3, but b differs across paths so c = 3 + b</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q8</span> Given: t1 = a*b; c = t1 + d; a = 7; t2 = a*b; e = t2 + d. Can CSE eliminate the second computation of a*b?</summary>
+          <div class="ans">
+            <p>Between the first <code>a*b</code> (t1) and the second <code>a*b</code> (t2), the variable <code>a</code> is redefined (<code>a = 7</code>). This means the expression <code>a*b</code> is <strong>killed</strong> — the second <code>a*b</code> uses a different value of a than the first. The expression is NOT available at the second computation point, so CSE cannot eliminate it.</p>
+            <p class="final">Answer: No — a is redefined between the two occurrences, so a*b is not an available expression at the second point</p>
           </div>
         </details>
       </div>
@@ -763,7 +842,19 @@ A' → β₁ | β₂</div>
         </div>
         <div class="card formula">
           <span class="label">Reaching definitions vs live variables</span>
-          <p>Reaching definitions: forward, def → later point. Live variables: backward, point → later use. Mirror-image data-flow problems.</p>
+          <p>Reaching definitions: forward, union, def → later point. Live variables: backward, union, point → later use. Mirror-image data-flow problems.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Constant propagation</span>
+          <p>Replaces variables with known constants. Lattice: ⊤ → constant c → ⊥ (NAC). At join points: meet = intersection (c ∩ c = c, c₁ ∩ c₂ = ⊥). A variable is constant only if ALL paths agree.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Available expressions (for CSE)</span>
+          <p>Forward analysis, meet = intersection. OUT[B] = e_GEN[B] ∪ (IN[B] − e_KILL[B]). Expression a op b is available if computed on ALL paths and operands not redefined since.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Data-flow meet operators — the critical distinction</span>
+          <p>Reaching defs & liveness use <strong>union (∪)</strong> — any path suffices. Constant prop & available exprs use <strong>intersection (∩)</strong> — all paths must agree. GATE frequently tests this distinction.</p>
         </div>
         <div class="card formula">
           <span class="label">Basic block leaders</span>
@@ -781,7 +872,7 @@ A' → β₁ | β₂</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A grammar is ambiguous. Can it be parsed by a CLR(1) parser?</summary>
           <div class="ans">
             <p>No — ambiguity means some string has two distinct parse trees/derivations, which always manifests as a genuine conflict (typically reduce-reduce) in the parsing table of any deterministic LR-family parser, no matter how much lookahead is used. More lookahead resolves lookahead-limited weaknesses, not fundamental grammatical ambiguity.</p>

@@ -285,7 +285,7 @@ section.topic{scroll-margin-top:56px;}
       </ul>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A relation R(A,B,C,D) has candidate key {A}. How many superkeys does R have?</summary>
           <div class="ans">
             <p>Any superkey must contain the candidate key A. The remaining attributes B, C, D can each independently be included or excluded, giving 2³ = 8 combinations, each unioned with A forming a valid (if sometimes redundant) superkey.</p>
@@ -375,7 +375,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> R has 5 tuples, S has 3 tuples, both with no attributes in common. How many tuples does R × S produce?</summary>
           <div class="ans">
             <p>Cartesian product pairs every tuple of R with every tuple of S — the tuple count is the product of the two relation sizes, regardless of attribute overlap (or lack thereof).</p>
@@ -453,7 +453,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Why does <code>SELECT dept, COUNT(*) FROM Emp WHERE COUNT(*) &gt; 5 GROUP BY dept;</code> fail?</summary>
           <div class="ans">
             <p>WHERE is evaluated before GROUP BY in the logical query processing order, so no groups (and thus no COUNT(*) per group) exist yet when WHERE runs — aggregate functions are unavailable at that stage. The correct fix is to move the condition to HAVING, which runs after grouping.</p>
@@ -535,7 +535,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> R(A,B,C,D) has FDs: A→B, B→C, C→D. Compute A⁺.</summary>
           <div class="ans">
             <p>Start with {A}. A→B adds B: {A,B}. Now B→C applies (B is covered): add C: {A,B,C}. Now C→D applies: add D: {A,B,C,D}. No more FDs apply — closure is complete and covers all of R's attributes.</p>
@@ -625,7 +625,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A schedule's precedence graph has edges T1→T2, T2→T3, T3→T1. Is the schedule conflict-serializable?</summary>
           <div class="ans">
             <p>These three edges form a cycle (T1→T2→T3→T1). Conflict-serializability requires an acyclic precedence graph — a cycle directly proves the schedule cannot be reordered into any equivalent serial schedule.</p>
@@ -707,7 +707,7 @@ section.topic{scroll-margin-top:56px;}
       <p>For a B+-tree of order <em>p</em> (max <em>p</em> pointers per node): each internal node holds at most p−1 keys and p pointers, at least ⌈p/2⌉ pointers (except root). GATE frequently asks you to compute the maximum number of records searchable in <em>h</em> levels, or the minimum height for <em>n</em> records, given a fan-out.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Can a secondary index ever be sparse? Justify.</summary>
           <div class="ans">
             <p>A sparse index relies on the data file being physically sorted by the indexed field, so one index entry per block is enough — a sequential scan within that block finds the target record. A secondary index is, by definition, built on a field the data file is NOT sorted by, so consecutive records with the indexed value aren't guaranteed to be in the same block — a sparse secondary index simply couldn't locate records reliably.</p>
@@ -809,7 +809,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> R(A,B,C,D,E) has FDs A→B, BC→D, D→E. Is {A,C} a candidate key?</summary>
           <div class="ans">
             <p>Compute {A,C}⁺: start {A,C}. A→B adds B: {A,B,C}. Now BC→D applies (both B,C present): add D: {A,B,C,D}. Now D→E applies: add E: {A,B,C,D,E} — all attributes covered. Check minimality: does {A}⁺ alone reach everything? A→B gives {A,B}, but BC→D needs C too, which isn't derivable from A alone — so {A} isn't sufficient. Similarly {C} alone derives nothing. So {A,C} is minimal.</p>

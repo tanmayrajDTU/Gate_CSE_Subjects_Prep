@@ -336,7 +336,7 @@ PC  ← PC + 1      ; program counter advances to next instruction</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Why can't a pure von Neumann machine fetch the next instruction and access data in the same cycle?</summary>
           <div class="ans">
             <p>Instructions and data share one memory and one bus in the von Neumann model, so only one memory access — either the instruction fetch or the data access — can use that shared path in a given cycle.</p>
@@ -433,7 +433,7 @@ PC  ← PC + 1      ; program counter advances to next instruction</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Compute A = B + C using strictly 1-address (accumulator) instructions.</summary>
           <div class="ans">
             <p>An accumulator machine implicitly uses the accumulator as one operand and the destination. LOAD B (Acc ← B); ADD C (Acc ← Acc + C); STORE A (A ← Acc).</p>
@@ -548,7 +548,7 @@ C₃ = G₂ + P₂G₁ + P₂P₁G₀ + P₂P₁P₀C₀   ← each Cᵢ expands
       <p>Besides arithmetic, an ALU implements bitwise AND, OR, XOR, NOT, and shift/rotate operations. A function-select input chooses which operation's result is routed to the output — typically via a multiplexer fed by parallel arithmetic and logic sub-units.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A 16-bit ripple carry adder is built from full adders, each with a 2 ns worst-case delay. What is the worst-case time for the sum to stabilize?</summary>
           <div class="ans">
             <p>In the worst case (a carry generated at the LSB must ripple through all 16 stages), total delay = number of stages × per-stage delay = 16 × 2 ns.</p>
@@ -633,7 +633,7 @@ C₃ = G₂ + P₂G₁ + P₂P₁G₀ + P₂P₁P₀C₀   ← each Cᵢ expands
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A program has 40% ALU instructions (CPI=1), 30% LOAD/STORE (CPI=3), and 30% branches (CPI=2). What is the average CPI?</summary>
           <div class="ans">
             <p>Weighted average CPI = Σ (fraction × CPI) = 0.4×1 + 0.3×3 + 0.3×2 = 0.4 + 0.9 + 0.6 = 1.9.</p>
@@ -736,7 +736,7 @@ Total control store size = (number of microinstructions) × (bits per microinstr
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Why is hardwired control generally faster than microprogrammed control?</summary>
           <div class="ans">
             <p>Hardwired control produces signals directly from combinational logic gates reacting to the opcode, while microprogrammed control must first read a microinstruction out of a control store (a memory access) before that signal can be produced.</p>
@@ -855,7 +855,7 @@ where H1 = L1 hit time, M1 = L1 miss rate, MP1 = L1 miss penalty (≈ memory acc
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A cache has 256 sets, 4-way set-associative, with a 64-byte block size, on a 32-bit address. Find the number of tag, index, and offset bits.</summary>
           <div class="ans">
             <p>Offset bits = log₂(64) = 6. Index bits = log₂(256) = 8. Tag bits = 32 − 8 − 6 = 18.</p>
@@ -937,7 +937,7 @@ where H1 = L1 hit time, M1 = L1 miss rate, MP1 = L1 miss penalty (≈ memory acc
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Why is programmed I/O (polling) inefficient for a slow device like a keyboard?</summary>
           <div class="ans">
             <p>The CPU must repeatedly check the device's status in a busy-wait loop until it becomes ready, and since a keyboard is extremely slow relative to CPU speed, the vast majority of those polling cycles are wasted doing no useful work.</p>
@@ -1073,7 +1073,7 @@ Speedup (n → ∞) → k   (approaches the number of stages)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A 5-stage pipeline with a 2 ns clock period executes 100 instructions with no stalls. How much total time does it take?</summary>
           <div class="ans">
             <p>Total cycles = k + n − 1 = 5 + 100 − 1 = 104. Total time = 104 × 2 ns = 208 ns.</p>
@@ -1200,7 +1200,7 @@ Speedup (n → ∞) → k   (approaches the number of stages)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A byte-addressable memory has a 20-bit address bus. What is its total addressable memory size?</summary>
           <div class="ans">
             <p>Address space = 2ⁿ locations for n address bits: 2²⁰ = 1,048,576 bytes.</p>

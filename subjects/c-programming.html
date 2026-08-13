@@ -315,7 +315,7 @@ section.topic{scroll-margin-top:20px;}
 printf("%d", ch);      <span class="c">// prints 65 — char promotes to int in printf's varargs</span></div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A program has a function <code>void foo();</code> declared (prototype) but never defined, and <code>foo()</code> is never called anywhere. Will it compile and link successfully?</summary>
           <div class="ans">
             <p>An unused declaration with no call and no definition needs no linking resolution — the linker only complains about references it must resolve. Since <code>foo</code> is never referenced (called), there's nothing to resolve.</p>
@@ -407,7 +407,7 @@ if (a &lt; b) printf("yes"); else printf("no");
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Predict the output: <code>printf("%d", sizeof(char) + sizeof(short));</code></summary>
           <div class="ans">
             <p><code>sizeof</code> returns type <code>size_t</code> (unsigned). Typical values: sizeof(char)=1, sizeof(short)=2. Their sum is 3, and since both operands are unsigned already, no signed/unsigned surprise occurs here.</p>
@@ -497,7 +497,7 @@ switch (x) {
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What does this print?<br><span class="code">int x=5;
 if(x&gt;0)
   if(x&gt;10) printf("big");
@@ -611,7 +611,7 @@ a ^= b;   <span class="c">// swaps a and b using only XOR — fails silently if 
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Evaluate: <code>int a=5,b=2,c; c = a++ + b++; printf("%d %d %d",a,b,c);</code></summary>
           <div class="ans">
             <p>Post-increment returns the old value first, then increments. c = 5+2 = 7 (using old a, old b). After the statement, a becomes 6 and b becomes 3. This case is well-defined because each variable is incremented only once with a clear sequence point at the full expression's end.</p>
@@ -695,7 +695,7 @@ int r = MAX(x++, 10);   <span class="c">// x++ may be textually substituted TWIC
       <p>Separate <code>.c</code> files compile independently into <code>.o</code> object files; the linker resolves cross-file symbol references. A function defined in one file and used in another needs a matching <strong>declaration</strong> (usually via a shared <code>.h</code>) visible at the call site — the definition itself doesn't need to be visible until link time.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What does <code>SQ(2+3)</code> expand to and evaluate to, given <code>#define SQ(x) x*x</code>?</summary>
           <div class="ans">
             <p>Pure textual substitution: <code>SQ(2+3)</code> becomes <code>2+3*2+3</code>. Applying normal precedence (* before +): 2 + 6 + 3 = 11, not 25 as a naive "square of 5" reading would suggest.</p>
@@ -777,7 +777,7 @@ int r = MAX(x++, 10);   <span class="c">// x++ may be textually substituted TWIC
       <p><code>auto</code> and <code>register</code> variables are <strong>not zero-initialized</strong> by default — they hold whatever garbage was left in that stack/register slot. <code>static</code> and file-scope (global) variables <strong>are</strong> zero-initialized automatically if no initializer is given.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What does this print across 3 calls?<br><span class="code">void f(){
   static int x = 0;
   x++;
@@ -872,7 +872,7 @@ f(); f(); f();</span></summary>
       <p>Every unreturned call keeps its activation record alive. Deep or infinite recursion (missing/wrong base case) exhausts stack memory — a runtime crash (stack overflow), not a compile-time error.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What does <code>f(3)</code> print?<br><span class="code">void f(int n){
   if(n==0) return;
   printf("%d",n);
@@ -961,7 +961,7 @@ p = p + 1;             <span class="c">// moves forward by 4*sizeof(int) = 16 by
       <p>Pointers can be compared with <code>==</code>/<code>!=</code>/relational operators only meaningfully within the same array (or one-past-the-end). <code>NULL</code> is a pointer that's guaranteed not to point to any valid object — dereferencing it is undefined behaviour (commonly a segfault).</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Given <code>int arr[]={2,4,6,8,10}; int *p=arr;</code>, what does <code>*(p+3)</code> evaluate to, and what is <code>*(arr+3)</code>?</summary>
           <div class="ans">
             <p>Both p and arr point to the same base address (arr decayed into p). p+3 and arr+3 both point to the 4th element (index 3), scaled by sizeof(int). Dereferencing gives arr[3] = 8 in both cases.</p>
@@ -1057,7 +1057,7 @@ printf("%d", fp(3,4));       <span class="c">// calls add(3,4) indirectly → 7<
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What's the key difference between <code>malloc(10)</code> and <code>calloc(10,1)</code> in terms of the bytes returned?</summary>
           <div class="ans">
             <p>Both allocate 10 bytes total. malloc leaves that memory uninitialized (garbage values), while calloc explicitly zero-initializes every byte of the allocated block before returning it.</p>
@@ -1148,7 +1148,7 @@ printf("%lu", sizeof(union U));   <span class="c">// = 4 (size of the largest me
       <p>Unlike arrays, structures are NOT automatically passed by pointer — passing a struct by value to a function copies the <em>entire</em> struct (all members, all padding). For large structs, this is expensive; pass a pointer instead when the struct is large or must be modified.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Given <code>struct S { char a; int b; char c; };</code> on a system with 4-byte int alignment, compute sizeof(struct S).</summary>
           <div class="ans">
             <p>a: offset 0 (1 byte), then 3 bytes padding so b aligns to offset 4. b: offset 4 (4 bytes), ends at offset 8. c: offset 8 (1 byte), then 3 bytes trailing padding so the struct's total size is itself a multiple of its largest alignment requirement (4).</p>

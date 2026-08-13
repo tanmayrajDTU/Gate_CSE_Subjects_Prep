@@ -287,7 +287,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> At which OSI layer does a router primarily operate?</summary>
           <div class="ans">
             <p>A router reads the destination IP address to decide where to forward a packet — that's Network layer (layer 3) information, so routing decisions happen at layer 3.</p>
@@ -377,8 +377,32 @@ Receiver divides the received frame by G — a zero remainder means no detected 
         <p>CRC division is <strong>modulo-2 (XOR) division</strong>, not ordinary binary subtraction — there's no borrowing, and each step is just XOR between the current bits and the generator whenever the leading bit is 1. Students who apply ordinary long division get the wrong remainder almost every time.</p>
       </div>
 
+      <h3 class="sub">Performance metrics</h3>
+      <p>The official GATE 2027 syllabus explicitly includes performance metrics. These quantify how well a network (or link) delivers data.</p>
+
+      <div class="card formula">
+        <span class="label">Four components of end-to-end delay</span>
+        <p><strong>d<sub>total</sub> = d<sub>proc</sub> + d<sub>queue</sub> + d<sub>trans</sub> + d<sub>prop</sub></strong></p>
+        <p>• <strong>Processing delay (d<sub>proc</sub>)</strong> — time to examine the packet header, check for errors, determine output link. Typically microseconds.<br>
+        • <strong>Queuing delay (d<sub>queue</sub>)</strong> — time waiting in the output buffer. Varies with traffic intensity; 0 if queue is empty.<br>
+        • <strong>Transmission delay (d<sub>trans</sub>)</strong> — time to push all bits onto the link = <strong>L / R</strong> (packet length / link bandwidth).<br>
+        • <strong>Propagation delay (d<sub>prop</sub>)</strong> — time for a bit to travel the physical distance = <strong>d / s</strong> (distance / propagation speed, typically ~2×10⁸ m/s for copper, ~3×10⁸ m/s for fiber).</p>
+      </div>
+
+      <div class="card formula">
+        <span class="label">Throughput and utilization</span>
+        <p><strong>Throughput</strong> = actual rate of data delivery (bits/sec), limited by the <strong>bottleneck link</strong> (the link with the lowest capacity on the path).<br>
+        <strong>Utilization (U)</strong> = fraction of time a link is busy = (actual traffic rate) / (link capacity). For stop-and-wait: U = (L/R) / (L/R + 2×d<sub>prop</sub>).<br>
+        <strong>Bandwidth-delay product (BDP)</strong> = bandwidth × RTT = the maximum amount of data "in flight" (unacknowledged) the link can hold. Essential for window sizing.</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — transmission vs propagation delay</span>
+        <p>⚠️ <strong>Transmission delay (L/R)</strong> depends on packet size and link bandwidth — it is the time to push the bits out. <strong>Propagation delay (d/s)</strong> depends on physical distance and has nothing to do with bandwidth or packet size. GATE questions often give both bandwidth and distance, and students confuse which to use where. Remember: doubling the bandwidth halves transmission delay but has zero effect on propagation delay.</p>
+      </div>
+
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which switching type reserves a fixed, dedicated path for the entire duration of a connection?</summary>
           <div class="ans">
             <p>Circuit switching sets up and reserves a dedicated path (fixed bandwidth) before any data is sent, and holds it for the whole call, regardless of whether data is actively flowing.</p>
@@ -449,7 +473,7 @@ Minimum frame size = 2 × propagation delay × bandwidth
       <p>A bridge (or switch) connects multiple LAN segments at the data link layer, forwarding frames based on MAC address rather than repeating everything like a hub. It builds a forwarding table by <strong>backward learning</strong> — recording which port each source MAC address arrived on — and floods (broadcasts) a frame out all ports only when the destination MAC isn't yet known.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A LAN has bandwidth 10 Mbps and one-way propagation delay 25.6 μs. Using CSMA/CD, what is the minimum frame size?</summary>
           <div class="ans">
             <p>Minimum frame size = 2 × propagation delay × bandwidth = 2 × 25.6μs × 10Mbps = 51.2μs × 10×10⁶ bps = 512 bits.</p>
@@ -524,7 +548,7 @@ While unvisited nodes remain:
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which routing approach is known as "routing by rumour," and why?</summary>
           <div class="ans">
             <p>Distance vector routing — each router only knows what its neighbours tell it about their own costs, never seeing the actual network topology, so it's effectively trusting second-hand ("rumoured") cost claims rather than direct topology knowledge.</p>
@@ -597,7 +621,7 @@ Subnets: 172.16.0.0/18, 172.16.64.0/18, 172.16.128.0/18, 172.16.192.0/18</div>
       <p>Lets many devices on a private network share a single public IP address by rewriting source IP/port on outgoing packets (and the reverse on replies), tracking the mapping in a translation table. This is why private address ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) can be reused identically across countless independent home/office networks without conflict.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">6 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> How many usable host addresses are available in the subnet 192.168.10.0/26?</summary>
           <div class="ans">
             <p>/26 leaves 32−26=6 host bits → 2⁶=64 total addresses. Subtract 2 for the network and broadcast addresses: 64−2=62.</p>
@@ -626,6 +650,12 @@ Subnets: 172.16.0.0/18, 172.16.64.0/18, 172.16.128.0/18, 172.16.192.0/18</div>
           <div class="ans">
             <p>ping sends ICMP Echo Request messages and listens for ICMP Echo Reply messages — it's a direct application of the ICMP protocol's diagnostic message types.</p>
             <p class="final">Answer: ICMP (Echo Request / Echo Reply messages)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q6</span> An organization has 50 devices using private IP addresses (192.168.1.x). They all access the internet through a single public IP via NAT. How does the NAT router distinguish replies destined for different internal hosts?</summary>
+          <div class="ans">
+            <p>The NAT router maintains a translation table mapping each internal (private IP, port) to a unique (public IP, external port). When an outgoing packet leaves, the router rewrites the source IP:port to public IP:unique-port. When a reply arrives at that unique port, the router looks up the mapping to determine which internal host to forward to. The port number is the key differentiator.</p>
+            <p class="final">Answer: NAT uses a translation table mapping unique external port numbers to internal (IP, port) pairs</p>
           </div>
         </details>
       </div>
@@ -673,11 +703,34 @@ Client → Server: ACK (ack=y+1)
         <p>Flow control and congestion control solve <strong>different</strong> problems and are commonly confused: flow control is receiver-driven (protects one slow receiver from one fast sender using the advertised window), while congestion control is network-driven (protects the shared network from being overwhelmed by all senders combined, inferred from loss/delay, using cwnd). GATE questions that describe "the receiver's buffer is full" point to flow control; questions describing "a router dropped packets" or "RTT increased" point to congestion control.</p>
       </div>
 
-      <h3 class="sub">Sockets</h3>
-      <p>A socket is the programming-level endpoint of a network connection, identified by the tuple <strong>(protocol, local IP, local port, remote IP, remote port)</strong> for a TCP connection — this full 5-tuple, not just the port number alone, is what uniquely identifies each individual connection, which is exactly how a server can serve many simultaneous clients on the very same listening port.</p>
+      <h3 class="sub">Sockets and the Socket API</h3>
+      <p>A <strong>socket</strong> is the programming-level endpoint of a network connection, identified by the tuple <strong>(protocol, local IP, local port, remote IP, remote port)</strong> for a TCP connection — this full 5-tuple, not just the port number alone, is what uniquely identifies each individual connection, which is exactly how a server can serve many simultaneous clients on the very same listening port.</p>
+
+      <div class="card formula">
+        <span class="label">Socket API — TCP client-server flow</span>
+        <p><strong>Server side (in order):</strong></p>
+        <p>1. <code>socket()</code> — create a socket descriptor<br>
+        2. <code>bind()</code> — attach a local IP:port to the socket<br>
+        3. <code>listen()</code> — mark socket as passive (willing to accept connections)<br>
+        4. <code>accept()</code> — block until a client connects; returns a <em>new</em> connected socket for this specific client</p>
+        <p><strong>Client side (in order):</strong></p>
+        <p>1. <code>socket()</code> — create a socket descriptor<br>
+        2. <code>connect()</code> — initiate TCP 3-way handshake to the server's IP:port</p>
+        <p><strong>Both sides then use:</strong> <code>send()</code> / <code>recv()</code> for data transfer, <code>close()</code> to terminate.</p>
+      </div>
+
+      <div class="card formula">
+        <span class="label">UDP sockets are simpler</span>
+        <p>UDP sockets use <code>socket()</code> → <code>bind()</code> → <code>sendto()</code> / <code>recvfrom()</code>. No <code>listen()</code>, no <code>accept()</code>, no <code>connect()</code> — because UDP is connectionless. Each <code>sendto()</code> specifies the destination address independently.</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — socket identity</span>
+        <p>⚠️ A server listening on port 80 can handle thousands of simultaneous TCP connections because each connection is identified by the <strong>full 5-tuple</strong>, not just the server port. The server's <code>accept()</code> call creates a <em>new</em> socket for each client, all sharing the same local port 80 but with different remote IP:port pairs.</p>
+      </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which transport protocol would you choose for a live video call, and why?</summary>
           <div class="ans">
             <p>UDP — for real-time media, a late/retransmitted packet is often worse than a lost one (it arrives too late to be useful), and UDP's lack of retransmission/ordering overhead keeps latency lower, which matters more than perfect reliability here.</p>
@@ -750,7 +803,7 @@ Client → Server: ACK (ack=y+1)
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which transport protocol does an ordinary DNS query typically use, and why?</summary>
           <div class="ans">
             <p>UDP — DNS queries and responses are usually small enough to fit in a single packet, and UDP's lack of connection-setup overhead makes lookups faster, which matters since DNS resolution sits on the critical path of nearly every network request.</p>
@@ -849,6 +902,18 @@ Client → Server: ACK (ack=y+1)
           <span class="label">FTP uses two connections</span>
           <p>Control (port 21, persistent) + a separate data connection per file transfer.</p>
         </div>
+        <div class="card formula">
+          <span class="label">Performance metrics: transmission vs propagation</span>
+          <p>d<sub>trans</sub> = L/R (packet size / bandwidth). d<sub>prop</sub> = d/s (distance / speed). Throughput ≤ bottleneck link capacity. BDP = bandwidth × RTT.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Framing techniques</span>
+          <p>Character count (length in header), byte stuffing (escape special chars), bit stuffing (insert 0 after five 1s). CRC checks integrity after deframing.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Socket API flow</span>
+          <p>Server: socket() → bind() → listen() → accept(). Client: socket() → connect(). Both: send()/recv() → close(). UDP: no listen/accept/connect — use sendto()/recvfrom().</p>
+        </div>
       </div>
 
       <div class="card note" style="margin-top:26px;">
@@ -857,7 +922,7 @@ Client → Server: ACK (ack=y+1)
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A network needs to be divided into subnets each supporting up to 30 hosts. What is the minimum subnet size (prefix length) needed?</summary>
           <div class="ans">
             <p>Need 2^h − 2 ≥ 30 usable hosts. h=5 gives 2⁵−2=30, exactly enough. Prefix length = 32−5 = 27.</p>

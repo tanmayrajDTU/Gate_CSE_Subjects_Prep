@@ -315,7 +315,7 @@ section.topic{scroll-margin-top:56px;}
       <p>For larger matrices: A⁻¹ = adj(A) / det(A), where adj(A) is the transpose of the cofactor matrix.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A 4×4 matrix has rank 3. What can you conclude about det(A)?</summary>
           <div class="ans">
             <p>A square n×n matrix has full rank n iff it is invertible (det ≠ 0). Rank 3 &lt; 4 means the matrix is singular.</p>
@@ -383,7 +383,7 @@ det(A) = product of eigenvalues        trace(A) = sum of eigenvalues</div>
       <p>For upper/lower triangular (and diagonal) matrices, det = product of the diagonal entries — this is why Gaussian elimination to triangular form is the fastest way to compute a determinant by hand for larger matrices.</p>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> If det(A) = 5 for a 3×3 matrix A, find det(2A).</summary>
           <div class="ans">
             <p>det(kA) = kⁿ·det(A) for an n×n matrix. Here n=3, k=2: det(2A) = 2³ × 5 = 8 × 5.</p>
@@ -458,7 +458,7 @@ det(A) = product of eigenvalues        trace(A) = sum of eigenvalues</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A system Ax = b has A of size 3×3 with rank(A) = 2, and rank([A|b]) = 3. What does this tell you?</summary>
           <div class="ans">
             <p>Since rank(A) ≠ rank([A|b]), the system is inconsistent — b is not in the column space of A.</p>
@@ -530,7 +530,7 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A 3×3 matrix has trace = 9 and two of its eigenvalues are 2 and 3. Find the third eigenvalue.</summary>
           <div class="ans">
             <p>Sum of eigenvalues = trace = 9. Third eigenvalue = 9 − 2 − 3.</p>
@@ -600,7 +600,7 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A = [1 1; 0 1]. Is A diagonalizable? Justify using multiplicities.</summary>
           <div class="ans">
             <p>Characteristic equation: (1−λ)² = 0 ⇒ λ = 1 (algebraic multiplicity 2). Solving (A−I)v=0 gives [0 1; 0 0]v = 0 ⇒ only one independent eigenvector (geometric multiplicity 1). Since 1 &lt; 2, it fails the diagonalizability condition.</p>
@@ -675,7 +675,7 @@ Step 2: Solve Ux = y for x   (back substitution — bottom to top)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Find the LU decomposition of A = [4 3; 6 3].</summary>
           <div class="ans">
             <p>Eliminate: R2 → R2 − (6/4)R1 = R2 − 1.5R1 → [4 3; 0 −1.5]. So U = [4 3; 0 −1.5], and the multiplier 1.5 goes into L: L = [1 0; 1.5 1].</p>
@@ -770,7 +770,7 @@ Step 2: Solve Ux = y for x   (back substitution — bottom to top)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A is a 3×3 orthogonal matrix. What are the possible values of det(A)?</summary>
           <div class="ans">
             <p>Orthogonal means AAᵀ = I, so det(A)·det(Aᵀ) = det(I) = 1. Since det(A) = det(Aᵀ), det(A)² = 1.</p>

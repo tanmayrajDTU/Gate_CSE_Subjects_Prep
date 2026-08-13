@@ -300,7 +300,7 @@ Running → Waiting: I/O or event wait          Waiting → Ready: I/O or event 
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A program calls fork() twice in sequence (not nested inside a conditional). How many total processes exist after both calls?</summary>
           <div class="ans">
             <p>Each fork() doubles the number of processes executing the subsequent code. Starting from 1 process: after 1st fork → 2 processes; after 2nd fork (each of those 2 calls it) → 4 processes.</p>
@@ -380,7 +380,7 @@ Average WT = (0+4+6)/3 = 3.33</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> P1(AT=0,BT=6), P2(AT=1,BT=4), P3(AT=2,BT=2). Using non-preemptive SJF, find the execution order.</summary>
           <div class="ans">
             <p>At t=0, only P1 has arrived, so it must start (SJF is non-preemptive, so once started it runs to completion). At t=6, P2(BT4) and P3(BT2) have both arrived — pick smaller: P3, then P2.</p>
@@ -451,7 +451,7 @@ Counting semaphore: S can take any integer — controls access to a pool of k re
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A counting semaphore is initialized to 3. After 2 wait() calls and 1 signal() call, what is its value?</summary>
           <div class="ans">
             <p>Start=3. wait() decrements: 3→2→1 (after 2 waits). signal() increments: 1→2 (after 1 signal).</p>
@@ -516,7 +516,7 @@ A request from process i is granted only if it can be satisfied AND the resultin
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A system has resources that can be preempted from a process without harm. Can deadlock occur?</summary>
           <div class="ans">
             <p>No — if preemption is possible, the "No Preemption" necessary condition is broken, and deadlock cannot occur regardless of the other three conditions.</p>
@@ -587,7 +587,7 @@ where h = TLB hit ratio</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A system has 64 pages and page size 1024 bytes. How many bits are needed for the page number and the offset?</summary>
           <div class="ans">
             <p>Page number bits = log₂(64) = 6. Offset bits = log₂(1024) = 10.</p>
@@ -656,7 +656,7 @@ where h = TLB hit ratio</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Disk head at cylinder 50. Requests: 82, 170, 43, 140, 24, 16, 190. Using SSTF, what is the first request serviced?</summary>
           <div class="ans">
             <p>Find the request closest to 50: |82−50|=32, |43−50|=7, |24−50|=26, |16−50|=34, |140−50|=90, |170−50|=120, |190−50|=140. Smallest distance is 43 (distance 7).</p>
@@ -751,7 +751,7 @@ where h = TLB hit ratio</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> P1(AT=0,BT=5), P2(AT=2,BT=3) under FCFS. Find average turnaround time.</summary>
           <div class="ans">
             <p>P1: 0→5, TAT=5−0=5. P2: starts at 5 (P1 still running till then), ends 5+3=8, TAT=8−2=6. Average TAT = (5+6)/2.</p>
