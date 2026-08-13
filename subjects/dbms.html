@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBMS — Blueprint Notes for GATE CSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1c2c;
+  --bg-deep:#071523;
+  --panel:#0f2438;
+  --panel-alt:#153351;
+  --line:#22516f;
+  --line-soft:#1a3c56;
+  --grid-line:rgba(90,209,230,0.06);
+  --cyan:#5ad1e6;
+  --cyan-dim:#3a8fa3;
+  --amber:#f2a65a;
+  --coral:#ff8272;
+  --mint:#6fe6b8;
+  --text:#e7f1f5;
+  --text-dim:#8fadc0;
+  --text-faint:#5b7d92;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --disp:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
+    var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  font-size:16px;
+}
+::selection{background:var(--cyan); color:var(--bg-deep);}
+a{color:var(--cyan); text-decoration:none;}
+h1,h2,h3,h4{font-family:var(--disp); font-weight:600; letter-spacing:-0.01em;}
+code, .mono{font-family:var(--mono);}
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:280px; flex-shrink:0;
+  background:var(--bg-deep);
+  border-right:1px solid var(--line-soft);
+  position:sticky; top:48px; height:calc(100vh - 48px); overflow-y:auto;
+  padding:28px 0 40px;
+}
+.sidebar::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+.brand{
+  padding:0 24px 22px; margin-bottom:10px;
+  border-bottom:1px solid var(--line-soft);
+}
+.brand .tag{
+  font-family:var(--mono); font-size:11px; color:var(--amber);
+  letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:6px;
+}
+.brand h1{font-size:22px; color:var(--text); line-height:1.25;}
+.brand .sub{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-top:8px;}
+.navlist{padding:14px 12px;}
+.navgroup{margin-bottom:4px;}
+.navlink{
+  display:flex; align-items:baseline; gap:10px;
+  padding:9px 12px; border-radius:6px;
+  color:var(--text-dim); font-size:13.5px;
+  border-left:2px solid transparent;
+  cursor:pointer; transition:background .15s, color .15s, border-color .15s;
+}
+.navlink .num{font-family:var(--mono); font-size:11px; color:var(--cyan-dim); flex-shrink:0;}
+.navlink:hover{background:var(--panel); color:var(--text);}
+.navlink.active{background:var(--panel-alt); color:var(--cyan); border-left-color:var(--cyan);}
+.navlink.active .num{color:var(--cyan);}
+.main{flex:1; min-width:0;}
+.hero{
+  padding:90px 64px 70px; max-width:980px;
+  border-bottom:1px solid var(--line-soft);
+  position:relative; overflow:hidden;
+}
+.hero .eyebrow{
+  font-family:var(--mono); font-size:12px; color:var(--cyan);
+  letter-spacing:0.18em; text-transform:uppercase; margin-bottom:18px; display:block;
+}
+.hero h1{font-size:52px; line-height:1.08; max-width:820px; margin-bottom:22px;}
+.hero h1 em{font-style:normal; color:var(--cyan);}
+.hero p{font-size:17px; color:var(--text-dim); max-width:620px; margin-bottom:28px;}
+.hero .chips{display:flex; flex-wrap:wrap; gap:10px;}
+.chip{
+  font-family:var(--mono); font-size:11.5px; color:var(--text-dim);
+  border:1px solid var(--line); padding:6px 12px; border-radius:20px;
+  background:var(--panel);
+}
+.hero-diagram{position:absolute; right:-40px; top:40px; width:340px; opacity:.9; pointer-events:none;}
+section.topic{
+  padding:56px 64px 20px; max-width:980px;
+  border-bottom:1px solid var(--line-soft);
+}
+section.topic:last-of-type{border-bottom:none; padding-bottom:120px;}
+.topic-head{display:flex; align-items:baseline; gap:16px; margin-bottom:8px;}
+.topic-head .idx{font-family:var(--mono); font-size:15px; color:var(--cyan-dim);}
+.topic-head h2{font-size:32px; color:var(--text);}
+.topic-kicker{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-bottom:32px; letter-spacing:.04em;}
+h3.sub{font-size:19px; color:var(--amber); margin:34px 0 12px; font-weight:600;}
+h4.subsub{font-size:15.5px; color:var(--text); margin:20px 0 8px; font-weight:600;}
+p{color:var(--text-dim); margin-bottom:13px; max-width:760px;}
+p strong, li strong{color:var(--text); font-weight:600;}
+ul, ol{color:var(--text-dim); margin:0 0 16px 20px;}
+li{margin-bottom:6px;}
+li::marker{color:var(--cyan-dim);}
+.card{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:10px;
+  padding:20px 22px; margin:16px 0;
+}
+.card.note{border-left:3px solid var(--amber);}
+.card.note .label{font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
+.card.pyq{border-left:3px solid var(--coral);}
+.card.pyq .label{font-family:var(--mono); font-size:11px; color:var(--coral); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
+.card.formula{border-left:3px solid var(--cyan);}
+.card.formula .label{font-family:var(--mono); font-size:11px; color:var(--cyan); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
+.card p:last-child{margin-bottom:0;}
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+@media (max-width:760px){.two-col{grid-template-columns:1fr;}}
+table{border-collapse:collapse; margin:14px 0 22px; font-family:var(--mono); font-size:13.5px; width:auto;}
+th, td{border:1px solid var(--line); padding:7px 14px; text-align:center;}
+th{background:var(--panel-alt); color:var(--cyan); font-weight:500;}
+td{color:var(--text-dim); background:var(--panel);}
+tr:hover td{color:var(--text);}
+.eq{
+  font-family:var(--mono); background:var(--bg-deep); border:1px solid var(--line-soft);
+  border-radius:8px; padding:14px 18px; color:var(--cyan); font-size:14.5px; margin:12px 0;
+  overflow-x:auto; white-space:pre;
+}
+.eq .c{color:var(--text-faint);}
+.eq .out{color:var(--mint);}
+.diagram-wrap{margin:22px 0; text-align:center;}
+.diagram-wrap svg{max-width:100%; height:auto;}
+.diagram-cap{font-family:var(--mono); font-size:11.5px; color:var(--text-faint); margin-top:8px;}
+footer{
+  padding:40px 64px 60px; max-width:980px; color:var(--text-faint); font-family:var(--mono); font-size:12px;
+}
+.practice{margin-top:44px; padding-top:28px; border-top:1px dashed var(--line);}
+.practice-head{display:flex; align-items:baseline; gap:10px; margin-bottom:16px;}
+.practice-head h3{font-size:17px; color:var(--coral); font-weight:600;}
+.practice-head .pcount{font-family:var(--mono); font-size:11px; color:var(--text-faint);}
+.qcard{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:8px;
+  margin-bottom:10px; overflow:hidden;
+}
+.qcard summary{
+  list-style:none; cursor:pointer; padding:13px 18px; display:flex; gap:12px;
+  font-size:14px; color:var(--text); align-items:baseline;
+}
+.qcard summary::-webkit-details-marker{display:none;}
+.qcard summary .qn{font-family:var(--mono); color:var(--coral); flex-shrink:0; font-size:12.5px;}
+.qcard summary::after{content:'+'; margin-left:auto; color:var(--text-faint); font-family:var(--mono);}
+.qcard[open] summary::after{content:'–';}
+.qcard .ans{
+  padding:2px 18px 16px 48px; border-top:1px solid var(--line-soft);
+  color:var(--text-dim); font-size:13.5px;
+}
+.qcard .ans p{margin-bottom:8px;}
+.qcard .ans .final{color:var(--amber); font-weight:600;}
+.qcard .ans .code{display:block; font-family:var(--mono); background:var(--bg-deep); border:1px solid var(--line-soft); border-radius:6px; padding:10px 14px; margin:8px 0; color:var(--cyan); white-space:pre; overflow-x:auto; font-size:12.5px;}
+section.topic{scroll-margin-top:56px;}
+@media (max-width:900px){
+  .sidebar{display:none;}
+  .hero, section.topic, footer{padding-left:26px; padding-right:26px;}
+  .hero h1{font-size:36px;}
+  .hero-diagram{display:none;}
+  .two-col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<script>window.SITE_NAV_CONFIG={current:'dbms', base:'../'};</script>
+<script src="../assets/site-nav.js"></script>
+<div class="shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="tag">GATE CSE // DBMS</span>
+      <h1>Blueprint&nbsp;Notes</h1>
+      <span class="sub">7 sheets · full syllabus</span>
+    </div>
+    <div class="navlist" id="navlist">
+      <div class="navgroup"><a class="navlink" href="#er-relational"><span class="num">01</span> ER Model &amp; Relational Model</a></div>
+      <div class="navgroup"><a class="navlink" href="#ra-rc"><span class="num">02</span> Relational Algebra &amp; Calculus</a></div>
+      <div class="navgroup"><a class="navlink" href="#sql"><span class="num">03</span> SQL</a></div>
+      <div class="navgroup"><a class="navlink" href="#normalization"><span class="num">04</span> Functional Dependencies &amp; Normalization</a></div>
+      <div class="navgroup"><a class="navlink" href="#transactions"><span class="num">05</span> Transactions, Concurrency &amp; Recovery</a></div>
+      <div class="navgroup"><a class="navlink" href="#indexing"><span class="num">06</span> Indexing &amp; File Organization</a></div>
+      <div class="navgroup"><a class="navlink" href="#revision"><span class="num">07</span> Revision Sheet</a></div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <section class="hero">
+      <span class="eyebrow">Schematic notes · GATE CSE 2027</span>
+      <h1>DBMS, worked out <em>relation by relation</em>, not memorized as a diagram.</h1>
+      <p>Seven sheets covering the complete GATE CSE DBMS syllabus — ER modeling, relational algebra/calculus, SQL, functional dependencies &amp; normalization, transactions &amp; concurrency control, and indexing — with worked examples and the exact traps GATE likes to set.</p>
+      <div class="chips">
+        <span class="chip">01 ER &amp; Relational Model</span>
+        <span class="chip">02 Algebra &amp; Calculus</span>
+        <span class="chip">03 SQL</span>
+        <span class="chip">04 FDs &amp; Normalization</span>
+        <span class="chip">05 Transactions &amp; Concurrency</span>
+        <span class="chip">06 Indexing</span>
+        <span class="chip">07 Revision</span>
+      </div>
+      <svg class="hero-diagram" viewBox="0 0 300 220" aria-hidden="true">
+        <g fill="none" stroke="#22516f" stroke-width="1.4">
+          <rect x="20" y="30" width="90" height="70" rx="3" stroke="#5ad1e6"/>
+          <rect x="180" y="30" width="90" height="70" rx="3"/>
+          <path d="M110 65 L180 65" stroke="#f2a65a"/>
+          <path d="M170 59 L180 65 L170 71" stroke="#f2a65a"/>
+          <rect x="90" y="140" width="120" height="60" rx="3"/>
+          <path d="M65 100 L130 140" />
+          <path d="M235 100 L170 140" />
+        </g>
+        <g font-family="IBM Plex Mono" font-size="10" fill="#5b7d92">
+          <text x="45" y="20" fill="#5ad1e6">Student</text>
+          <text x="205" y="20">Course</text>
+          <text x="112" y="130">Enrolls (M:N)</text>
+        </g>
+      </svg>
+    </section>
+    <section class="topic" id="er-relational">
+      <div class="topic-head"><span class="idx">01</span><h2>ER Model &amp; Relational Model</h2></div>
+      <div class="topic-kicker">ENTITIES &amp; RELATIONSHIPS · KEYS · MAPPING ER TO TABLES · CONSTRAINTS</div>
+
+      <h3 class="sub">ER model building blocks</h3>
+      <table>
+        <tr><th>Construct</th><th>Meaning</th></tr>
+        <tr><td>Entity</td><td>a real-world object with independent existence (e.g. Student)</td></tr>
+        <tr><td>Weak entity</td><td>no key of its own — identified only via a owner entity + a partial (discriminator) key</td></tr>
+        <tr><td>Attribute</td><td>property of an entity: simple, composite, single/multi-valued, derived</td></tr>
+        <tr><td>Relationship</td><td>association between entities, with a degree (binary, ternary...) and cardinality (1:1, 1:N, M:N)</td></tr>
+      </table>
+      <div class="card note">
+        <span class="label">Weak entities need identifying relationships</span>
+        <p>A weak entity (e.g. Dependent, identified only relative to an Employee) is connected to its owner via an <strong>identifying relationship</strong>, drawn with a double diamond, and the weak entity set is drawn with a double rectangle. Its primary key = owner's key + its own partial/discriminator key.</p>
+      </div>
+
+      <h3 class="sub">Types of keys</h3>
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Candidate key</span>
+          <p>A minimal superkey — no proper subset of it can also uniquely identify tuples. A relation can have multiple candidate keys.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Primary vs alternate/foreign key</span>
+          <p><strong>Primary key</strong>: the chosen candidate key. <strong>Alternate keys</strong>: the other candidate keys, not chosen. <strong>Foreign key</strong>: an attribute referencing a candidate/primary key of another (or the same) relation, enforcing referential integrity.</p>
+        </div>
+      </div>
+      <div class="card pyq">
+        <span class="label">GATE trap — superkey vs candidate key count</span>
+        <p>Every candidate key is a superkey, but not every superkey is a candidate key — a superkey can have extra, redundant attributes. If a relation has n attributes and a single-attribute candidate key, the number of superkeys is 2^(n−1) (that attribute must be present; the rest are optional), a classic counting question.</p>
+      </div>
+
+      <h3 class="sub">Mapping ER diagrams to relational tables</h3>
+      <table>
+        <tr><th>ER construct</th><th>Table mapping rule</th></tr>
+        <tr><td>Strong entity</td><td>own table, PK = entity's key attribute(s)</td></tr>
+        <tr><td>Weak entity</td><td>own table, PK = owner's PK + discriminator; owner's PK is also a FK</td></tr>
+        <tr><td>1:1 relationship</td><td>FK on EITHER side (prefer the side with mandatory participation)</td></tr>
+        <tr><td>1:N relationship</td><td>FK placed on the "N" (many) side, referencing the "1" side's PK</td></tr>
+        <tr><td>M:N relationship</td><td>separate junction/bridge table with FKs to both entities; together they form its PK</td></tr>
+        <tr><td>Multi-valued attribute</td><td>separate table: FK to owning entity + the attribute value, together forming the PK</td></tr>
+      </table>
+      <div class="card pyq">
+        <span class="label">GATE trap — total vs partial participation</span>
+        <p><strong>Total participation</strong> (double line in ER diagrams) means every entity instance MUST participate in the relationship (NOT NULL constraint on the FK). <strong>Partial participation</strong> (single line) allows the FK to be NULL. This distinction is frequently tested when mapping 1:1 relationships — the side with total participation is the better place to embed the foreign key, to avoid excess NULLs.</p>
+      </div>
+
+      <h3 class="sub">Relational model integrity constraints</h3>
+      <ul>
+        <li><strong>Domain constraint</strong> — each attribute value must come from its declared domain.</li>
+        <li><strong>Entity integrity</strong> — no attribute of the primary key can be NULL.</li>
+        <li><strong>Referential integrity</strong> — a foreign key value must either be NULL or match an existing primary key value in the referenced relation.</li>
+      </ul>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> A relation R(A,B,C,D) has candidate key {A}. How many superkeys does R have?</summary>
+          <div class="ans">
+            <p>Any superkey must contain the candidate key A. The remaining attributes B, C, D can each independently be included or excluded, giving 2³ = 8 combinations, each unioned with A forming a valid (if sometimes redundant) superkey.</p>
+            <p class="final">Answer: 8 superkeys</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> In an ER diagram, Employee (strong entity) has a 1:1 total-participation-on-both-sides relationship "Manages" with Department. How should this be mapped to tables, and why is embedding the FK as a separate junction table wasteful here?</summary>
+          <div class="ans">
+            <p>Since both sides have total participation in a 1:1 relationship, the foreign key can be embedded directly in either table (say, dept_id in Employee, or manager_id in Department) without any NULLs on either side — a separate junction table would be unnecessary overhead, since junction tables exist specifically to handle M:N cardinality, and 1:1 never needs that extra structure.</p>
+            <p class="final">Answer: Embed the FK directly in either table (no junction table needed) — junction tables are only required for M:N relationships</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Dependent is a weak entity identified relative to Employee via relationship "HasDependent," with Dependent's own partial key being "dep_name". What is Dependent's full primary key in the mapped table?</summary>
+          <div class="ans">
+            <p>A weak entity's primary key always combines its owner's full primary key (to disambiguate which owner it belongs to) with its own partial/discriminator key (to disambiguate among that owner's dependents) — since dep_name alone could repeat across different employees' dependents.</p>
+            <p class="final">Answer: (Employee's PK, dep_name) — the composite of owner's key + discriminator</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Can a foreign key value be NULL? Under what integrity rule, and does this violate referential integrity?</summary>
+          <div class="ans">
+            <p>Yes, a foreign key CAN be NULL (unless additionally constrained NOT NULL by, e.g., a total-participation requirement) — referential integrity only requires that a NON-NULL foreign key value must match an existing primary key value in the referenced table; NULL is explicitly treated as "no reference yet" and doesn't violate the constraint.</p>
+            <p class="final">Answer: Yes, a NULL foreign key is allowed and does not violate referential integrity — only a non-matching non-NULL value would</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> A ternary relationship connects entities A, B, and C with cardinality constraints such that each (A,B) pair maps to at most one C. How is this typically mapped to a relational table?</summary>
+          <div class="ans">
+            <p>A single table is created for the relationship with foreign keys to A, B, and C. Since each (A,B) pair determines at most one C, the primary key of this relationship table can be just (A's key, B's key) rather than all three keys together — reflecting that A and B together are sufficient to identify a unique row.</p>
+            <p class="final">Answer: One relationship table with FKs to A, B, C; primary key = (A_id, B_id) only, since that pair determines C uniquely</p>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="topic" id="ra-rc">
+      <div class="topic-head"><span class="idx">02</span><h2>Relational Algebra &amp; Calculus</h2></div>
+      <div class="topic-kicker">SELECT/PROJECT/JOIN · SET OPERATIONS · DIVISION · TUPLE &amp; DOMAIN CALCULUS</div>
+
+      <h3 class="sub">Core relational algebra operators</h3>
+      <table>
+        <tr><th>Operator</th><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>Selection</td><td>σ<sub>condition</sub>(R)</td><td>filter rows</td></tr>
+        <tr><td>Projection</td><td>π<sub>attrs</sub>(R)</td><td>filter columns, removes duplicates</td></tr>
+        <tr><td>Union / Intersection / Difference</td><td>∪ ∩ −</td><td>set ops — require union-compatible relations (same arity, matching domains)</td></tr>
+        <tr><td>Cartesian product</td><td>R × S</td><td>all combinations of tuples from R and S</td></tr>
+        <tr><td>Join</td><td>⋈</td><td>filtered Cartesian product on a condition</td></tr>
+        <tr><td>Rename</td><td>ρ</td><td>renames relation/attributes</td></tr>
+      </table>
+
+      <h3 class="sub">Join variants</h3>
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Natural join (⋈)</span>
+          <p>Equi-join on ALL commonly-named attributes, then removes the duplicate join columns automatically. If no common attributes exist, natural join degenerates to the Cartesian product.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Theta join (⋈<sub>θ</sub>)</span>
+          <p>Join with an arbitrary condition θ (not necessarily equality) — equivalently, σ<sub>θ</sub>(R × S). An equi-join is a theta join restricted to "=" conditions, and unlike natural join, it does NOT auto-remove duplicate columns.</p>
+        </div>
+      </div>
+      <div class="card pyq">
+        <span class="label">GATE trap — natural join can silently drop rows if column names accidentally match</span>
+        <p>If R and S share an attribute name that ISN'T semantically meant to be joined on (a coincidental naming collision), natural join will still equate them — potentially producing wrong or empty results. Always verify semantic intent, not just column-name overlap, when reasoning about natural join output.</p>
+      </div>
+
+      <h3 class="sub">Division operator — the most-tested RA operator</h3>
+      <p><code>R ÷ S</code> returns tuples t from R's non-S-attributes such that, for EVERY tuple s in S, the combination (t,s) appears in R. Classic use: "find students who have taken ALL courses in set S."</p>
+      <div class="eq">R(student, course)  ÷  S(course)
+<span class="c">// returns every student who has taken every course listed in S</span></div>
+      <div class="card formula">
+        <span class="label">Division built from primitives (if asked to derive it)</span>
+        <div class="eq">R ÷ S  =  π<sub>X</sub>(R) − π<sub>X</sub>( (π<sub>X</sub>(R) × S) − R )</div>
+      </div>
+
+      <h3 class="sub">Relational calculus</h3>
+      <div class="two-col">
+        <div class="card">
+          <h4 class="subsub">Tuple relational calculus (TRC)</h4>
+          <p>{t | P(t)} — t ranges over tuples, P is a formula using t.attribute, ∃, ∀, ∧, ∨, ¬. Declarative — states WHAT to retrieve, not how.</p>
+        </div>
+        <div class="card">
+          <h4 class="subsub">Domain relational calculus (DRC)</h4>
+          <p>{&lt;x1,...,xn&gt; | P(x1,...,xn)} — variables range over individual domain values (attribute values), not whole tuples.</p>
+        </div>
+      </div>
+      <div class="card note">
+        <span class="label">Expressive equivalence</span>
+        <p>Relational algebra, TRC, and DRC (restricted to <strong>safe</strong> expressions, avoiding infinite results from negation over infinite domains) are all provably equivalent in expressive power — this equivalence is called <strong>relational completeness</strong>, and any of the three can serve as the baseline for judging a query language's power.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> R has 5 tuples, S has 3 tuples, both with no attributes in common. How many tuples does R × S produce?</summary>
+          <div class="ans">
+            <p>Cartesian product pairs every tuple of R with every tuple of S — the tuple count is the product of the two relation sizes, regardless of attribute overlap (or lack thereof).</p>
+            <p class="final">Answer: 15 tuples</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> Given Enrolled(student, course) and a relation AllCourses(course) listing every course offered, write the RA expression to find students enrolled in every course in AllCourses.</summary>
+          <div class="ans">
+            <p>This is the textbook use case for the division operator — dividing the enrollment relation by the full course list returns exactly the students whose enrolled-course set is a superset of (i.e., covers) AllCourses.</p>
+            <p class="final">Answer: Enrolled ÷ AllCourses</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Why must the operands of a union operation in relational algebra be "union-compatible," and what does that require?</summary>
+          <div class="ans">
+            <p>Union combines tuples from two relations into one result set — for that result to be a well-defined relation (fixed number of attributes with consistent domains), both operand relations must have the same number of attributes (arity), and corresponding attributes must draw from compatible domains. Without this, the combined "relation" wouldn't have a consistent schema.</p>
+            <p class="final">Answer: Same arity and matching attribute domains — needed so the result is itself a well-formed relation</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> R(A,B) and S(B,C) are joined with a natural join. If R has 4 tuples and S has 3 tuples, and every B value in R matches exactly one B value in S, at most how many tuples can R ⋈ S produce?</summary>
+          <div class="ans">
+            <p>Natural join matches rows where the shared attribute B agrees. If every B value in R matches exactly one distinct B in S (a one-to-one style match per row), each of R's 4 tuples pairs with exactly one S tuple — giving at most 4 result tuples (bounded also by however many of R's tuples actually find a match, up to 4).</p>
+            <p class="final">Answer: At most 4 tuples (bounded by |R|, since each R-tuple matches at most one S-tuple here)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Explain what "safety" means for a tuple relational calculus expression, and why unsafe expressions are excluded from being considered relationally complete.</summary>
+          <div class="ans">
+            <p>A TRC expression is unsafe if it could, in principle, generate an infinite result — most commonly arising from negation combined with an unbounded domain (e.g. "all tuples t such that t is NOT in R" ranges over every possible tuple in an infinite domain). Safety restricts formulas so results are always finite and drawn from values actually appearing in the referenced relations/constants. Only safe TRC expressions are considered when establishing equivalence with relational algebra, since RA itself can never produce an infinite result from finite input relations.</p>
+            <p class="final">Answer: Safety means the expression can only produce a finite result; unsafe (potentially-infinite) expressions are excluded because RA can never produce infinite output, so only safe TRC is equivalent to it</p>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="topic" id="sql">
+      <div class="topic-head"><span class="idx">03</span><h2>SQL</h2></div>
+      <div class="topic-kicker">QUERY EXECUTION ORDER · JOINS · AGGREGATION · NULL SEMANTICS · SUBQUERIES</div>
+
+      <h3 class="sub">Logical order of SQL query evaluation</h3>
+      <p>SQL is written in one order but <strong>evaluated in a different logical order</strong> — this mismatch is the single most tested SQL concept on GATE.</p>
+      <div class="eq">FROM  →  WHERE  →  GROUP BY  →  HAVING  →  SELECT  →  ORDER BY  →  LIMIT
+<span class="c">// written order:  SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY</span></div>
+      <div class="card pyq">
+        <span class="label">GATE trap — why WHERE can't use aggregate functions but HAVING can</span>
+        <p><code>WHERE</code> is evaluated <strong>before</strong> <code>GROUP BY</code>, so no groups (and hence no aggregates like COUNT/SUM) exist yet at that point — using an aggregate in WHERE is a syntax/semantic error. <code>HAVING</code> is evaluated <strong>after</strong> GROUP BY, when aggregates are available, so it can filter on them. Similarly, a column alias defined in SELECT can't generally be used in WHERE (SELECT runs after WHERE) but often CAN be used in ORDER BY (which runs after SELECT).</p>
+      </div>
+
+      <h3 class="sub">Join types and NULL behaviour</h3>
+      <table>
+        <tr><th>Join</th><th>Unmatched left rows</th><th>Unmatched right rows</th></tr>
+        <tr><td>INNER JOIN</td><td>dropped</td><td>dropped</td></tr>
+        <tr><td>LEFT OUTER JOIN</td><td>kept, right side NULL</td><td>dropped</td></tr>
+        <tr><td>RIGHT OUTER JOIN</td><td>dropped</td><td>kept, left side NULL</td></tr>
+        <tr><td>FULL OUTER JOIN</td><td>kept, right side NULL</td><td>kept, left side NULL</td></tr>
+      </table>
+
+      <h3 class="sub">Three-valued logic and NULL</h3>
+      <p>SQL comparisons involving NULL evaluate to <strong>UNKNOWN</strong>, not TRUE or FALSE. A WHERE clause only keeps rows where the condition is TRUE — UNKNOWN rows are excluded, same as FALSE ones, but they're logically distinct.</p>
+      <div class="card pyq">
+        <span class="label">GATE trap — NULL comparisons and NOT IN</span>
+        <p><code>x = NULL</code> is always UNKNOWN, never TRUE — must use <code>IS NULL</code> instead. Even more subtle: <code>WHERE x NOT IN (1, 2, NULL)</code> returns <strong>zero rows always</strong> for ANY x, because NOT IN expands to a chain of AND'd <code>&lt;&gt;</code> comparisons, and <code>x &lt;&gt; NULL</code> is UNKNOWN — ANDing UNKNOWN into the chain poisons the whole condition to never be definitively TRUE.</p>
+      </div>
+
+      <h3 class="sub">Aggregate functions and GROUP BY rules</h3>
+      <p>Every column in SELECT that is NOT wrapped in an aggregate function MUST appear in GROUP BY (strict SQL standard) — otherwise the value to display for that column within a group is ambiguous. COUNT(*) counts all rows including NULLs; COUNT(column) skips NULLs in that column.</p>
+
+      <h3 class="sub">Correlated vs uncorrelated subqueries</h3>
+      <div class="two-col">
+        <div class="card">
+          <h4 class="subsub">Uncorrelated subquery</h4>
+          <p>Independent of the outer query — evaluated once. E.g. <code>WHERE salary &gt; (SELECT AVG(salary) FROM Emp)</code>.</p>
+        </div>
+        <div class="card">
+          <h4 class="subsub">Correlated subquery</h4>
+          <p>References a column from the outer query — conceptually re-evaluated once per outer row. E.g. <code>WHERE EXISTS (SELECT 1 FROM Emp e2 WHERE e2.dept=e1.dept AND e2.salary&gt;e1.salary)</code> finds non-top earners per department.</p>
+        </div>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> Why does <code>SELECT dept, COUNT(*) FROM Emp WHERE COUNT(*) &gt; 5 GROUP BY dept;</code> fail?</summary>
+          <div class="ans">
+            <p>WHERE is evaluated before GROUP BY in the logical query processing order, so no groups (and thus no COUNT(*) per group) exist yet when WHERE runs — aggregate functions are unavailable at that stage. The correct fix is to move the condition to HAVING, which runs after grouping.</p>
+            <p class="final">Answer: WHERE runs before GROUP BY, so aggregates aren't available yet; must use HAVING COUNT(*) &gt; 5 instead</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> Table Emp has 5 rows, 2 of which have dept = NULL. What does <code>SELECT COUNT(dept) FROM Emp;</code> return, versus <code>SELECT COUNT(*) FROM Emp;</code>?</summary>
+          <div class="ans">
+            <p>COUNT(column) counts only non-NULL values of that specific column, skipping the 2 NULL depts, giving 3. COUNT(*) counts all rows regardless of NULLs in any column, giving 5.</p>
+            <p class="final">Answer: COUNT(dept) = 3, COUNT(*) = 5</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Table A(id) has values {1,2,3}. Table B(id) has values {1, NULL}. What does <code>SELECT * FROM A WHERE id NOT IN (SELECT id FROM B);</code> return?</summary>
+          <div class="ans">
+            <p>NOT IN expands to AND-chained inequality checks against every value in the subquery result, including NULL. For any row of A, the comparison "id &lt;&gt; NULL" evaluates to UNKNOWN, and ANDing UNKNOWN with anything else can never produce definite TRUE — so the WHERE condition is never satisfied for any row, no matter what id value it has.</p>
+            <p class="final">Answer: Empty result (zero rows) — the NULL inside the NOT IN subquery poisons the entire condition</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Emp(1000 rows) LEFT OUTER JOIN Dept(50 rows) ON Emp.dept_id=Dept.id, where 30 employees have a dept_id that doesn't match any Dept row (including possibly NULL dept_id). How many rows does the result have, at minimum?</summary>
+          <div class="ans">
+            <p>LEFT OUTER JOIN preserves every row from the left table (Emp) regardless of whether a match exists on the right (Dept) — unmatched left rows appear once each, with all Dept columns as NULL. So the result has at least all 1000 Emp rows (exactly 1000 if each matching employee matches only one Dept row, since Dept.id being a key means at most one match per employee).</p>
+            <p class="final">Answer: 1000 rows (every Emp row is preserved; the 30 unmatched ones just get NULL Dept columns)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Write a correlated subquery to find employees who earn more than the average salary of their OWN department (not the company-wide average).</summary>
+          <div class="ans">
+            <p>Because "average of their own department" depends on which department the outer row belongs to, the subquery must reference the outer query's department value — making it correlated (re-evaluated conceptually per outer row) rather than a single company-wide average computed once.</p>
+            <p class="final">Answer: SELECT * FROM Emp e1 WHERE salary &gt; (SELECT AVG(salary) FROM Emp e2 WHERE e2.dept_id = e1.dept_id);</p>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="topic" id="normalization">
+      <div class="topic-head"><span class="idx">04</span><h2>Functional Dependencies &amp; Normalization</h2></div>
+      <div class="topic-kicker">ARMSTRONG'S AXIOMS · CLOSURE &amp; CANDIDATE KEYS · 1NF–BCNF · DECOMPOSITION PROPERTIES</div>
+
+      <h3 class="sub">Functional dependency basics</h3>
+      <p><code>X → Y</code> means: whenever two tuples agree on X, they must also agree on Y. X is the determinant, Y is the dependent.</p>
+      <div class="card formula">
+        <span class="label">Armstrong's axioms (sound &amp; complete)</span>
+        <ul style="margin-top:8px;">
+          <li><strong>Reflexivity</strong>: if Y ⊆ X, then X → Y</li>
+          <li><strong>Augmentation</strong>: if X → Y, then XZ → YZ</li>
+          <li><strong>Transitivity</strong>: if X → Y and Y → Z, then X → Z</li>
+        </ul>
+        <p>Derived rules (union, decomposition, pseudotransitivity) all follow from these three.</p>
+      </div>
+
+      <h3 class="sub">Computing attribute closure (X⁺)</h3>
+      <p>The single most-tested computational skill in this module: given a set of FDs, compute X⁺ (all attributes functionally determined by X) by repeatedly applying FDs whose LHS is already covered, until no more attributes can be added.</p>
+      <div class="card pyq">
+        <span class="label">GATE trap — using closure to test candidate keys</span>
+        <p>X is a candidate key of R iff X⁺ = all attributes of R, AND no proper subset of X also has this property (minimality). GATE routinely asks "compute X⁺" as a stepping stone to "is X a candidate key / superkey" or "does X → Y hold" (check if Y ⊆ X⁺).</p>
+      </div>
+
+      <h3 class="sub">Normal forms — what each one actually forbids</h3>
+      <table>
+        <tr><th>Form</th><th>Requires (in addition to previous)</th></tr>
+        <tr><td>1NF</td><td>atomic (indivisible) attribute values — no repeating groups or multi-valued cells</td></tr>
+        <tr><td>2NF</td><td>no partial dependency — every non-prime attribute fully depends on the WHOLE of every candidate key (only matters when a key is composite)</td></tr>
+        <tr><td>3NF</td><td>no transitive dependency — every non-prime attribute depends directly on a candidate key, not via another non-prime attribute (with the "or LHS is a superkey / RHS is prime" escape clause)</td></tr>
+        <tr><td>BCNF</td><td>for EVERY non-trivial FD X→Y, X must be a superkey — stricter than 3NF, drops 3NF's escape clause</td></tr>
+      </table>
+      <div class="card note">
+        <span class="label">3NF's escape clause is exactly what BCNF removes</span>
+        <p>3NF allows a non-superkey X → Y dependency IF Y is a <strong>prime attribute</strong> (part of some candidate key) — this exception is what makes 3NF always achievable via lossless, dependency-preserving decomposition, unlike BCNF, which sometimes must sacrifice dependency preservation to remain lossless.</p>
+      </div>
+
+      <h3 class="sub">Decomposition properties</h3>
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Lossless-join decomposition</span>
+          <p>R decomposed into R1, R2 is lossless iff (R1∩R2) → R1 OR (R1∩R2) → R2 — the common attributes must be a key (or superkey) of at least one of the two pieces.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Dependency-preserving decomposition</span>
+          <p>Every original FD can be verified using only FDs local to individual decomposed relations (no need to rejoin them to check). BCNF decomposition sometimes cannot preserve all original dependencies — a fundamental tradeoff GATE tests directly.</p>
+        </div>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> R(A,B,C,D) has FDs: A→B, B→C, C→D. Compute A⁺.</summary>
+          <div class="ans">
+            <p>Start with {A}. A→B adds B: {A,B}. Now B→C applies (B is covered): add C: {A,B,C}. Now C→D applies: add D: {A,B,C,D}. No more FDs apply — closure is complete and covers all of R's attributes.</p>
+            <p class="final">Answer: A⁺ = {A,B,C,D} — so A is a candidate key of R</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> R(A,B,C) has candidate key {A,B} and FD: B→C (a non-prime attribute C depends on part of the composite key, not all of it). Which normal form does R violate?</summary>
+          <div class="ans">
+            <p>C is a non-prime attribute (not part of any candidate key) and it depends only on B, which is a PROPER SUBSET of the composite candidate key {A,B} — this is exactly the definition of a partial dependency, which 2NF forbids.</p>
+            <p class="final">Answer: Violates 2NF (partial dependency of non-prime C on part of the composite key)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> R(A,B,C) has candidate key {A} and FD chain A→B, B→C, where C is non-prime. Is R in 3NF? Is it in BCNF?</summary>
+          <div class="ans">
+            <p>C depends on A only transitively (through B), not directly — a transitive dependency of non-prime C via non-prime B, which is exactly what 3NF forbids UNLESS the escape clause saves it (it doesn't here, since C is non-prime and B is not a superkey). So R violates 3NF, and since 3NF is stricter... actually violating 3NF automatically means violating BCNF too, since BCNF is strictly stronger than 3NF.</p>
+            <p class="final">Answer: R violates both 3NF (transitive dependency A→B→C) and consequently BCNF too</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> R(A,B,C) is decomposed into R1(A,B) and R2(B,C). Given FD B→C holds in R, is this decomposition lossless?</summary>
+          <div class="ans">
+            <p>The common attribute between R1 and R2 is B. Lossless-join requires (R1∩R2)→R1 or (R1∩R2)→R2, i.e., B→(A,B) or B→(B,C). We're given B→C holds, and B→B holds trivially (reflexivity), so B→(B,C) holds — satisfying the lossless-join condition via the second disjunct.</p>
+            <p class="final">Answer: Yes, lossless — because B→C (given) combined with B→B (trivial) gives B→R2, satisfying the lossless-join test</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why can BCNF decomposition sometimes fail to be dependency-preserving, while 3NF decomposition never has this problem?</summary>
+          <div class="ans">
+            <p>BCNF requires every non-trivial FD's LHS to be a superkey, with NO exceptions — so if an FD X→Y exists where X is not a superkey but Y happens to be prime (part of some other candidate key), BCNF still forces you to decompose it away, and that FD may end up spanning two separate decomposed relations with no single relation able to verify it locally. 3NF explicitly permits exactly this situation (its "Y is prime" escape clause), which is precisely why the 3NF synthesis algorithm can always guarantee both losslessness AND dependency preservation simultaneously, while BCNF decomposition cannot always guarantee both together.</p>
+            <p class="final">Answer: BCNF has no escape clause for FDs whose RHS is prime, so decomposing to satisfy BCNF can split such an FD across relations and lose the ability to check it locally — 3NF's escape clause avoids exactly this case</p>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="topic" id="transactions">
+      <div class="topic-head"><span class="idx">05</span><h2>Transactions, Concurrency Control &amp; Recovery</h2></div>
+      <div class="topic-kicker">ACID · SCHEDULES &amp; SERIALIZABILITY · LOCKING · DEADLOCK · LOGGING</div>
+
+      <h3 class="sub">ACID properties</h3>
+      <table>
+        <tr><th>Property</th><th>Guarantees</th></tr>
+        <tr><td>Atomicity</td><td>a transaction executes fully or not at all (no partial effects survive)</td></tr>
+        <tr><td>Consistency</td><td>a transaction moves the DB from one valid state to another, preserving all declared constraints</td></tr>
+        <tr><td>Isolation</td><td>concurrently executing transactions don't see each other's intermediate (uncommitted) state</td></tr>
+        <tr><td>Durability</td><td>once committed, changes survive any subsequent crash</td></tr>
+      </table>
+
+      <h3 class="sub">Schedules and serializability</h3>
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Conflict serializability</span>
+          <p>A schedule is conflict-serializable if it can be transformed into a serial schedule by repeatedly swapping adjacent, non-conflicting operations (from different transactions). Tested via the <strong>precedence graph</strong>: draw an edge Ti→Tj if Ti has an operation that conflicts with and precedes a later operation of Tj on the same data item — the schedule is conflict-serializable iff this graph is <strong>acyclic</strong>.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">View serializability</span>
+          <p>A strictly weaker/broader condition — equivalent in initial reads, final writes, and which transaction's write each read sees. Every conflict-serializable schedule is view-serializable, but NOT vice versa (view-serializable schedules can exist that aren't conflict-serializable, typically involving "blind writes").</p>
+        </div>
+      </div>
+      <div class="card pyq">
+        <span class="label">GATE trap — precedence graph cycle detection</span>
+        <p>To build the precedence graph, only consider pairs of operations from DIFFERENT transactions on the SAME data item where at least one is a write (RW, WR, or WW conflicts — RR is not a conflict since reads don't interfere). If the resulting graph has ANY cycle, the schedule is NOT conflict-serializable, no matter how few edges are involved.</p>
+      </div>
+
+      <h3 class="sub">Locking protocols</h3>
+      <p><strong>Two-Phase Locking (2PL)</strong>: every transaction has a growing phase (only acquires locks) followed by a shrinking phase (only releases locks) — once a lock is released, no new lock can be acquired. 2PL guarantees conflict-serializability but does NOT by itself prevent deadlock or cascading rollback.</p>
+      <div class="card formula">
+        <span class="label">Strict 2PL</span>
+        <p>Holds ALL exclusive (write) locks until commit/abort (not just until the shrinking phase begins) — this additionally prevents cascading rollback, since no other transaction can read an uncommitted write. Strict 2PL is the most commonly assumed protocol in GATE problems unless stated otherwise.</p>
+      </div>
+
+      <h3 class="sub">Deadlock — detection and prevention</h3>
+      <table>
+        <tr><th>Approach</th><th>Mechanism</th></tr>
+        <tr><td>Prevention (wait-die)</td><td>older transaction waits for younger; younger requesting a lock held by older is aborted (dies)</td></tr>
+        <tr><td>Prevention (wound-wait)</td><td>older transaction "wounds" (forces abort of) younger holder; younger waits for older</td></tr>
+        <tr><td>Detection</td><td>build a wait-for graph; a cycle indicates deadlock — abort a victim to break it</td></tr>
+      </table>
+
+      <h3 class="sub">Recovery — logging protocols</h3>
+      <div class="two-col">
+        <div class="card">
+          <h4 class="subsub">WAL (Write-Ahead Logging)</h4>
+          <p>The log record for a change must be written to stable storage BEFORE the corresponding data page is written to disk — this is what makes crash recovery (undo/redo) possible at all.</p>
+        </div>
+        <div class="card">
+          <h4 class="subsub">Checkpointing</h4>
+          <p>Periodically records which transactions are active, limiting how far back the recovery process must scan the log after a crash — without it, recovery would need to replay the entire log history.</p>
+        </div>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> A schedule's precedence graph has edges T1→T2, T2→T3, T3→T1. Is the schedule conflict-serializable?</summary>
+          <div class="ans">
+            <p>These three edges form a cycle (T1→T2→T3→T1). Conflict-serializability requires an acyclic precedence graph — a cycle directly proves the schedule cannot be reordered into any equivalent serial schedule.</p>
+            <p class="final">Answer: No, not conflict-serializable (the precedence graph has a cycle)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> Does every conflict-serializable schedule guarantee no deadlock will occur during its actual execution under 2PL? Explain.</summary>
+          <div class="ans">
+            <p>No — conflict-serializability is a property of the FINAL schedule (the actual order operations ended up executing in), evaluated after the fact. Deadlock is a runtime execution hazard that can occur while transactions are contending for locks, potentially preventing that serializable schedule from ever completing at all — 2PL guarantees serializability of whatever schedule DOES complete, but doesn't prevent transactions from deadlocking while trying to acquire locks in the first place.</p>
+            <p class="final">Answer: No — 2PL guarantees serializability of completed schedules, but does not itself prevent deadlock during execution</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Under the wait-die deadlock prevention scheme, an older transaction Ti requests a lock held by younger transaction Tj. What happens?</summary>
+          <div class="ans">
+            <p>Wait-die's rule: an older transaction is allowed to WAIT for a younger one to release its lock (it doesn't "die"). It's the reverse situation — a younger transaction requesting a lock held by an older one — that causes the younger requester to be aborted ("dies").</p>
+            <p class="final">Answer: Ti (older) waits for Tj (younger) to release the lock — no abort occurs in this direction under wait-die</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Why does strict 2PL prevent cascading rollback, while ordinary (non-strict) 2PL does not?</summary>
+          <div class="ans">
+            <p>Cascading rollback happens when transaction Tj reads a value written by Ti, and Ti later aborts — forcing Tj (and anything that read from Tj) to also roll back. Ordinary 2PL only guarantees locks aren't newly ACQUIRED after the shrinking phase begins, but write locks can still be released (and hence read by others) before commit. Strict 2PL holds all write locks until commit/abort, so no other transaction can ever read an uncommitted (potentially-to-be-aborted) write in the first place — eliminating the possibility of cascading rollback entirely.</p>
+            <p class="final">Answer: Strict 2PL holds write locks until commit, so nobody can read uncommitted data — removing the precondition for cascading rollback</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why must the write-ahead log record be flushed to stable storage BEFORE the corresponding modified data page is written to disk?</summary>
+          <div class="ans">
+            <p>If the data page were written first and the system crashed before the log record was saved, there would be no record describing what changed — making it impossible to undo that change if the transaction later needs to be rolled back, or to redo it correctly if only partially applied. Writing the log first guarantees that, no matter when a crash occurs, the log always has enough information to recover the data page to a consistent state (undo or redo) matching what actually happened.</p>
+            <p class="final">Answer: So that recovery always has a log record describing any change that might have reached disk, enabling correct undo/redo after a crash regardless of when it occurred</p>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="topic" id="indexing">
+      <div class="topic-head"><span class="idx">06</span><h2>Indexing &amp; File Organization</h2></div>
+      <div class="topic-kicker">ORDERED/HASH FILES · PRIMARY VS SECONDARY INDEX · B/B+ TREES · SPARSE VS DENSE</div>
+
+      <h3 class="sub">File organization strategies</h3>
+      <table>
+        <tr><th>Organization</th><th>Access pattern</th></tr>
+        <tr><td>Heap (unordered)</td><td>fast insert (append), slow search — O(n) scan</td></tr>
+        <tr><td>Sequential (ordered)</td><td>fast range queries, but insert/delete requires reorganization or overflow areas</td></tr>
+        <tr><td>Hash</td><td>fast exact-match lookup — O(1) average, but no support for range queries</td></tr>
+      </table>
+
+      <h3 class="sub">Primary vs secondary index — defined by the DATA FILE's order, not the index itself</h3>
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Primary index</span>
+          <p>Built on the field that the data file is <strong>physically sorted</strong> by (usually the key). Can be sparse.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Secondary index</span>
+          <p>Built on a field that does NOT determine the data file's physical order. Must always be <strong>dense</strong>, since consecutive index entries don't correspond to physically adjacent records.</p>
+        </div>
+      </div>
+      <div class="card pyq">
+        <span class="label">GATE trap — sparse index requires the file to be sorted on that field</span>
+        <p>A <strong>sparse index</strong> has one entry per BLOCK (not per record) — it only works if the file is physically sorted by the indexed field, so the index can point to a block and a sequential scan within that block finds the target. A sparse index is therefore always a primary index; a secondary index can never be sparse, because the data file isn't ordered by the secondary key.</p>
+      </div>
+      <div class="card note">
+        <span class="label">Dense index</span>
+        <p>One entry for EVERY record (or every distinct key value, for a duplicate-key field), regardless of file ordering — works on both primary and secondary indexes, but uses more storage than sparse.</p>
+      </div>
+
+      <h3 class="sub">B-Tree vs B+-Tree — the most-tested distinction</h3>
+      <table>
+        <tr><th></th><th>B-Tree</th><th>B+-Tree</th></tr>
+        <tr><td>Data pointers</td><td>in BOTH internal and leaf nodes</td><td>ONLY in leaf nodes</td></tr>
+        <tr><td>Leaf nodes</td><td>not linked</td><td>linked in a sequence (linked list) — enables fast range scans</td></tr>
+        <tr><td>Key redundancy</td><td>each key stored exactly once</td><td>internal-node keys are duplicated as "guide posts"; actual data reference lives in the leaf</td></tr>
+        <tr><td>Fan-out</td><td>lower (data pointers take space in internal nodes)</td><td>higher (internal nodes hold only keys, so more fit per node)</td></tr>
+      </table>
+      <div class="card pyq">
+        <span class="label">GATE trap — why B+-trees are preferred for DBMS indexes</span>
+        <p>Because B+-tree internal nodes store ONLY keys (no data pointers), they achieve a much higher fan-out per node than a B-tree of the same node/block size — this means fewer levels for the same number of keys, i.e. fewer disk I/Os per search. Combined with the linked leaf list enabling efficient range queries (just walk the leaf chain), this is why virtually every real DBMS uses B+-trees, not plain B-trees, for indexing.</p>
+      </div>
+
+      <h3 class="sub">B-Tree / B+-Tree order and height calculations</h3>
+      <p>For a B+-tree of order <em>p</em> (max <em>p</em> pointers per node): each internal node holds at most p−1 keys and p pointers, at least ⌈p/2⌉ pointers (except root). GATE frequently asks you to compute the maximum number of records searchable in <em>h</em> levels, or the minimum height for <em>n</em> records, given a fan-out.</p>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> Can a secondary index ever be sparse? Justify.</summary>
+          <div class="ans">
+            <p>A sparse index relies on the data file being physically sorted by the indexed field, so one index entry per block is enough — a sequential scan within that block finds the target record. A secondary index is, by definition, built on a field the data file is NOT sorted by, so consecutive records with the indexed value aren't guaranteed to be in the same block — a sparse secondary index simply couldn't locate records reliably.</p>
+            <p class="final">Answer: No — sparse indexes require the file to be sorted on the indexed field, which is precisely what a secondary index is not</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> Which structure supports efficient range queries better — B-Tree or B+-Tree — and why specifically?</summary>
+          <div class="ans">
+            <p>B+-Tree, because its leaf nodes are linked together in a sequential chain — once you find the starting key via a single root-to-leaf traversal, you can retrieve the rest of the range simply by following leaf-to-leaf pointers without any further tree traversal. A plain B-Tree has no such leaf linkage, so a range scan may require repeated in-order traversal logic across the tree structure itself.</p>
+            <p class="final">Answer: B+-Tree — its linked leaf-node chain allows sequential range retrieval without re-traversing the tree</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> A B+-tree of order 4 (max 4 pointers per node, 3 keys per node) has a height of 3 (root + 2 levels, root itself considered level 1, leaves at level 3). Ignoring underflow constraints and assuming maximum fan-out throughout, roughly how many leaf-level key entries can it index at most?</summary>
+            <div class="ans">
+              <p>With maximum fan-out 4 at every internal level: level 1 (root) has up to 4 children, level 2 has up to 4×4=16 children (the leaves). Each of the 16 leaf nodes can hold up to 3 keys. Total ≈ 16 × 3 = 48 key entries at the leaf level in the best case.</p>
+              <p class="final">Answer: Approximately 48 key entries (16 leaves × 3 keys each, at maximum fan-out)</p>
+            </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> A file is physically sorted by employee_id and has a primary index on employee_id with one entry per data block. Is this index sparse or dense, and why is this valid here specifically?</summary>
+          <div class="ans">
+            <p>One entry per BLOCK (not per record) is exactly the definition of a sparse index. This is valid because the file is physically sorted by employee_id — given a target id, the index locates the correct block, and since records within that block are guaranteed to be in sorted order too, a short sequential scan within the block finds the exact record.</p>
+            <p class="final">Answer: Sparse index — valid because the underlying file is sorted on the indexed field (employee_id)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why does a plain B-Tree generally have LOWER fan-out than a B+-Tree built for the same block/node size?</summary>
+          <div class="ans">
+            <p>A B-Tree's internal nodes must store both keys AND data pointers (since records can be referenced from any level, not just leaves), consuming more space per key and leaving room for fewer total keys/pointers within a fixed-size node. A B+-Tree's internal nodes store ONLY keys (all actual data references live exclusively in the leaves), so more keys fit per node of the same size — directly translating into higher fan-out and, consequently, fewer tree levels for the same number of total keys.</p>
+            <p class="final">Answer: B-Tree internal nodes carry data pointers alongside keys, consuming space that reduces fan-out compared to B+-Tree's keys-only internal nodes</p>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="topic" id="revision">
+      <div class="topic-head"><span class="idx">07</span><h2>Revision Sheet</h2></div>
+      <div class="topic-kicker">EVERYTHING ON ONE SCREEN — LAST-MINUTE PASS</div>
+
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Weak entity PK</span>
+          <p>Owner's PK + weak entity's own discriminator/partial key. Requires an identifying relationship to the owner.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Superkey count formula</span>
+          <p>If a single attribute is the only candidate key among n total attributes, superkey count = 2^(n−1).</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Total vs partial participation</span>
+          <p>Total = double line, mandatory (NOT NULL FK). Partial = single line, FK can be NULL. Put the FK on the total-participation side of a 1:1.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Division (÷)</span>
+          <p>R÷S = tuples t such that (t,s)∈R for EVERY s∈S. Classic "find X related to ALL of Y" query.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Relational completeness</span>
+          <p>RA ≡ safe TRC ≡ safe DRC in expressive power. "Safe" excludes expressions that could yield infinite results.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">SQL logical evaluation order</span>
+          <p>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. WHERE can't use aggregates (runs before grouping); HAVING can.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">NULL is three-valued</span>
+          <p>Comparisons with NULL → UNKNOWN, not TRUE/FALSE. NOT IN with a NULL in the list always returns zero rows.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">X⁺ (attribute closure)</span>
+          <p>X is a candidate key iff X⁺ = all attributes of R AND no proper subset of X also satisfies this (minimality).</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Normal form ladder</span>
+          <p>1NF: atomic values. 2NF: no partial dependency. 3NF: no transitive dependency (escape clause: RHS is prime). BCNF: every determinant is a superkey, no exceptions.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Lossless-join test</span>
+          <p>R1, R2 decomposition of R is lossless iff (R1∩R2)→R1 or (R1∩R2)→R2.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Conflict-serializability test</span>
+          <p>Build the precedence graph from RW/WR/WW conflicts across different transactions on the same item — serializable iff the graph is acyclic.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Strict 2PL</span>
+          <p>Holds write locks until commit — guarantees serializability AND prevents cascading rollback, unlike plain 2PL.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Sparse index requires sorted file</span>
+          <p>Sparse = 1 entry/block, only valid when file is physically sorted on the indexed field → always primary, never secondary.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">B+-Tree over B-Tree</span>
+          <p>Data pointers only in leaves → higher fan-out, fewer levels. Linked leaves → fast range scans. This is why DBMSs use B+-trees, not B-trees.</p>
+        </div>
+      </div>
+
+      <div class="card note" style="margin-top:26px;">
+        <span class="label">How to use this sheet</span>
+        <p>Read sections 01–06 once to build the mental model of how data moves from an ER diagram to a query result on disk, then loop back to this page alone for every later revision pass — if a card doesn't immediately click, that's the section to reopen. DBMS rewards being able to compute a closure, normalize a relation, or trace a precedence graph on the spot, far more than reciting definitions — drill construction problems, not re-reading theory.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> R(A,B,C,D,E) has FDs A→B, BC→D, D→E. Is {A,C} a candidate key?</summary>
+          <div class="ans">
+            <p>Compute {A,C}⁺: start {A,C}. A→B adds B: {A,B,C}. Now BC→D applies (both B,C present): add D: {A,B,C,D}. Now D→E applies: add E: {A,B,C,D,E} — all attributes covered. Check minimality: does {A}⁺ alone reach everything? A→B gives {A,B}, but BC→D needs C too, which isn't derivable from A alone — so {A} isn't sufficient. Similarly {C} alone derives nothing. So {A,C} is minimal.</p>
+            <p class="final">Answer: Yes, {A,C} is a candidate key</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> True or false: every BCNF relation is also in 3NF.</summary>
+          <div class="ans">
+            <p>True — BCNF is strictly stronger than (a subset of conditions compared to) 3NF; it removes 3NF's escape clause rather than adding a new requirement outside of it. Any relation satisfying the stricter BCNF condition automatically satisfies the looser 3NF condition too.</p>
+            <p class="final">Answer: True</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> A schedule has only read operations from multiple transactions on shared data, no writes at all. Is it necessarily conflict-serializable?</summary>
+          <div class="ans">
+            <p>Yes — conflicts only arise from RW, WR, or WW pairs; two reads (RR) never conflict, regardless of order. With no writes anywhere in the schedule, there are no conflicting operation pairs at all, so the precedence graph has no edges — trivially acyclic, and hence trivially conflict-serializable (equivalent to any serial order, including the schedule itself).</p>
+            <p class="final">Answer: Yes — an all-read schedule has no conflicts at all, so it's trivially conflict-serializable</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Which SQL clause would you use to filter groups based on their aggregate COUNT value, and why not WHERE?</summary>
+          <div class="ans">
+            <p>HAVING is used, because it's evaluated after GROUP BY has formed the groups and aggregate values like COUNT are computed — WHERE runs before grouping even happens, so no aggregate value exists yet to filter on at that stage.</p>
+            <p class="final">Answer: HAVING — because it runs after GROUP BY, when aggregates are actually available</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> A data file is NOT sorted by any particular field. Can it have a sparse index on any field?</summary>
+          <div class="ans">
+            <p>No — sparse indexing fundamentally relies on physical file ordering matching the indexed field, so that one index entry per block is enough to locate the target via a short local scan. If the file has no sort order at all, no field can support a sparse index; only a dense index (one entry per record) would correctly locate every record.</p>
+            <p class="final">Answer: No — an unsorted file cannot support a sparse index on any field; only dense indexing works</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      Blueprint Notes — DBMS for GATE CSE · built for revision, not first-read · official syllabus: "ER model, relational model, relational algebra, tuple calculus, SQL. Normalization. File organization, indexing (B and B+ trees). Transactions and concurrency control."
+    </footer>
+  </main>
+</div>
+
+<script>
+// Scrollspy: highlight active nav link
+const links = document.querySelectorAll('.navlink');
+const sections = Array.from(links).map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+function onScroll(){
+  let idx = 0;
+  const y = window.scrollY + 120;
+  sections.forEach((s,i)=>{ if(s && s.offsetTop <= y) idx = i; });
+  links.forEach(l=>l.classList.remove('active'));
+  if(links[idx]) links[idx].classList.add('active');
+}
+window.addEventListener('scroll', onScroll);
+onScroll();
+</script>
+</body>
+</html>

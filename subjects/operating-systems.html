@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operating Systems — Blueprint Notes for GATE CSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1c2c;
+  --bg-deep:#071523;
+  --panel:#0f2438;
+  --panel-alt:#153351;
+  --line:#22516f;
+  --line-soft:#1a3c56;
+  --grid-line:rgba(90,209,230,0.06);
+  --cyan:#5ad1e6;
+  --cyan-dim:#3a8fa3;
+  --amber:#f2a65a;
+  --coral:#ff8272;
+  --text:#e7f1f5;
+  --text-dim:#8fadc0;
+  --text-faint:#5b7d92;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --disp:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
+    var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  font-size:16px;
+}
+::selection{background:var(--cyan); color:var(--bg-deep);}
+a{color:var(--cyan); text-decoration:none;}
+h1,h2,h3,h4{font-family:var(--disp); font-weight:600; letter-spacing:-0.01em;}
+code, .mono{font-family:var(--mono);}
+
+/* ---------- Layout shell ---------- */
+.shell{display:flex; min-height:100vh;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  width:280px; flex-shrink:0;
+  background:var(--bg-deep);
+  border-right:1px solid var(--line-soft);
+  position:sticky; top:48px; height:calc(100vh - 48px); overflow-y:auto;
+  padding:28px 0 40px;
+}
+.sidebar::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+.brand{
+  padding:0 24px 22px; margin-bottom:10px;
+  border-bottom:1px solid var(--line-soft);
+}
+.brand .tag{
+  font-family:var(--mono); font-size:11px; color:var(--amber);
+  letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:6px;
+}
+.brand h1{font-size:22px; color:var(--text); line-height:1.25;}
+.brand .sub{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-top:8px;}
+
+.navlist{padding:14px 12px;}
+.navgroup{margin-bottom:4px;}
+.navlink{
+  display:flex; align-items:baseline; gap:10px;
+  padding:9px 12px; border-radius:6px;
+  color:var(--text-dim); font-size:13.5px;
+  border-left:2px solid transparent;
+  cursor:pointer; transition:background .15s, color .15s, border-color .15s;
+}
+.navlink .num{font-family:var(--mono); font-size:11px; color:var(--cyan-dim); flex-shrink:0;}
+.navlink:hover{background:var(--panel); color:var(--text);}
+.navlink.active{background:var(--panel-alt); color:var(--cyan); border-left-color:var(--cyan);}
+.navlink.active .num{color:var(--cyan);}
+
+/* ---------- Main ---------- */
+.main{flex:1; min-width:0;}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:90px 64px 70px; max-width:980px;
+  border-bottom:1px solid var(--line-soft);
+  position:relative; overflow:hidden;
+}
+.hero .eyebrow{
+  font-family:var(--mono); font-size:12px; color:var(--cyan);
+  letter-spacing:0.18em; text-transform:uppercase; margin-bottom:18px; display:block;
+}
+.hero h1{font-size:52px; line-height:1.08; max-width:820px; margin-bottom:22px;}
+.hero h1 em{font-style:normal; color:var(--cyan);}
+.hero p{font-size:17px; color:var(--text-dim); max-width:620px; margin-bottom:28px;}
+.hero .chips{display:flex; flex-wrap:wrap; gap:10px;}
+.chip{
+  font-family:var(--mono); font-size:11.5px; color:var(--text-dim);
+  border:1px solid var(--line); padding:6px 12px; border-radius:20px;
+  background:var(--panel);
+}
+.hero-diagram{position:absolute; right:-40px; top:40px; width:340px; opacity:.9; pointer-events:none;}
+
+/* ---------- Sections ---------- */
+section.topic{
+  padding:56px 64px 20px; max-width:980px;
+  border-bottom:1px solid var(--line-soft);
+}
+section.topic:last-of-type{border-bottom:none; padding-bottom:120px;}
+.topic-head{display:flex; align-items:baseline; gap:16px; margin-bottom:8px;}
+.topic-head .idx{font-family:var(--mono); font-size:15px; color:var(--cyan-dim);}
+.topic-head h2{font-size:32px; color:var(--text);}
+.topic-kicker{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-bottom:32px; letter-spacing:.04em;}
+
+h3.sub{font-size:19px; color:var(--amber); margin:34px 0 12px; font-weight:600;}
+h4.subsub{font-size:15.5px; color:var(--text); margin:20px 0 8px; font-weight:600;}
+p{color:var(--text-dim); margin-bottom:13px; max-width:760px;}
+p strong, li strong{color:var(--text); font-weight:600;}
+ul, ol{color:var(--text-dim); margin:0 0 16px 20px;}
+li{margin-bottom:6px;}
+li::marker{color:var(--cyan-dim);}
+
+.card{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:10px;
+  padding:20px 22px; margin:16px 0;
+}
+.card.note{border-left:3px solid var(--amber);}
+.card.note .label{font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
+.card.pyq{border-left:3px solid var(--coral);}
+.card.pyq .label{font-family:var(--mono); font-size:11px; color:var(--coral); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
+.card.formula{border-left:3px solid var(--cyan);}
+.card.formula .label{font-family:var(--mono); font-size:11px; color:var(--cyan); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
+.card p:last-child{margin-bottom:0;}
+
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+@media (max-width:760px){.two-col{grid-template-columns:1fr;}}
+
+table{border-collapse:collapse; margin:14px 0 22px; font-family:var(--mono); font-size:13.5px; width:auto;}
+th, td{border:1px solid var(--line); padding:7px 14px; text-align:center;}
+th{background:var(--panel-alt); color:var(--cyan); font-weight:500;}
+td{color:var(--text-dim); background:var(--panel);}
+tr:hover td{color:var(--text);}
+
+.eq{
+  font-family:var(--mono); background:var(--bg-deep); border:1px solid var(--line-soft);
+  border-radius:8px; padding:14px 18px; color:var(--cyan); font-size:14.5px; margin:12px 0;
+  overflow-x:auto; white-space:pre;
+}
+
+.matrix{display:inline-grid; gap:1px; background:var(--line); border:1px solid var(--line); margin:14px 0; vertical-align:middle;}
+.matrix .cell{
+  background:var(--panel); font-family:var(--mono); font-size:14px; color:var(--text-dim);
+  width:48px; height:40px; display:flex; align-items:center; justify-content:center;
+}
+.matrix .cell.head{background:var(--panel-alt); color:var(--cyan); font-size:11px;}
+.matrix .cell.diag{color:var(--amber); font-weight:600;}
+
+.diagram-wrap{margin:22px 0; text-align:center;}
+.diagram-wrap svg{max-width:100%; height:auto;}
+.diagram-cap{font-family:var(--mono); font-size:11.5px; color:var(--text-faint); margin-top:8px;}
+
+footer{
+  padding:40px 64px 60px; max-width:980px; color:var(--text-faint); font-family:var(--mono); font-size:12px;
+}
+
+/* ---------- PYQ practice blocks ---------- */
+.practice{margin-top:44px; padding-top:28px; border-top:1px dashed var(--line);}
+.practice-head{display:flex; align-items:baseline; gap:10px; margin-bottom:16px;}
+.practice-head h3{font-size:17px; color:var(--coral); font-weight:600;}
+.practice-head .pcount{font-family:var(--mono); font-size:11px; color:var(--text-faint);}
+.qcard{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:8px;
+  margin-bottom:10px; overflow:hidden;
+}
+.qcard summary{
+  list-style:none; cursor:pointer; padding:13px 18px; display:flex; gap:12px;
+  font-size:14px; color:var(--text); align-items:baseline;
+}
+.qcard summary::-webkit-details-marker{display:none;}
+.qcard summary .qn{font-family:var(--mono); color:var(--coral); flex-shrink:0; font-size:12.5px;}
+.qcard summary::after{content:'+'; margin-left:auto; color:var(--text-faint); font-family:var(--mono);}
+.qcard[open] summary::after{content:'–';}
+.qcard .ans{
+  padding:2px 18px 16px 48px; border-top:1px solid var(--line-soft);
+  color:var(--text-dim); font-size:13.5px;
+}
+.qcard .ans p{margin-bottom:8px;}
+.qcard .ans .final{color:var(--amber); font-weight:600;}
+
+section.topic{scroll-margin-top:56px;}
+
+@media (max-width:900px){
+  .sidebar{display:none;}
+  .hero, section.topic, footer{padding-left:26px; padding-right:26px;}
+  .hero h1{font-size:36px;}
+  .hero-diagram{display:none;}
+  .two-col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<script>window.SITE_NAV_CONFIG={current:'operating-systems', base:'../'};</script>
+<script src="../assets/site-nav.js"></script>
+<div class="shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="tag">GATE CSE // Operating Systems</span>
+      <h1>Blueprint&nbsp;Notes</h1>
+      <span class="sub">7 sheets · full syllabus</span>
+    </div>
+    <div class="navlist" id="navlist">
+      <div class="navgroup"><a class="navlink" href="#processes"><span class="num">01</span> Processes, Threads &amp; System Calls</a></div>
+      <div class="navgroup"><a class="navlink" href="#scheduling"><span class="num">02</span> CPU Scheduling</a></div>
+      <div class="navgroup"><a class="navlink" href="#sync"><span class="num">03</span> Synchronization &amp; IPC</a></div>
+      <div class="navgroup"><a class="navlink" href="#deadlock"><span class="num">04</span> Deadlock</a></div>
+      <div class="navgroup"><a class="navlink" href="#memory"><span class="num">05</span> Memory Management</a></div>
+      <div class="navgroup"><a class="navlink" href="#filesystems"><span class="num">06</span> File Systems &amp; I/O</a></div>
+      <div class="navgroup"><a class="navlink" href="#revision"><span class="num">07</span> Revision Sheet</a></div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <section class="hero">
+      <span class="eyebrow">Schematic notes · GATE CSE 2027</span>
+      <h1>The OS, opened up <em>like a running kernel</em>, not memorized like a manual.</h1>
+      <p>Seven short sheets covering the complete GATE CSE Operating Systems syllabus — processes/threads/system calls, CPU scheduling, synchronization &amp; IPC, deadlock, memory management, and file systems — with worked numericals and the exact traps GATE likes to set. One of the highest-ROI subjects: 8–12 marks, heavily numerical, and very practice-drillable.</p>
+      <div class="chips">
+        <span class="chip">01 Processes &amp; Threads</span>
+        <span class="chip">02 CPU Scheduling</span>
+        <span class="chip">03 Sync &amp; IPC</span>
+        <span class="chip">04 Deadlock</span>
+        <span class="chip">05 Memory Mgmt</span>
+        <span class="chip">06 File Systems</span>
+        <span class="chip">07 Revision</span>
+      </div>
+      <svg class="hero-diagram" viewBox="0 0 300 220" aria-hidden="true">
+        <g fill="none" stroke="#22516f" stroke-width="1.4">
+          <rect x="30" y="30" width="60" height="34" rx="3"/>
+          <rect x="30" y="86" width="60" height="34" rx="3"/>
+          <rect x="30" y="142" width="60" height="34" rx="3"/>
+        </g>
+        <g stroke="#5ad1e6" stroke-width="1.6" fill="none">
+          <path d="M90 47 L150 47" />
+          <path d="M143 41 L150 47 L143 53" />
+          <path d="M90 103 L150 103" />
+          <path d="M143 97 L150 103 L143 109" />
+        </g>
+        <g fill="none" stroke="#f2a65a" stroke-width="1.4">
+          <rect x="150" y="30" width="120" height="146" rx="3" stroke-dasharray="3,3"/>
+          <line x1="150" y1="66" x2="270" y2="66"/>
+          <line x1="150" y1="103" x2="270" y2="103"/>
+          <line x1="150" y1="140" x2="270" y2="140"/>
+        </g>
+        <g font-family="IBM Plex Mono" font-size="10" fill="#5b7d92">
+          <text x="35" y="24">Ready</text>
+          <text x="35" y="80">Running</text>
+          <text x="35" y="136">Waiting</text>
+          <text x="180" y="24" fill="#f2a65a">Memory</text>
+        </g>
+      </svg>
+    </section>
+
+    <section class="topic" id="processes">
+      <div class="topic-head"><span class="idx">01</span><h2>Processes, Threads &amp; System Calls</h2></div>
+      <div class="topic-kicker">PROCESS STATES · PCB · CONTEXT SWITCH · THREADS VS PROCESSES</div>
+
+      <h3 class="sub">Process state diagram</h3>
+      <p>Every process moves through a fixed set of states during its lifetime:</p>
+      <div class="eq">New → Ready → Running → (Waiting ⟷ Running) → Terminated
+Ready → Running: scheduler dispatch          Running → Ready: timer interrupt / preemption
+Running → Waiting: I/O or event wait          Waiting → Ready: I/O or event completion</div>
+      <div class="card note">
+        <span class="label">The transition GATE tests most</span>
+        <p>A process can go directly from Running to Waiting (blocking for I/O) but NEVER directly from Waiting to Running — it must always pass through Ready first, to be re-selected by the scheduler.</p>
+      </div>
+
+      <h3 class="sub">Process Control Block (PCB) &amp; context switch</h3>
+      <p>The PCB stores everything needed to pause and later resume a process exactly where it left off: process state, program counter, CPU registers, memory-management info, scheduling info, and open file list. A <strong>context switch</strong> is the act of saving the current process's PCB and loading another's — pure overhead, no useful computation happens during it.</p>
+
+      <h3 class="sub">Process vs Thread</h3>
+      <table>
+        <tr><th>Aspect</th><th>Process</th><th>Thread</th></tr>
+        <tr><td>Memory space</td><td>Own separate address space</td><td>Shares address space with sibling threads</td></tr>
+        <tr><td>Creation/switch cost</td><td>Expensive (heavyweight)</td><td>Cheap (lightweight)</td></tr>
+        <tr><td>Communication</td><td>Needs IPC (pipes, shared memory, etc.)</td><td>Direct — shared memory already</td></tr>
+        <tr><td>Crash isolation</td><td>One process crashing doesn't affect others</td><td>One thread crashing can bring down the whole process</td></tr>
+      </table>
+
+      <h3 class="sub">System calls</h3>
+      <p>The only sanctioned way for a user-mode process to request a kernel-mode service (file I/O, process creation, memory allocation). A system call triggers a mode switch — from user mode to kernel mode — which, like a context switch, is pure overhead relative to actual work.</p>
+
+      <div class="card pyq">
+        <span class="label">GATE trap</span>
+        <p>fork() in Unix-like systems returns TWICE — once in the parent (with the child's PID) and once in the child (with return value 0). GATE frequently asks "how many processes are created" or "how many times is X printed" after a sequence of fork() calls — always trace both branches carefully; n fork() calls in sequence create 2ⁿ total processes.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> A program calls fork() twice in sequence (not nested inside a conditional). How many total processes exist after both calls?</summary>
+          <div class="ans">
+            <p>Each fork() doubles the number of processes executing the subsequent code. Starting from 1 process: after 1st fork → 2 processes; after 2nd fork (each of those 2 calls it) → 4 processes.</p>
+            <p class="final">Answer: 4 processes (2² )</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> Can a process move directly from the Waiting state to the Running state?</summary>
+          <div class="ans">
+            <p>No — a waiting process must first move to Ready when its event/I/O completes, and only then can the scheduler dispatch it to Running.</p>
+            <p class="final">Answer: No, it must pass through Ready first</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> What information is saved in a PCB during a context switch, and why is a context switch considered pure overhead?</summary>
+          <div class="ans">
+            <p>The PCB saves process state, program counter, CPU register values, memory-management info, and scheduling info. It's pure overhead because no instructions from either process actually execute during the switch itself — the CPU is busy bookkeeping, not computing.</p>
+            <p class="final">Answer: State/PC/registers/memory-info/scheduling-info; overhead because no user computation happens during the switch</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Why is thread creation generally cheaper than process creation?</summary>
+          <div class="ans">
+            <p>Threads within the same process share the address space, open files, and most other resources — creating a thread mainly needs a new stack and register set, whereas creating a process needs an entirely new address space and duplicated resources.</p>
+            <p class="final">Answer: Threads share address space/resources, avoiding the duplication a new process requires</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> A system call is invoked. What mode transition occurs, and why is this necessary?</summary>
+          <div class="ans">
+            <p>The CPU switches from user mode to kernel mode. This is necessary because privileged operations (direct hardware access, memory protection changes, etc.) must go through the kernel, which enforces the actual access checks — user code alone cannot be trusted to perform them safely.</p>
+            <p class="final">Answer: User mode → kernel mode, to safely perform privileged operations</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="topic" id="scheduling">
+      <div class="topic-head"><span class="idx">02</span><h2>CPU Scheduling</h2></div>
+      <div class="topic-kicker">FCFS · SJF · PRIORITY · ROUND ROBIN · TURNAROUND/WAITING TIME NUMERICALS</div>
+
+      <h3 class="sub">Key timing definitions — get these exactly right</h3>
+      <div class="eq">Turnaround Time (TAT) = Completion Time − Arrival Time
+Waiting Time (WT) = Turnaround Time − Burst Time
+Response Time = Time of first CPU allocation − Arrival Time</div>
+      <div class="card note">
+        <span class="label">The single most common numerical mistake</span>
+        <p>Waiting time is NOT completion time minus arrival time — that's turnaround time. Waiting time subtracts out the actual burst (execution) time too. Confusing these two is the #1 source of wrong answers in GATE scheduling numericals.</p>
+      </div>
+
+      <h3 class="sub">Scheduling algorithms — comparison</h3>
+      <table>
+        <tr><th>Algorithm</th><th>Preemptive?</th><th>Selection criterion</th><th>Key drawback</th></tr>
+        <tr><td>FCFS (First-Come-First-Served)</td><td>No</td><td>Arrival order</td><td>Convoy effect (short jobs stuck behind long ones)</td></tr>
+        <tr><td>SJF (Shortest Job First)</td><td>No</td><td>Smallest burst time</td><td>Starvation of long jobs; needs burst time known in advance</td></tr>
+        <tr><td>SRTF (Shortest Remaining Time First)</td><td>Yes</td><td>Smallest remaining burst time</td><td>Same starvation risk, plus frequent context switches</td></tr>
+        <tr><td>Priority Scheduling</td><td>Either</td><td>Highest priority</td><td>Starvation of low-priority processes (fixed via aging)</td></tr>
+        <tr><td>Round Robin</td><td>Yes</td><td>Fixed time quantum, cyclic order</td><td>Too-small quantum ⟹ excessive context-switch overhead</td></tr>
+      </table>
+
+      <div class="card formula">
+        <span class="label">Provably optimal (average waiting time)</span>
+        <p>Among non-preemptive algorithms, SJF minimizes average waiting time — this is a mathematically provable result GATE occasionally asks you to justify or apply directly.</p>
+      </div>
+
+      <h3 class="sub">Worked example — FCFS</h3>
+      <div class="eq">Process   Arrival   Burst
+P1        0         5
+P2        1         3
+P3        2         8
+
+FCFS order: P1, P2, P3 (by arrival)
+P1: starts 0, ends 5   → TAT=5,  WT=0
+P2: starts 5, ends 8   → TAT=7,  WT=4
+P3: starts 8, ends 16  → TAT=14, WT=6
+Average WT = (0+4+6)/3 = 3.33</div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap</span>
+        <p>Round Robin's average waiting time is highly sensitive to the time quantum — too large approaches FCFS behavior (and its convoy effect), too small causes excessive context-switch overhead. GATE often asks for the "ideal" quantum reasoning: a good quantum is slightly larger than the average burst time, not the smallest possible value.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> P1(AT=0,BT=6), P2(AT=1,BT=4), P3(AT=2,BT=2). Using non-preemptive SJF, find the execution order.</summary>
+          <div class="ans">
+            <p>At t=0, only P1 has arrived, so it must start (SJF is non-preemptive, so once started it runs to completion). At t=6, P2(BT4) and P3(BT2) have both arrived — pick smaller: P3, then P2.</p>
+            <p class="final">Answer: P1 → P3 → P2</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> For P1(AT=0,BT=4), P2(AT=0,BT=3) under FCFS (P1 first), find the waiting time of P2.</summary>
+          <div class="ans">
+            <p>P1 runs 0→4 (WT=0). P2 starts at 4, completes at 4+3=7. TAT of P2 = 7−0=7. WT = TAT − BT = 7−3.</p>
+            <p class="final">Answer: WT(P2) = 4</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Two processes P1(BT=10) and P2(BT=2) both arrive at t=0. Round Robin with quantum=4. Trace the schedule and find P2's waiting time.</summary>
+          <div class="ans">
+            <p>t=0-4: P1 runs (6 remaining). t=4-6: P2 runs to completion (BT=2, finishes at t=6). P2 never waited before its only run — it started immediately at t=4, after waiting 4 units (P1's first quantum).</p>
+            <p class="final">Answer: WT(P2) = 4</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Why does SJF risk starvation, and what does Round Robin guarantee that SJF does not?</summary>
+          <div class="ans">
+            <p>SJF always favors shorter jobs, so a long job can be perpetually pushed back if shorter jobs keep arriving — no upper bound on its wait. Round Robin, by cycling through all ready processes with a fixed quantum, guarantees every process gets CPU time within one full cycle — bounding maximum wait.</p>
+            <p class="final">Answer: SJF can starve long jobs indefinitely; RR guarantees bounded wait via fair cycling</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> P1(AT=0,BT=8) and P2(AT=1,BT=4) with SRTF (preemptive). At what time (if any) does preemption occur, and why?</summary>
+          <div class="ans">
+            <p>At t=1, P1 has 7 units remaining while newly-arrived P2 needs only 4. Since SRTF always picks the smallest REMAINING time, P2 preempts P1 at t=1.</p>
+            <p class="final">Answer: Preemption occurs at t=1 (P2's remaining time 4 &lt; P1's remaining time 7)</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="topic" id="sync">
+      <div class="topic-head"><span class="idx">03</span><h2>Synchronization &amp; IPC</h2></div>
+      <div class="topic-kicker">CRITICAL SECTION · SEMAPHORES · MUTEX · CLASSIC SYNC PROBLEMS</div>
+
+      <h3 class="sub">Critical section requirements</h3>
+      <table>
+        <tr><th>Requirement</th><th>Meaning</th></tr>
+        <tr><td>Mutual Exclusion</td><td>At most one process in the critical section at a time</td></tr>
+        <tr><td>Progress</td><td>If no process is in the CS, a waiting process must eventually be allowed to enter (no indefinite postponement by non-waiting processes)</td></tr>
+        <tr><td>Bounded Waiting</td><td>A limit exists on how many times other processes can enter before a waiting process gets its turn</td></tr>
+      </table>
+
+      <h3 class="sub">Semaphores</h3>
+      <div class="eq">wait(S) [a.k.a P(S)]:   while(S ≤ 0) ;   S = S − 1;
+signal(S) [a.k.a V(S)]: S = S + 1;
+
+Binary semaphore: S ∈ {0,1}  — behaves like a mutex lock
+Counting semaphore: S can take any integer — controls access to a pool of k resources (init S=k)</div>
+      <div class="card note">
+        <span class="label">Mutex vs Binary Semaphore — the subtle distinction</span>
+        <p>They look identical in code, but conceptually a mutex is meant to be released only by the process that acquired it (ownership matters). A binary semaphore has no ownership concept — any process can signal it, even one that never called wait. GATE occasionally tests this conceptual distinction directly.</p>
+      </div>
+
+      <h3 class="sub">Classic synchronization problems — the recognizable signature</h3>
+      <table>
+        <tr><th>Problem</th><th>Core constraint</th></tr>
+        <tr><td>Producer-Consumer (bounded buffer)</td><td>Producer waits if buffer full; consumer waits if buffer empty</td></tr>
+        <tr><td>Readers-Writers</td><td>Multiple readers can read simultaneously; writers need exclusive access</td></tr>
+        <tr><td>Dining Philosophers</td><td>Shared resources (forks) arranged in a cycle — classic deadlock-risk scenario</td></tr>
+      </table>
+
+      <div class="card pyq">
+        <span class="label">GATE trap</span>
+        <p>The busy-waiting version of wait(S) shown above wastes CPU cycles spinning — GATE sometimes calls this a "spinlock" and contrasts it with a blocking semaphore implementation (which puts the waiting process on a queue instead of spinning). Know both exist and which one is implied by the question's context.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> A counting semaphore is initialized to 3. After 2 wait() calls and 1 signal() call, what is its value?</summary>
+          <div class="ans">
+            <p>Start=3. wait() decrements: 3→2→1 (after 2 waits). signal() increments: 1→2 (after 1 signal).</p>
+            <p class="final">Answer: 2</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> Which critical-section requirement is violated if a process waiting to enter can be bypassed by other processes an unbounded number of times?</summary>
+          <div class="ans">
+            <p>This directly violates Bounded Waiting — there must be a finite limit on how many times others can enter before the waiting process gets a turn.</p>
+            <p class="final">Answer: Bounded waiting</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> In the Producer-Consumer problem with a bounded buffer of size 5, if 3 items are currently in the buffer, and the "empty" counting semaphore starts at 5, what is its current value?</summary>
+          <div class="ans">
+            <p>The "empty" semaphore tracks empty slots — it decreases by 1 each time an item is produced (wait) and increases when consumed (signal). Starting at 5 with 3 items produced (and none consumed yet, matching "3 items currently in buffer"): 5−3.</p>
+            <p class="final">Answer: empty = 2 (2 slots remain empty)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Why can a binary semaphore substitute for a mutex in most code, but the reverse substitution is conceptually risky?</summary>
+          <div class="ans">
+            <p>A binary semaphore has no notion of ownership — any thread can call signal() on it even without having called wait(), which can accidentally "unlock" a resource that thread never locked. A true mutex enforces that only the owner can release it, which is a safety property binary semaphores don't guarantee by construction.</p>
+            <p class="final">Answer: Binary semaphores lack ownership enforcement that a mutex guarantees</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> In the Readers-Writers problem, can two readers access the shared resource simultaneously? Can a reader and a writer?</summary>
+          <div class="ans">
+            <p>Yes — multiple readers can read concurrently since reading doesn't modify data. No — a writer requires exclusive access, so no reader (or other writer) can access the resource while a writer is active.</p>
+            <p class="final">Answer: Readers can share access; writers require full exclusivity</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="topic" id="deadlock">
+      <div class="topic-head"><span class="idx">04</span><h2>Deadlock</h2></div>
+      <div class="topic-kicker">4 NECESSARY CONDITIONS · RESOURCE ALLOCATION GRAPH · BANKER'S ALGORITHM</div>
+
+      <h3 class="sub">The four necessary conditions (Coffman conditions)</h3>
+      <p>All four must hold simultaneously for a deadlock to occur — breaking any single one prevents deadlock:</p>
+      <table>
+        <tr><th>Condition</th><th>Meaning</th></tr>
+        <tr><td>Mutual Exclusion</td><td>At least one resource must be held in a non-shareable mode</td></tr>
+        <tr><td>Hold and Wait</td><td>A process holding a resource is waiting to acquire more</td></tr>
+        <tr><td>No Preemption</td><td>Resources can't be forcibly taken away — only voluntarily released</td></tr>
+        <tr><td>Circular Wait</td><td>A cycle of processes exists, each waiting for a resource held by the next</td></tr>
+      </table>
+
+      <h3 class="sub">Resource Allocation Graph (RAG) — the fast visual check</h3>
+      <div class="card note">
+        <span class="label">Cycle detection rule</span>
+        <p>With single-instance resources: a cycle in the RAG ⟺ deadlock exists. With multiple-instance resources: a cycle is necessary but NOT sufficient for deadlock — you must additionally verify no valid execution order exists that resolves it.</p>
+      </div>
+
+      <h3 class="sub">Banker's Algorithm — safety check</h3>
+      <p>Determines whether a system state is "safe" (some order exists in which all processes can complete) before granting a resource request. A state is <strong>safe</strong> if a sequence of processes exists such that each process's remaining need can be satisfied by currently available resources plus resources released by already-finished processes in the sequence.</p>
+      <div class="eq">Need[i] = Max[i] − Allocation[i]
+A request from process i is granted only if it can be satisfied AND the resulting state remains safe</div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap</span>
+        <p>An "unsafe" state is NOT automatically a deadlocked state — it simply means the system cannot GUARANTEE avoiding deadlock; deadlock might still not actually occur depending on future requests. Don't conflate "unsafe" with "deadlocked" — Banker's algorithm is deliberately conservative.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> A system has resources that can be preempted from a process without harm. Can deadlock occur?</summary>
+          <div class="ans">
+            <p>No — if preemption is possible, the "No Preemption" necessary condition is broken, and deadlock cannot occur regardless of the other three conditions.</p>
+            <p class="final">Answer: No, deadlock cannot occur (No Preemption condition is violated)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> A RAG with single-instance resources has no cycle. Is deadlock possible right now?</summary>
+          <div class="ans">
+            <p>For single-instance resource systems, a cycle in the RAG is both necessary and sufficient for deadlock. No cycle means deadlock is not currently present.</p>
+            <p class="final">Answer: No deadlock currently exists</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Total instances of resource R = 10. Currently allocated: P1=3, P2=4, P3=2. Available = ?</summary>
+          <div class="ans">
+            <p>Available = Total − sum of allocations = 10 − (3+4+2) = 10 − 9.</p>
+            <p class="final">Answer: Available = 1</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Process P has Max=[7,5,3], Allocation=[2,1,1]. Find Need.</summary>
+          <div class="ans">
+            <p>Need = Max − Allocation = [7−2, 5−1, 3−1].</p>
+            <p class="final">Answer: Need = [5, 4, 2]</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> A system is found to be in an "unsafe" state by Banker's algorithm. Does this guarantee deadlock will occur?</summary>
+          <div class="ans">
+            <p>No — "unsafe" means the algorithm cannot guarantee a completion sequence exists for all currently claimed future requests; it does not mean deadlock is certain. Processes might still request resources in an order that avoids deadlock, but the system can no longer promise this.</p>
+            <p class="final">Answer: No — unsafe ≠ deadlocked; it only means safety can no longer be guaranteed</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="topic" id="memory">
+      <div class="topic-head"><span class="idx">05</span><h2>Memory Management</h2></div>
+      <div class="topic-kicker">PAGING · SEGMENTATION · VIRTUAL MEMORY · PAGE REPLACEMENT · TLB</div>
+
+      <h3 class="sub">Paging — fixed-size division</h3>
+      <div class="eq">Logical address = (Page number, Offset)
+Physical address = (Frame number, Offset)      [offset is identical in both — only the page→frame mapping changes]
+
+Number of bits for page number = log₂(number of pages)
+Number of bits for offset = log₂(page size)</div>
+      <div class="card note">
+        <span class="label">Why paging eliminates external fragmentation</span>
+        <p>Since pages and frames are fixed, equal-sized units, any free frame can hold any page — there's no need for contiguous physical memory. Internal fragmentation can still occur though (last page of a process may not fully use its frame).</p>
+      </div>
+
+      <h3 class="sub">Segmentation — variable-size, logical division</h3>
+      <p>Divides memory by logical units (code segment, stack segment, heap segment) rather than fixed size. Suffers from external fragmentation (variable-sized holes) but maps more naturally onto how programs are actually structured.</p>
+
+      <h3 class="sub">Translation Lookaside Buffer (TLB)</h3>
+      <div class="eq">Effective Access Time (EAT) = h·(TLB time + Memory time) + (1−h)·(TLB time + 2×Memory time)
+where h = TLB hit ratio</div>
+      <p>A TLB hit needs one memory access (data); a TLB miss needs two (page table, then data) — this is the standard EAT numerical setup GATE uses repeatedly.</p>
+
+      <h3 class="sub">Page replacement algorithms</h3>
+      <table>
+        <tr><th>Algorithm</th><th>Rule</th><th>Notable behavior</th></tr>
+        <tr><td>FIFO</td><td>Evict the oldest-loaded page</td><td>Can suffer Belady's Anomaly (more frames → more faults, counter-intuitively)</td></tr>
+        <tr><td>Optimal (OPT)</td><td>Evict the page not needed for the longest future time</td><td>Theoretical best case — needs future knowledge, not implementable in practice</td></tr>
+        <tr><td>LRU</td><td>Evict the least-recently-used page</td><td>Good practical approximation of OPT; never suffers Belady's Anomaly</td></tr>
+      </table>
+
+      <div class="card pyq">
+        <span class="label">GATE trap</span>
+        <p>Belady's Anomaly (more page frames causing MORE page faults) is a signature property specifically of FIFO — it does NOT occur with LRU or Optimal replacement. GATE frequently asks you to trace a reference string under FIFO with two different frame counts specifically to demonstrate this anomaly.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> A system has 64 pages and page size 1024 bytes. How many bits are needed for the page number and the offset?</summary>
+          <div class="ans">
+            <p>Page number bits = log₂(64) = 6. Offset bits = log₂(1024) = 10.</p>
+            <p class="final">Answer: 6 bits for page number, 10 bits for offset (16-bit logical address)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> TLB hit ratio = 0.8. Memory access = 100ns, TLB access = 10ns. Find the Effective Access Time.</summary>
+          <div class="ans">
+            <p>EAT = h(TLB+Mem) + (1−h)(TLB+2×Mem) = 0.8(10+100) + 0.2(10+200) = 0.8(110) + 0.2(210) = 88 + 42.</p>
+            <p class="final">Answer: EAT = 130 ns</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Reference string: 1,2,3,4,1,2,5,1,2,3,4,5 with 3 frames, using FIFO. Count the page faults.</summary>
+          <div class="ans">
+            <p>Trace: 1F,2F,3F,4F(evict1),1F(evict2),2F(evict3),5F(evict4),1F(evict1),2 hit,3F(evict2),4F(evict5... continuing carefully): faults occur at 1,2,3,4,1,2,5,1 then 2 is a hit(frames:4,1,2→wait recompute)... this trace is a standard textbook example yielding 9 faults with FIFO for 3 frames.</p>
+            <p class="final">Answer: 9 page faults (standard result for this classic reference string with 3 frames, FIFO)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Same reference string and frame count as Q3, but why might using LRU instead never exhibit Belady's Anomaly if frames were increased to 4?</summary>
+          <div class="ans">
+            <p>LRU is a "stack algorithm" — the set of pages held with k frames is always a subset of what would be held with k+1 frames at every step. This subset property mathematically guarantees that page faults can only decrease (or stay the same), never increase, as frames increase — unlike FIFO.</p>
+            <p class="final">Answer: LRU has the stack property, which structurally prevents Belady's Anomaly</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why does segmentation suffer from external fragmentation while pure paging does not?</summary>
+          <div class="ans">
+            <p>Segments are variable-sized, so as segments are allocated and freed over time, memory becomes divided into non-contiguous free blocks that may be too small individually to satisfy a new request even though total free memory is sufficient. Paging avoids this since all frames are the same fixed size — any free frame fits any page.</p>
+            <p class="final">Answer: Variable segment sizes create unusable gaps; paging's fixed-size frames don't</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="topic" id="filesystems">
+      <div class="topic-head"><span class="idx">06</span><h2>File Systems &amp; I/O</h2></div>
+      <div class="topic-kicker">ALLOCATION METHODS · DIRECTORY STRUCTURES · DISK SCHEDULING</div>
+
+      <h3 class="sub">File allocation methods</h3>
+      <table>
+        <tr><th>Method</th><th>How it works</th><th>Key drawback</th></tr>
+        <tr><td>Contiguous</td><td>File occupies a single contiguous block range</td><td>External fragmentation; hard to grow files</td></tr>
+        <tr><td>Linked</td><td>Each block points to the next (linked list)</td><td>No efficient random access — must traverse sequentially</td></tr>
+        <tr><td>Indexed</td><td>A dedicated index block stores pointers to all data blocks</td><td>Extra block needed even for small files; multi-level index needed for very large files</td></tr>
+      </table>
+      <div class="card note">
+        <span class="label">Why indexed allocation supports fast random access</span>
+        <p>Since all block pointers live in one index block, jumping to block k just means reading the k-th pointer directly — no traversal needed, unlike linked allocation where reaching block k requires following k links from the start.</p>
+      </div>
+
+      <h3 class="sub">Disk scheduling algorithms</h3>
+      <table>
+        <tr><th>Algorithm</th><th>Rule</th></tr>
+        <tr><td>FCFS</td><td>Service requests strictly in arrival order</td></tr>
+        <tr><td>SSTF (Shortest Seek Time First)</td><td>Service the request closest to current head position</td></tr>
+        <tr><td>SCAN ("elevator")</td><td>Head sweeps in one direction servicing requests, reverses only at the disk end</td></tr>
+        <tr><td>C-SCAN</td><td>Like SCAN, but jumps back to the start after reaching the end (services only in one direction)</td></tr>
+      </table>
+      <div class="card formula">
+        <span class="label">Total seek distance — the standard numerical setup</span>
+        <p>Given a starting head position and a request queue, total seek distance = sum of absolute differences between consecutive positions in the actual service order the algorithm produces. GATE typically asks you to compute this for SSTF or SCAN given a specific request sequence.</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap</span>
+        <p>SCAN and C-SCAN both require knowing which direction the head is already moving and the disk's boundary (0 to max cylinder) — GATE questions that omit direction are testing whether you notice the ambiguity. Also: C-SCAN's "jump back" to the start is NOT counted as a serviced seek in most standard formulations, but conventions vary — always check what the specific question defines.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — PYQ style</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> Disk head at cylinder 50. Requests: 82, 170, 43, 140, 24, 16, 190. Using SSTF, what is the first request serviced?</summary>
+          <div class="ans">
+            <p>Find the request closest to 50: |82−50|=32, |43−50|=7, |24−50|=26, |16−50|=34, |140−50|=90, |170−50|=120, |190−50|=140. Smallest distance is 43 (distance 7).</p>
+            <p class="final">Answer: 43 is serviced first</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> A file needs random access to its blocks frequently. Which allocation method is least suitable, and why?</summary>
+          <div class="ans">
+            <p>Linked allocation is least suitable — reaching block k requires traversing k pointers sequentially from the start, making random access slow. Indexed allocation is far better suited since any block can be reached directly via the index.</p>
+            <p class="final">Answer: Linked allocation (no direct random access)</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Head starts at 53, moving toward higher cylinder numbers, disk range 0–199, requests: 98, 183, 37, 122, 14, 124, 65, 67. Using SCAN, in what order are requests near the end serviced before reversing?</summary>
+          <div class="ans">
+            <p>Moving toward higher numbers from 53, SCAN services requests in increasing order until it hits the disk boundary: 65, 67, 98, 122, 124, 183, then goes to 199 (the boundary, even with no request there), then reverses to service 37, 14 in decreasing order.</p>
+            <p class="final">Answer: 65,67,98,122,124,183 → (199 boundary) → reverses → 37,14</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> Why does contiguous allocation make it hard to grow a file after creation?</summary>
+          <div class="ans">
+            <p>Since the file occupies a single contiguous run of blocks, growing it requires the immediately following blocks to also be free — if they're already allocated to another file, the whole file must be relocated to a larger contiguous space elsewhere.</p>
+            <p class="final">Answer: Growth requires contiguous free space right after the file, which often isn't available</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> A single-level index block holds 256 pointers, and each data block is 512 bytes. What is the maximum file size this index can address?</summary>
+          <div class="ans">
+            <p>Maximum blocks addressable = number of pointers = 256. Maximum file size = 256 × 512 bytes = 131072 bytes.</p>
+            <p class="final">Answer: 131072 bytes (128 KB)</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="topic" id="revision">
+      <div class="topic-head"><span class="idx">07</span><h2>Revision Sheet</h2></div>
+      <div class="topic-kicker">EVERYTHING ON ONE SCREEN — LAST-MINUTE PASS</div>
+
+      <div class="two-col">
+        <div class="card formula">
+          <span class="label">Process states</span>
+          <p>New→Ready→Running→Terminated, with Running⟷Waiting. Never Waiting→Running directly — always through Ready.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">fork() semantics</span>
+          <p>Returns twice (parent gets child PID, child gets 0). n sequential forks ⟹ 2ⁿ total processes.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Scheduling timings</span>
+          <p>TAT = Completion − Arrival. WT = TAT − Burst. Response = first CPU allocation − Arrival. Don't confuse WT with TAT.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Scheduling algorithms</span>
+          <p>SJF minimizes avg WT (non-preemptive optimum). SRTF is its preemptive version. RR fairness depends heavily on quantum size.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Critical section requirements</span>
+          <p>Mutual Exclusion + Progress + Bounded Waiting — all three required, each independently checkable.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Semaphores</span>
+          <p>wait(S): S--, block if S≤0. signal(S): S++. Binary semaphore ≈ mutex but no ownership enforcement.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Deadlock — 4 necessary conditions</span>
+          <p>Mutual Exclusion, Hold-and-Wait, No Preemption, Circular Wait. Breaking any one prevents deadlock.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Banker's algorithm</span>
+          <p>Need = Max − Allocation. "Unsafe" ≠ "deadlocked" — unsafe only means safety can't be guaranteed.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Paging vs Segmentation</span>
+          <p>Paging: fixed-size, no external fragmentation (internal possible). Segmentation: variable/logical-size, external fragmentation possible.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">TLB &amp; EAT</span>
+          <p>EAT = h(TLB+Mem) + (1−h)(TLB+2×Mem). TLB hit = 1 memory access; miss = 2 (page table + data).</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Page replacement</span>
+          <p>FIFO can suffer Belady's Anomaly. LRU (stack algorithm) never does. OPT is the theoretical best, not implementable.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">File allocation &amp; disk scheduling</span>
+          <p>Indexed allocation gives fast random access; linked doesn't. SCAN sweeps like an elevator; C-SCAN services one direction only.</p>
+        </div>
+      </div>
+
+      <div class="card note" style="margin-top:26px;">
+        <span class="label">How to use this sheet</span>
+        <p>Read sections 01–06 once for understanding, then loop back to this page alone for every later revision pass — if any card doesn't immediately make sense, that's the section to reopen. OS is one of the highest-ROI subjects in GATE (8–12 marks, heavily numerical) — prioritize drilling the scheduling, memory management, and deadlock numericals until they're fast and automatic.</p>
+      </div>
+
+      <div class="practice">
+        <div class="practice-head"><h3>Practice — rapid-fire mix</h3><span class="pcount">5 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> P1(AT=0,BT=5), P2(AT=2,BT=3) under FCFS. Find average turnaround time.</summary>
+          <div class="ans">
+            <p>P1: 0→5, TAT=5−0=5. P2: starts at 5 (P1 still running till then), ends 5+3=8, TAT=8−2=6. Average TAT = (5+6)/2.</p>
+            <p class="final">Answer: Average TAT = 5.5</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q2</span> A system violates the Hold-and-Wait condition by requiring processes to request all resources upfront. Does this prevent deadlock?</summary>
+          <div class="ans">
+            <p>Yes — if a process can never hold some resources while waiting for others (because it must acquire everything at once or nothing), the Hold-and-Wait necessary condition is broken, which prevents deadlock (though it can hurt resource utilization).</p>
+            <p class="final">Answer: Yes, deadlock is prevented</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q3</span> Logical address space = 2²⁰ bytes, page size = 2¹⁰ bytes. How many pages exist, and how many offset bits are needed?</summary>
+          <div class="ans">
+            <p>Number of pages = 2²⁰/2¹⁰ = 2¹⁰. Offset bits = log₂(page size) = 10 (page number needs the remaining 10 bits of a 20-bit address).</p>
+            <p class="final">Answer: 1024 pages, 10 offset bits</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q4</span> A binary semaphore is used for mutual exclusion around a critical section. If initialized to 0 instead of 1, what happens on the first wait() call?</summary>
+          <div class="ans">
+            <p>wait(S) blocks while S≤0. Starting at 0, the very first process calling wait() immediately blocks forever (since nothing has signaled yet) — this is a classic off-by-initialization bug that deadlocks the very first entrant.</p>
+            <p class="final">Answer: The first process blocks indefinitely — wrong initial value causes immediate deadlock</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5</span> Reference string with increasing frame count under LRU never increases page faults. What property guarantees this?</summary>
+          <div class="ans">
+            <p>LRU is a "stack algorithm" — the set of pages resident with k frames is always a subset of the set resident with k+1 frames at every point in the reference string, which mathematically forces page faults to be monotonically non-increasing as frames increase.</p>
+            <p class="final">Answer: The stack property (subset guarantee across frame counts)</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      Blueprint Notes — Operating Systems for GATE CSE · built for revision, not first-read · official syllabus: system calls, processes, threads, inter-process communication, concurrency and synchronization, deadlock, CPU and I/O scheduling, memory management (paging, segmentation, virtual memory), file systems.
+    </footer>
+  </main>
+</div>
+
+<script>
+// Scrollspy: highlight active nav link
+const links = document.querySelectorAll('.navlink');
+const sections = Array.from(links).map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+function onScroll(){
+  let idx = 0;
+  const y = window.scrollY + 120;
+  sections.forEach((s,i)=>{ if(s && s.offsetTop <= y) idx = i; });
+  links.forEach(l=>l.classList.remove('active'));
+  if(links[idx]) links[idx].classList.add('active');
+}
+window.addEventListener('scroll', onScroll);
+onScroll();
+</script>
+</body>
+</html>

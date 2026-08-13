@@ -12,6 +12,7 @@ subjects/analysis.html         → live (20-year PYQ trend analysis)
 subjects/c-programming.html    → live
 subjects/data-structures.html  → coming soon placeholder
 subjects/algorithms.html       → coming soon placeholder
+subjects/computer-organization.html → live
 ```
 
 The old combined "C, Data Structures & Algorithms" subject has been split into three

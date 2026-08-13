@@ -9,10 +9,17 @@
     { id: 'c-programming',  label: 'C Programming',   href: base + 'subjects/c-programming.html',  status: 'live' },
     { id: 'data-structures', label: 'Data Structures', href: base + 'subjects/data-structures.html', status: 'live' },
     { id: 'algorithms',     label: 'Algorithms',      href: base + 'subjects/algorithms.html',     status: 'live' },
+    { id: 'operating-systems', label: 'Operating Systems', href: base + 'subjects/operating-systems.html', status: 'live' },
+    { id: 'theory-of-computation', label: 'Theory of Computation', href: base + 'subjects/theory-of-computation.html', status: 'live' },
+    { id: 'discrete-mathematics', label: 'Discrete Mathematics', href: base + 'subjects/discrete-mathematics.html', status: 'live' },
+    { id: 'compiler-design', label: 'Compiler Design', href: base + 'subjects/compiler-design.html', status: 'live' },
+    { id: 'dbms', label: 'DBMS', href: base + 'subjects/dbms.html', status: 'live' },
+    { id: 'computer-organization', label: 'Computer Organization', href: base + 'subjects/computer-organization.html', status: 'live' },
     { id: 'linear-algebra', label: 'Linear Algebra',  href: base + 'subjects/linear-algebra.html', status: 'live' },
     { id: 'calculus',       label: 'Calculus',        href: base + 'subjects/calculus.html',       status: 'live' },
     { id: 'probability-statistics', label: 'Probability & Stats', href: base + 'subjects/probability-statistics.html', status: 'live' },
     { id: 'aptitude',       label: 'Aptitude',        href: base + 'subjects/aptitude.html',       status: 'live' },
+    { id: 'computer-networks', label: 'Computer Networks', href: base + 'subjects/computer-networks.html', status: 'live' },
     { id: 'analysis',       label: 'Trend Analysis',  href: base + 'subjects/analysis.html',       status: 'live' }
   ];
 
