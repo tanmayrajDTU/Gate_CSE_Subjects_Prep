@@ -271,11 +271,12 @@ section.topic{scroll-margin-top:56px;}
       <p>Matrices themselves rarely carry a full question — they're the language the rest of the syllabus (determinants, eigenvalues, systems) is written in. GATE tests whether you instantly recognize <strong>special matrix types</strong> and their guaranteed properties, since that recognition shortcuts otherwise long computations.</p>
 
       <h3 class="sub">Special matrices — properties GATE relies on</h3>
+      <p>The eigenvalue guarantees below (real, purely imaginary, orthonormal rows/columns) specifically assume a <strong>real matrix</strong> — i.e. all entries are real numbers, which is the standard GATE setting unless a question explicitly introduces complex entries. Stated for complex matrices, the corresponding guarantees actually belong to the broader classes Hermitian, skew-Hermitian, and unitary matrices instead.</p>
       <table>
-        <tr><th>Type</th><th>Definition</th><th>Key guaranteed property</th></tr>
+        <tr><th>Type</th><th>Definition</th><th>Key guaranteed property (for a real matrix)</th></tr>
         <tr><td>Symmetric</td><td>A = Aᵀ</td><td>Eigenvalues always real</td></tr>
         <tr><td>Skew-symmetric</td><td>A = −Aᵀ</td><td>Diagonal = 0; eigenvalues purely imaginary or 0</td></tr>
-        <tr><td>Orthogonal</td><td>A·Aᵀ = I</td><td>det(A) = ±1; rows/cols are unit &amp; mutually perpendicular</td></tr>
+        <tr><td>Orthogonal</td><td>A·Aᵀ = I</td><td>det(A) = ±1; rows/cols form an orthonormal set (unit length, mutually perpendicular)</td></tr>
         <tr><td>Idempotent</td><td>A² = A</td><td>Eigenvalues are only 0 or 1</td></tr>
         <tr><td>Nilpotent</td><td>Aᵏ = 0 for some k</td><td>All eigenvalues are 0</td></tr>
         <tr><td>Involutory</td><td>A² = I</td><td>Eigenvalues are only +1 or −1</td></tr>
@@ -285,7 +286,7 @@ section.topic{scroll-margin-top:56px;}
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>"Symmetric ⇒ real eigenvalues" is a one-way guarantee. A matrix can have all-real eigenvalues without being symmetric. Never use the converse.</p>
+        <p>"Symmetric ⇒ real eigenvalues" is a one-way guarantee, and it's specifically a statement about <strong>real symmetric</strong> matrices. A matrix can have all-real eigenvalues without being symmetric at all — never use the converse. And if the matrix has complex entries, being symmetric (A=Aᵀ, without conjugation) no longer guarantees real eigenvalues; that stronger guarantee belongs to Hermitian matrices (A = A͞ᵀ) instead.</p>
       </div>
 
       <h3 class="sub">Rank of a matrix</h3>
@@ -513,11 +514,16 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
         <tr><td>Sum of eigenvalues</td><td>= trace(A) (sum of diagonal entries)</td></tr>
         <tr><td>Product of eigenvalues</td><td>= det(A)</td></tr>
         <tr><td>Eigenvalues of Aᵀ</td><td>Same as eigenvalues of A</td></tr>
-        <tr><td>Eigenvalues of A⁻¹</td><td>1/λᵢ for each eigenvalue λᵢ of A</td></tr>
+        <tr><td>Eigenvalues of A⁻¹ (A invertible)</td><td>1/λᵢ for each eigenvalue λᵢ of A</td></tr>
         <tr><td>Eigenvalues of Aᵏ</td><td>λᵢᵏ for each eigenvalue λᵢ of A</td></tr>
         <tr><td>Eigenvalues of A + kI</td><td>λᵢ + k for each eigenvalue λᵢ of A</td></tr>
         <tr><td>Eigenvalues of triangular/diagonal A</td><td>Read directly off the diagonal — no computation needed</td></tr>
       </table>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — "eigenvalues of A⁻¹ = 1/λᵢ" needs A invertible</span>
+        <p>This shortcut silently assumes A is nonsingular. If A has 0 as an eigenvalue, then det(A) = product of eigenvalues = 0, so A is singular and A⁻¹ doesn't exist at all — there's nothing to take reciprocals of. The correct statement: <strong>if A is invertible (equivalently, all its eigenvalues are nonzero), then A⁻¹ exists and its eigenvalues are exactly 1/λᵢ.</strong> Always confirm no eigenvalue is 0 before applying this shortcut.</p>
+      </div>
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
@@ -545,7 +551,7 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> A matrix A has eigenvalues 1, 2, 3. Find det(A) and the eigenvalues of A⁻¹.</summary>
           <div class="ans">
-            <p>det(A) = product of eigenvalues = 1×2×3 = 6. Eigenvalues of A⁻¹ = reciprocals = 1, 1/2, 1/3.</p>
+            <p>det(A) = product of eigenvalues = 1×2×3 = 6 ≠ 0, so A is invertible and the reciprocal-eigenvalue shortcut applies. Eigenvalues of A⁻¹ = reciprocals = 1, 1/2, 1/3.</p>
             <p class="final">Answer: det(A) = 6; eigenvalues of A⁻¹ are 1, 1/2, 1/3</p>
           </div>
         </details>
@@ -586,7 +592,8 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
       <div class="eq">Aᵏ = P·Dᵏ·P⁻¹     where Dᵏ just raises each diagonal entry to the power k</div>
       <p>This is the standard route for "find A¹⁰⁰" or "find a closed form for a linear recurrence" style questions.</p>
 
-      <h3 class="sub">Cayley-Hamilton theorem</h3>
+      <h3 class="sub">Cayley-Hamilton theorem <span style="font-family:var(--mono, monospace); font-size:10.5px; font-weight:700; letter-spacing:.06em; padding:2px 9px; border-radius:20px; background:rgba(255,255,255,0.05); color:var(--text-faint); border:1px solid var(--line-soft); text-transform:uppercase;">🟡 supporting / historical</span></h3>
+      <p>Not explicitly named in the revised GATE CSE 2027 Linear Algebra syllabus (matrices, determinants, systems of linear equations, eigenvalues/eigenvectors, LU decomposition) — kept here because it's a genuinely useful technique (e.g. for finding A⁻¹ or high powers of A) and has appeared in past papers, but treat it as supporting material rather than an explicit syllabus item.</p>
       <p>Every square matrix satisfies its own characteristic equation. If the characteristic polynomial is p(λ) = λⁿ + c₁λⁿ⁻¹ + ... + cₙ, then:</p>
       <div class="eq">p(A) = Aⁿ + c₁Aⁿ⁻¹ + ... + cₙI = 0   (the zero matrix)</div>
       <div class="card formula">
@@ -735,12 +742,12 @@ Step 2: Solve Ux = y for x   (back substitution — bottom to top)</div>
           <p>det(A − λI) = 0. Sum of roots = trace(A). Product of roots = det(A).</p>
         </div>
         <div class="card formula">
-          <span class="label">Special matrix eigenvalue rules</span>
-          <p>Symmetric → real λ. Orthogonal → det=±1. Idempotent → λ∈{0,1}. Nilpotent → λ=0. Involutory → λ∈{−1,1}.</p>
+          <span class="label">Special matrix eigenvalue rules (real matrices)</span>
+          <p>Real symmetric → real λ. Real orthogonal → det=±1. Idempotent → λ∈{0,1}. Nilpotent → λ=0. Involutory → λ∈{−1,1}.</p>
         </div>
         <div class="card formula">
           <span class="label">Eigenvalue transformations</span>
-          <p>A⁻¹ → 1/λ. Aᵏ → λᵏ. A+kI → λ+k. Aᵀ → same λ as A.</p>
+          <p>A⁻¹ → 1/λ (only if A invertible, i.e. no λ=0). Aᵏ → λᵏ. A+kI → λ+k. Aᵀ → same λ as A.</p>
         </div>
         <div class="card formula">
           <span class="label">Diagonalizability</span>

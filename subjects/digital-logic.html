@@ -496,14 +496,19 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
       <div class="topic-kicker">GROUPING RULES · PRIME IMPLICANTS · DON'T-CARES</div>
 
       <h3 class="sub">Karnaugh map — grouping rules</h3>
-      <ul>
-        <li>Group sizes must be powers of 2: 1, 2, 4, 8, 16 cells.</li>
-        <li>The map <strong>wraps around</strong> — leftmost and rightmost columns are adjacent, top and bottom rows are adjacent (it's really a torus).</li>
-        <li>Cover every 1 with the <strong>largest possible group</strong>; larger groups eliminate more literals.</li>
-        <li>A group of 2ᵏ cells eliminates <code>k</code> variables from the resulting term — the variables that <em>change</em> across the group drop out; variables that stay constant remain.</li>
-        <li>Overlap groups freely; every 1 must be covered by at least one group, but a cell can belong to several groups.</li>
-        <li><strong>Don't-cares (X)</strong> may be included in a group if they help make it bigger, but never form a group made purely of don't-cares.</li>
-      </ul>
+      <div class="card pyq">
+        <span class="label">The 7-point checklist — wrap-around, overlap, and don't-cares included</span>
+        <ul>
+          <li>Groups must contain exactly <strong>1, 2, 4, 8, 16, ...</strong> cells (a power of 2) — never 3, 5, 6, etc.</li>
+          <li><strong>Rectangular groups only</strong> — a valid group is always a rectangle (a single cell, a 1×2/2×1 pair, a 2×2 or 1×4 block, and so on); diagonal or L-shaped "groups" are never valid.</li>
+          <li>The map <strong>wraps around</strong> on both axes — leftmost and rightmost columns are adjacent, and top and bottom rows are adjacent (the map is topologically a torus).</li>
+          <li><strong>Overlapping groups are allowed</strong> — the same cell can belong to more than one group if that helps cover things more efficiently.</li>
+          <li><strong>Don't-care cells (X) may be used</strong> to help form a bigger group, but a group can never consist purely of don't-cares.</li>
+          <li><strong>Make every group as large as possible</strong> — a bigger group (more cells) always eliminates more literals and gives a simpler term.</li>
+          <li><strong>Every required 1 must be covered</strong> by at least one group in the final solution — an uncovered 1 means the minimization is incomplete (wrong).</li>
+        </ul>
+      </div>
+      <p>A group of 2ᵏ cells eliminates <code>k</code> variables from the resulting term — the variables that <em>change</em> across the group drop out; variables that stay constant remain.</p>
 
       <h3 class="sub">Worked example — 4-variable map</h3>
       <p>F(A,B,C,D) = Σm(0,1,2,3,4,5,6,7). Rows are AB in Gray order, columns are CD in Gray order:</p>
@@ -561,8 +566,8 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> F(A,B,C,D) = Σm(1,3,7,11,15). How many essential prime implicants does it have?</summary>
           <div class="ans">
-            <p>All listed minterms have D=1. Plotting on the K-map: 1(0001),3(0011),7(0111),11(1011),15(1111) — all lie in the D=1 half. Grouping: {1,3} combine to A'B'D, {3,7,11,15} form a group of 4 giving CD (C and D constant =1 across all four), and note {1,3} isn't essential once CD covers 3. Checking minterm 1: only covered by A'B'D — that's essential. CD covers 3,7,11,15 and is essential since it's the largest group containing several minterms uniquely.</p>
-            <p class="final">Answer: 2 essential prime implicants — CD and A'B'D</p>
+            <p>All listed minterms have D=1. Plotting on the K-map: 1(0001), 3(0011), 7(0111), 11(1011), 15(1111) — all lie in the D=1 half. Grouping: {1,3} combine to A'B'D (a group of 2, since no adjacent minterm 5 or 9 is present to grow it further), and {3,7,11,15} form a group of 4 giving CD (C and D constant = 1 across all four). A prime implicant is <strong>essential</strong> specifically when it is the <em>only</em> prime implicant covering some minterm — not because of its group size. Checking each minterm: m1 is covered only by A'B'D (no other PI reaches it) — so A'B'D is essential. m11 (and m15) are covered only by CD (no other PI reaches them) — so CD is essential. m3 happens to be covered by both A'B'D and CD, so m3 alone wouldn't make either one essential, but each is already essential on the strength of m1 and m11 respectively.</p>
+            <p class="final">Answer: 2 essential prime implicants — A'B'D (essential via m1) and CD (essential via m11/m15)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> Minimize F(A,B,C) = Σm(1,3,5) + d(0,2,4) using don't-cares.</summary>
@@ -660,8 +665,16 @@ Cᵢ₊₁ = Gᵢ + Pᵢ·Cᵢ</div>
       <p>A discarded/ignored final carry-out in this scheme signals the result's sign convention in 2's complement arithmetic — see Section 09 for overflow detection rules.</p>
 
       <div class="card pyq">
-        <span class="label">GATE trap</span>
-        <p>Propagation delay questions: for an n-bit ripple carry adder built from full adders each with delay <code>t</code> for sum and <code>t</code> for carry, the <strong>worst-case total delay</strong> is usually asked as the carry chain delay (n·t) plus one extra sum-gate delay for the final full adder — read the question's gate-delay assumptions carefully, they vary by problem.</p>
+        <span class="label">GATE trap — ripple-carry delay has no single universal formula</span>
+        <p>There isn't one formula that always applies — <strong>always use the delay model given in the question</strong>. Different problems define the per-stage delay differently: carry-propagation delay (t<sub>carry</sub>, the time for Cin→Cout through one full adder) is often NOT the same as sum delay (t<sub>sum</sub>, the time for inputs→S through one full adder), and some problems only give a single generic "gate delay" meant to stand in for both. Read exactly which delay(s) are defined before plugging into any formula.</p>
+        <p>If the question gives you both delays separately (the common, safer case), for an n-bit ripple carry adder:</p>
+        <div class="eq">Final carry-out (Cₙ)  ≈  n × t_carry
+   (Cₙ must ripple through all n stages' carry chains)
+
+Final sum (Sₙ₋₁, the most-significant sum bit)  ≈  (n−1) × t_carry  +  t_sum
+   (the carry ripples through the first n−1 stages, then the last stage
+    additionally needs its own sum-gate delay)</div>
+        <p>If t<sub>carry</sub> = t<sub>sum</sub> = t (a single flat delay per full adder, as some simplified problems assume), this collapses to Cₙ ≈ n·t and the final sum ≈ (n−1)·t + t = n·t — which is where the older "n·t + one extra sum-gate delay" shorthand came from. Treat that shorthand as a special case of the general model above, not the default — check the problem's stated delays before assuming carry and sum delays are equal.</p>
       </div>
 
       <div class="practice">
@@ -876,15 +889,19 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
 
       <div class="card formula">
         <span class="label">Setup &amp; hold time</span>
-        <p><strong>Setup time (tsu)</strong>: minimum time input must be stable <em>before</em> the clock edge. <strong>Hold time (th)</strong>: minimum time input must remain stable <em>after</em> the clock edge. Violating either causes metastability. Maximum clock frequency of a flip-flop chain is bounded by <code>1 / (tclk-to-q + tcombinational + tsu)</code>.</p>
+        <p><strong>Setup time (tsu)</strong>: minimum time input must be stable <em>before</em> the clock edge. <strong>Hold time (th)</strong>: minimum time input must remain stable <em>after</em> the clock edge. Violating setup/hold requirements <strong>can</strong> cause metastability and makes the sampled value unreliable — it doesn't guarantee metastability on every single occurrence, since the flip-flop's internal amplifier may still resolve to a valid 0 or 1 quickly enough most of the time, just with no guarantee of which value or how long resolution takes. Maximum clock frequency of a flip-flop chain is bounded by <code>1 / (tclk-to-q + tcombinational + tsu)</code>.</p>
+        <div class="card note" style="margin-top:10px;">
+          <span class="label">Why this is fundamentally probabilistic, not a binary trigger</span>
+          <p>Setup/hold violations are <strong>analog timing phenomena</strong> at heart — the flip-flop's internal latch is a bistable analog circuit, and a violation means the input changed while that circuit was still in the middle of resolving toward 0 or 1. Whether it resolves in time, resolves late, or hangs in an in-between voltage for an unbounded (theoretically unbounded) duration is a matter of physics and probability, not digital logic. The digital abstraction has no way to represent "resolving," so it simply treats the result as <strong>indeterminate/unreliable</strong> rather than claiming metastability is certain to occur.</p>
+        </div>
       </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> In an SR latch, inputs S=1, R=1 are applied and then both are dropped to S=0, R=0 simultaneously. What happens?</summary>
           <div class="ans">
-            <p>S=R=1 is the forbidden state — it forces both Q and Q' toward 0, violating their complementary relationship. When both inputs then drop to 0 at exactly the same instant, which output settles to 1 depends on tiny gate-delay mismatches — the result is unpredictable ("race condition").</p>
-            <p class="final">Answer: Next state is indeterminate/undefined (a race condition)</p>
+            <p>Two distinct things are happening here, and it's worth keeping them separate. First, S=R=1 is the <strong>forbidden/invalid input combination</strong> — it forces both Q and Q' toward 0, violating their required complementary relationship (Q and Q' are supposed to always be opposite). Second, when both inputs then drop to 0 at exactly the same instant from that invalid state, which output settles to 1 depends on tiny, unequal gate-propagation-delay mismatches between the two cross-coupled gates — this specific unpredictable settling is <strong>metastability / an indeterminate final state due to unequal propagation delays</strong>, not the same phenomenon as "race-around" (which specifically refers to a level-triggered JK latch with J=K=1 toggling repeatedly for as long as its enable/clock pulse stays high — see the JK section). Don't use "race-around" for this SR case; reserve that term for the JK toggling issue.</p>
+            <p class="final">Answer: Next state is indeterminate — a metastable outcome caused by unequal propagation delays, distinct from JK's "race-around"</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Derive the J and K inputs needed to make a JK flip-flop behave as a D flip-flop.</summary>
@@ -922,7 +939,7 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
       <p>Each flip-flop's clock input is driven by the <strong>previous</strong> flip-flop's output, not the master clock. Simple to build (usually T or JK flip-flops wired to toggle), but state changes ripple through stage by stage — delay grows with the number of bits, and the outputs are momentarily inconsistent (glitchy) during a transition.</p>
 
       <h3 class="sub">Synchronous counters</h3>
-      <p>Every flip-flop shares the same clock; next-state logic is computed combinationally from the present state. No ripple delay, no glitches — but more gate hardware. GATE's design questions almost always mean synchronous design.</p>
+      <p>Every flip-flop shares the same clock; next-state logic is computed combinationally from the present state. This avoids the cumulative ripple-clock delay that asynchronous counters have — but it does not mean glitch-free outputs. When multiple state bits change simultaneously, any combinational logic decoding those bits (e.g. an output decoder) can still produce transient glitches from unequal propagation delays across paths (a hazard), just like the Moore-output case discussed later on this page. Synchronous design needs more gate hardware than ripple counters; GATE's design questions almost always mean synchronous design. Outputs are glitch-free only if they're registered (latched synchronously) or the decode logic is otherwise hazard-controlled.</p>
       <div class="card formula">
         <span class="label">Synchronous counter design procedure</span>
         <ol>
@@ -991,10 +1008,11 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
             <p class="final">Answer: 5 valid states, 0 decoding gates needed</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> An 8-bit PISO (parallel-in serial-out) shift register is parallel-loaded in 1 clock cycle. How many additional clock cycles are needed to shift all 8 bits out serially?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> An 8-bit PISO (parallel-in serial-out) shift register is parallel-loaded in 1 clock cycle, and the first loaded bit is immediately visible at the serial output before any shift occurs. How many additional clock cycles are needed to shift all 8 bits out serially?</summary>
           <div class="ans">
-            <p>After the load cycle, the first bit is already sitting at the serial output pin (no shift needed to read it), and each subsequent clock pulse shifts the next bit into position. So getting the remaining 7 bits out takes 7 more pulses — 7 additional cycles (8 total including load) is the more common convention. Some sources instead count one pulse per bit including the first, giving 8 additional cycles (9 total); watch for which convention a given question is using.</p>
-            <p class="final">Answer: 7 additional clock cycles (8 total including the load) is the standard convention — some sources say 8 additional (9 total); check the convention in use</p>
+            <p>Since the first bit is already sitting at the serial output pin right after the load cycle (no shift needed to read it), each subsequent clock pulse shifts the next bit into position. Getting the remaining 7 bits out therefore takes exactly 7 more pulses.</p>
+            <p>This is why the question must state the output-sampling assumption explicitly: if instead the convention is that the output is sampled only on a clock edge (i.e. even the first bit requires a shift pulse to appear at the output), the answer becomes 8 additional cycles. Always pin down which convention applies before answering — don't assume one silently.</p>
+            <p class="final">Answer: 7 additional clock cycles (8 total including the load), given the stated assumption that the first bit is visible immediately after loading</p>
           </div>
         </details>
       </div>
@@ -1007,7 +1025,7 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
       <div class="two-col">
         <div class="card">
           <h4 class="subsub">Moore machine</h4>
-          <p>Output depends <strong>only on the present state</strong>. Output is written inside the state circle in the state diagram. Changes only at clock edges — one clock cycle "safer" and glitch-free, but usually needs more states for the same job.</p>
+          <p>Output depends <strong>only on the present state</strong>. Output is written inside the state circle in the state diagram. Since output depends only on state (which is held in flip-flops and changes only at clock edges), it does not respond directly to asynchronous mid-cycle input changes — this makes Moore outputs <strong>generally less sensitive to input glitches</strong> than Mealy outputs, but usually needs more states for the same job.</p>
         </div>
         <div class="card">
           <h4 class="subsub">Mealy machine</h4>
@@ -1015,8 +1033,9 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
         </div>
       </div>
       <div class="card pyq">
-        <span class="label">GATE trap</span>
+        <span class="label">GATE trap — "Moore is glitch-free" is an overstatement</span>
         <p>Converting Mealy → Moore may require <strong>adding states</strong> (never removing), because a Moore state's output must be single-valued while the same Mealy state could produce different outputs depending on the incoming edge. Converting Moore → Mealy never needs extra states.</p>
+        <p>Don't repeat "Moore output is glitch-free" as an unqualified fact. A Moore output is decoded <em>combinationally</em> from the state bits — and combinational logic can glitch on its own, from propagation-delay skew when multiple state bits change simultaneously (a hazard), independent of any input glitch. What's actually true is narrower: Moore output doesn't react directly to <em>asynchronous input</em> changes, because it only depends on state, which updates synchronously. If the output itself is registered (latched into a flip-flop, synchronously sampled) that's a separate, stronger guarantee — "depends only on state" and "is glitch-free" are not the same claim.</p>
       </div>
 
       <h3 class="sub">State minimization</h3>
@@ -1063,10 +1082,10 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
             <p class="final">Answer: Binary = 3 flip-flops, One-hot = 6 flip-flops</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> Why is a Moore machine's output described as "glitch-free" compared to a Mealy machine's?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why is a Moore machine's output described as less sensitive to glitches than a Mealy machine's — and is it actually glitch-free?</summary>
           <div class="ans">
-            <p>A Moore output depends only on the current state, which is stored in flip-flops and changes only at clock edges — so the output is stable for the entire clock cycle. A Mealy output depends directly on the (possibly asynchronous or mid-cycle changing) input, so it can momentarily glitch if the input changes before the next clock edge.</p>
-            <p class="final">Answer: Because Moore output updates only on clock edges, never combinationally on raw input changes</p>
+            <p>A Moore output depends only on the current state, which is stored in flip-flops and changes only at clock edges — so it never responds directly to an asynchronous or mid-cycle input change the way a Mealy output can. A Mealy output depends directly on the current input, so it can momentarily glitch if the input changes before the next clock edge. That said, "glitch-free" overstates it: a Moore output is still typically decoded by combinational logic from the state bits, and that decoding logic can itself glitch (a static/dynamic hazard) if multiple state bits change at once with different propagation delays — the state-only dependency removes one source of glitches (raw input), not all of them.</p>
+            <p class="final">Answer: Moore output can't react to asynchronous input changes (state-only dependency), making it less glitch-prone than Mealy — but it's not automatically glitch-free, since combinational decoding of the state bits can still hazard</p>
           </div>
         </details>
       </div>
@@ -1187,8 +1206,8 @@ Equivalently: overflow happens only when adding two numbers of the SAME sign
           <p>Minterm list and maxterm list of the same function are complementary index sets.</p>
         </div>
         <div class="card formula">
-          <span class="label">K-map group of 2ᵏ</span>
-          <p>Eliminates k variables — keep only the literals constant across the whole group.</p>
+          <span class="label">K-map grouping</span>
+          <p>Groups: sizes 2ᵏ, rectangular only, wrap-around adjacency, overlap allowed, don't-cares allowed (never a pure-don't-care group), as large as possible, every 1 covered. Full 7-point checklist below.</p>
         </div>
         <div class="card formula">
           <span class="label">Essential PI</span>
@@ -1207,8 +1226,8 @@ Equivalently: overflow happens only when adding two numbers of the SAME sign
           <p>2ⁿ⁻¹:1 MUX implements any n-var function; leftover variable (or its complement, or 0/1) goes on data lines.</p>
         </div>
         <div class="card formula">
-          <span class="label">JK flip-flop</span>
-          <p>Q(next) = JQ' + K'Q. J=K=1 → toggle. Fixes SR's forbidden state.</p>
+          <span class="label">Flip-flops</span>
+          <p>D: Q(next)=D (no hold/toggle). T: T=1→toggle, T=0→hold. JK: J=K=1→toggle, fixes SR's forbidden state. Full unified characteristic + excitation table below.</p>
         </div>
         <div class="card formula">
           <span class="label">Mod-N counter</span>
@@ -1228,12 +1247,37 @@ Equivalently: overflow happens only when adding two numbers of the SAME sign
         </div>
         <div class="card formula">
           <span class="label">Mealy vs Moore</span>
-          <p>Mealy: output on transition (input-dependent, fewer states). Moore: output in state (glitch-free, may need more states).</p>
+          <p>Mealy: output on transition (input-dependent, fewer states, can glitch on input change). Moore: output in state (less glitch-sensitive to input, not automatically glitch-free — decode logic can still hazard; may need more states).</p>
         </div>
         <div class="card formula">
           <span class="label">PLA vs PAL vs ROM</span>
           <p>ROM: AND fixed, OR programmable. PLA: both programmable. PAL: AND programmable, OR fixed.</p>
         </div>
+      </div>
+
+      <div class="card pyq" style="margin-top:26px;">
+        <span class="label">Flip-flop master table — characteristic + excitation, unified</span>
+        <table>
+          <tr><th>FF</th><th>Characteristic equation</th><th>Excitation (Q→Q′: inputs needed)</th></tr>
+          <tr><td>SR</td><td>Q(next) = S + R′Q<br>(S·R=0, else invalid)</td><td>0→0: S=0,R=X<br>0→1: S=1,R=0<br>1→0: S=0,R=1<br>1→1: S=X,R=0</td></tr>
+          <tr><td>JK</td><td>Q(next) = JQ′ + K′Q</td><td>0→0: J=0,K=X<br>0→1: J=1,K=X<br>1→0: J=X,K=1<br>1→1: J=X,K=0</td></tr>
+          <tr><td>D</td><td>Q(next) = D</td><td>0→0: D=0<br>0→1: D=1<br>1→0: D=0<br>1→1: D=1</td></tr>
+          <tr><td>T</td><td>Q(next) = T⊕Q</td><td>0→0: T=0<br>0→1: T=1<br>1→0: T=1<br>1→1: T=0</td></tr>
+        </table>
+        <p>The three facts that answer most flip-flop questions on sight: <strong>JK</strong> — J=K=1 → toggle. <strong>T</strong> — T=1 → toggle (T=0 → hold). <strong>D</strong> — Q(next)=D, always; there's no hold/toggle behavior at all, the next state simply equals whatever D is right now.</p>
+      </div>
+
+      <div class="card pyq" style="margin-top:26px;">
+        <span class="label">K-map grouping — the 7-point checklist (rapid-fire)</span>
+        <ul>
+          <li>Groups must contain <strong>1, 2, 4, 8, 16, ...</strong> cells (a power of 2)</li>
+          <li><strong>Rectangular groups only</strong> — never diagonal or L-shaped</li>
+          <li><strong>Wrap-around adjacency</strong> — edges and corners connect (torus)</li>
+          <li><strong>Overlapping groups allowed</strong> — a cell can belong to several groups</li>
+          <li><strong>Don't-care cells may be used</strong> — but never form a group of only don't-cares</li>
+          <li><strong>Make groups as large as possible</strong> — bigger group = fewer literals</li>
+          <li><strong>Every required 1 must be covered</strong> — nothing left unmatched</li>
+        </ul>
       </div>
 
       <div class="card note" style="margin-top:26px;">

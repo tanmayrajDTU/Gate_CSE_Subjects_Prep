@@ -283,6 +283,14 @@ Multiplication Rule: P(A ∩ B) = P(A) · P(B|A) = P(B) · P(A|B)</div>
         <p>Do NOT confuse "independent events" with "mutually exclusive events". Mutually exclusive means they cannot happen together (P(A ∩ B) = 0). Independent means the occurrence of one doesn't affect the probability of the other (P(A ∩ B) = P(A)P(B)). In fact, if A and B are mutually exclusive (with non-zero probabilities), they are mathematically guaranteed to be dependent.</p>
       </div>
 
+      <h3 class="sub">Conditional independence</h3>
+      <p>A and B are <strong>conditionally independent given C</strong> if, once you already know C occurred, learning A gives no further information about B (and vice versa):</p>
+      <div class="eq">P(A ∩ B | C) = P(A|C) · P(B|C)</div>
+      <div class="card note">
+        <span class="label">Conditional independence ≠ unconditional independence</span>
+        <p>These are genuinely different properties, and neither implies the other. A and B can be conditionally independent given C, yet be <strong>dependent</strong> when C is unknown/unconditioned on — and conversely, A and B can be unconditionally independent yet become dependent once you condition on some C. A classic example: A = "sprinkler was on", B = "grass is wet from rain", C = "the ground is wet". A and B may look correlated unconditionally (both tend to coincide with "wet ground" scenarios), but once C is fixed, learning about the sprinkler tells you nothing extra about whether it rained, or vice versa. This is exactly the reasoning pattern behind Bayesian-network-style questions: an edge structure encodes exactly which variables are conditionally independent given which others, and GATE questions often hinge on spotting this distinction rather than computing a number.</p>
+      </div>
+
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Let P(A) = 0.4, P(B) = 0.5, and P(A ∪ B) = 0.7. Are A and B independent?</summary>
@@ -459,7 +467,7 @@ Var(X + Y) = Var(X) + Var(Y)   (if X,Y are independent)</div>
 
     <section class="topic" id="discrete-distributions">
       <div class="topic-head"><span class="idx">04</span><h2>Standard Discrete Distributions</h2></div>
-      <div class="topic-kicker">BINOMIAL · POISSON · POISSON APPROXIMATION</div>
+      <div class="topic-kicker">BINOMIAL · POISSON · POISSON APPROXIMATION · GEOMETRIC</div>
 
       <h3 class="sub">Binomial Distribution — B(n,p)</h3>
       <p>Models the number of successes in n independent Bernoulli trials, each with probability of success p.</p>
@@ -475,18 +483,35 @@ Variance: σ² = λ</div>
 
       <div class="card formula">
         <span class="label">Poisson Approximation to Binomial</span>
-        <p>When n is very large and p is very small, calculating Binomial PMF is computationally difficult. The Poisson distribution approximates the Binomial with λ = np.</p>
+        <p>As a quick rule of thumb: when n is very large and p is very small, calculating the Binomial PMF directly is computationally awkward, and the Poisson distribution with λ = np approximates it well.</p>
+        <p>The precise limiting statement behind this rule: for Binomial(n, p) as n → ∞ and p → 0 <strong>while np → λ stays fixed and finite</strong>, the Binomial PMF converges to the Poisson(λ) PMF. The "np held fixed" condition is the part GATE expects you to know — n large and p small on their own aren't enough if their product isn't a moderate, stable value.</p>
+      </div>
+
+      <h3 class="sub">Geometric Distribution — Geom(p) <span style="font-family:var(--mono, monospace); font-size:10.5px; font-weight:700; letter-spacing:.06em; padding:2px 9px; border-radius:20px; background:rgba(255,255,255,0.05); color:var(--text-faint); border:1px solid var(--line-soft); text-transform:uppercase;">🟡 supporting / historical</span></h3>
+      <p>Not explicitly named in the revised GATE CSE 2027 probability syllabus (which lists Uniform, Normal, Exponential, Poisson, Binomial, random variables, mean/median/mode/SD, conditional probability, and Bayes) — kept here because it's a well-established, frequently useful distribution and has appeared in past GATE papers, but treat it as supporting material rather than a core syllabus item.</p>
+      <p>Models the number of independent Bernoulli(p) trials needed to get the <strong>first success</strong>. This is the "trial number of first success" convention — the one GATE uses by default unless a question says otherwise.</p>
+      <div class="eq">PMF: P(X = k) = (1−p)^(k−1) p ,  k = 1, 2, 3, ...
+Mean: μ = 1/p
+Variance: σ² = (1−p)/p²</div>
+      <div class="card note">
+        <span class="label">Watch for the other convention</span>
+        <p>Some textbooks instead define the geometric random variable as the <strong>number of failures before</strong> the first success, with support k = 0, 1, 2, ... In that convention: P(X=k) = (1−p)^k p, mean = (1−p)/p, and variance is unchanged at (1−p)/p². Same distribution, shifted by 1 — always check which convention a question is using before quoting mean/PMF, since mixing them up is a common, entirely avoidable error.</p>
+      </div>
+      <div class="card formula">
+        <span class="label">Memoryless property</span>
+        <p>The geometric distribution is the only discrete distribution with the memoryless property: P(X &gt; m+n | X &gt; m) = P(X &gt; n) for all m, n ≥ 0. Having already failed m trials tells you nothing about how many more trials remain — the process "forgets" how long it's been waiting.</p>
       </div>
 
       <table>
         <tr><th>Distribution</th><th>Mean</th><th>Variance</th><th>When to use</th></tr>
         <tr><td>Binomial</td><td>np</td><td>np(1−p)</td><td>Fixed n trials, each success/failure</td></tr>
         <tr><td>Poisson</td><td>λ</td><td>λ</td><td>Counting events in fixed interval, rare events</td></tr>
+        <tr><td>Geometric</td><td>1/p</td><td>(1−p)/p²</td><td>Trials until the first success</td></tr>
       </table>
 
       <div class="card pyq">
-        <span class="label">GATE trap</span>
-        <p>A dead giveaway for the Poisson distribution in a theoretical question is its property: Mean = Variance. If a question states "a discrete random variable has its mean equal to its variance," it's almost always referring to a Poisson distribution!</p>
+        <span class="label">GATE trap — Mean = Variance does NOT imply Poisson</span>
+        <p>For a <em>known</em> Poisson(λ) distribution, E[X] = Var(X) = λ — that direction is a true, useful fact. But the converse is <strong>false</strong>: "mean equals variance" does not identify a distribution as Poisson, because it isn't a characterizing property. Other discrete random variables can satisfy E[X] = Var(X) too (constructed examples exist outside the standard named families), so mean=variance is at most a piece of supporting evidence for Poisson, never proof. Don't reason backward from "mean = variance" to "must be Poisson" — only reason forward, from "given Poisson" to "mean = variance = λ."</p>
       </div>
 
       <div class="practice">
@@ -682,6 +707,10 @@ Mode(Y) = a · Mode(X) + b
           <p>Addition: P(A∪B) = P(A)+P(B)−P(A∩B). Multiplication: P(A∩B) = P(A)P(B|A). Independence: P(A∩B) = P(A)P(B).</p>
         </div>
         <div class="card formula">
+          <span class="label">Conditional Independence</span>
+          <p>P(A∩B|C) = P(A|C)P(B|C). Conditional independence given C does NOT imply unconditional independence, and vice versa — they're separate properties.</p>
+        </div>
+        <div class="card formula">
           <span class="label">Bayes' Theorem</span>
           <p>P(Aᵢ|B) = [ P(B|Aᵢ)P(Aᵢ) ] / ∑[P(B|Aⱼ)P(Aⱼ)]. Useful for reversing conditionals.</p>
         </div>
@@ -695,7 +724,11 @@ Mode(Y) = a · Mode(X) + b
         </div>
         <div class="card formula">
           <span class="label">Poisson(λ)</span>
-          <p>P(X=k) = e⁻λλᵏ/k!. Mean = λ. Var = λ. Used for rare events.</p>
+          <p>P(X=k) = e⁻λλᵏ/k!. Mean = λ. Var = λ. Used for rare events. Mean=Var is necessary for Poisson, NOT sufficient to conclude it.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Geometric(p)</span>
+          <p>P(X=k) = (1−p)ᵏ⁻¹p, k≥1 (trials-to-first-success form). Mean = 1/p. Var = (1−p)/p². The only discrete memoryless distribution.</p>
         </div>
         <div class="card formula">
           <span class="label">Uniform U(a,b)</span>
