@@ -311,7 +311,7 @@ section.topic{scroll-margin-top:56px;}
       </div>
 
       <h3 class="sub">Minimization — merging equivalent states</h3>
-      <p>Two states are equivalent (mergeable) if, for every possible input string, they either both lead to acceptance or both lead to rejection. The standard algorithm (table-filling / Myhill–Nerode) starts by marking accepting vs. non-accepting states as distinguishable, then iteratively marks any pair whose transitions lead to an already-distinguished pair, until no new pairs are marked.</p>
+      <p>Two states are equivalent (mergeable) if, for every possible input string, they either both lead to acceptance or both lead to rejection. These are related but distinct ideas: the <strong>Myhill–Nerode theorem</strong> is the theoretical characterization — it defines an equivalence relation on strings and proves that a regular language has a <em>unique</em> minimal DFA whose states correspond exactly to the equivalence classes of that relation. The <strong>table-filling algorithm</strong> is the concrete procedure used to actually compute state-equivalence on a given DFA: it starts by marking accepting vs. non-accepting states as distinguishable, then iteratively marks any pair whose transitions lead to an already-distinguished pair, until no new pairs are marked. In short — Myhill–Nerode tells you a minimal DFA exists and is unique; table-filling is how you find it.</p>
 
       <h3 class="sub">Regular expressions ↔ finite automata</h3>
       <p>Kleene's theorem: a language is regular <strong>if and only if</strong> some finite automaton accepts it <strong>if and only if</strong> some regular expression describes it. All three views are interchangeable, and GATE tests conversions in every direction.</p>
@@ -487,8 +487,18 @@ This string is NOT in L, contradicting the pumping lemma.
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Is the grammar S → aS | Sa | a ambiguous? Check the string "aaa".</summary>
           <div class="ans">
-            <p>Yes — "aaa" can be derived as S⇒aS⇒aaS⇒aaa (always expanding via aS) or as S⇒Sa⇒Saa⇒aaa (always via Sa), giving two structurally different parse trees for the same string, even though both derivations use the same multiset of rules just in different combinations.</p>
-            <p class="final">Answer: Yes, ambiguous — "aaa" has multiple distinct parse trees</p>
+            <p>Yes. Deriving "aaa" by always expanding via <code>S → aS</code> gives a right-branching tree; always expanding via <code>S → Sa</code> gives a left-branching tree. These are two genuinely different tree <em>shapes</em> for the same string — not just two orders of writing down the same tree:</p>
+            <div class="eq">Tree 1 (via S → aS, right-branching):     Tree 2 (via S → Sa, left-branching):
+
+        S                                        S
+       / \                                      / \
+      a   S                                    S   a
+         / \                                  / \
+        a   S                                S   a
+            |                                |
+            a                                a</div>
+            <p>In Tree 1, every S expands as (terminal a) followed by (S) — recursion nests to the right, so the tree leans right. In Tree 2, every S expands as (S) followed by (terminal a) — recursion nests to the left, so the tree leans left. Both trees have "aaa" as their yield (read the leaves left to right), but they are structurally distinct trees — which is exactly what "ambiguous" means: more than one parse tree for the same string, not merely more than one derivation order of one tree.</p>
+            <p class="final">Answer: Yes, ambiguous — "aaa" has (at least) these two distinct parse trees</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> A CNF grammar derives a string of length 6. How many total derivation steps does this take?</summary>
@@ -558,13 +568,24 @@ Pumping v and y (i=2) increases the count of at most 2 letters, breaking the a=b
       <h3 class="sub">Closure properties of context-free languages</h3>
       <table>
         <tr><th>Operation</th><th>Closed?</th></tr>
-        <tr><td>Union</td><td>Yes</td></tr>
-        <tr><td>Concatenation</td><td>Yes</td></tr>
-        <tr><td>Kleene star</td><td>Yes</td></tr>
-        <tr><td>Intersection with a regular language</td><td>Yes</td></tr>
-        <tr><td>Intersection of two CFLs</td><td>No, not guaranteed</td></tr>
-        <tr><td>Complementation</td><td>No, not guaranteed</td></tr>
+        <tr><td>Union</td><td>✅ Yes</td></tr>
+        <tr><td>Concatenation</td><td>✅ Yes</td></tr>
+        <tr><td>Kleene star</td><td>✅ Yes</td></tr>
+        <tr><td>Reversal</td><td>✅ Yes</td></tr>
+        <tr><td>Intersection (CFL ∩ CFL)</td><td>❌ No, not in general</td></tr>
+        <tr><td>Complement</td><td>❌ No, not in general</td></tr>
+        <tr><td>Difference (CFL − CFL)</td><td>❌ No, not in general</td></tr>
       </table>
+
+      <div class="card formula">
+        <span class="label">The one exception that matters most: CFL ∩ Regular = CFL</span>
+        <p>Even though intersection of two arbitrary CFLs can fail to be context-free, intersecting a CFL with a <strong>regular</strong> language always stays context-free. This asymmetry — closed under intersection-with-regular, but not under general intersection or complement — is exactly why the non-closure results above don't contradict this one: a regular language's DFA has no stack of its own to create the cross-checking power that breaks CFL closure. GATE uses this exception constantly, e.g. to build a PDA for "L is context-free, restricted to strings matching some regex" without needing to re-derive a grammar from scratch.</p>
+      </div>
+
+      <div class="card note">
+        <span class="label">Why union/concatenation/star/reversal survive but intersection/complement don't</span>
+        <p>Union, concatenation, and star can each be implemented by combining PDAs "in parallel" or "in sequence" without ever needing the two machines' stacks to interact — one PDA nondeterministically simulates whichever branch is relevant. Reversal just runs the grammar's derivations backward. Intersection (of two genuine CFLs) would require synchronizing <em>two independent stacks</em> at once, which a single-stack PDA fundamentally cannot do — that's the structural reason the closure breaks, not just an accident of the standard counterexamples.</p>
+      </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
@@ -640,8 +661,12 @@ Pumping v and y (i=2) increases the count of at most 2 letters, breaking the a=b
 Until: no unmarked 'a' remains
 Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matched)</div>
 
-      <h3 class="sub">TM variants — all equally powerful</h3>
-      <p>Multi-tape TMs, non-deterministic TMs, TMs with a two-way infinite tape, and TMs that can only move right — every one of these variants can be simulated by a standard single-tape deterministic TM (with at most a polynomial slowdown for the multi-tape/NTM cases). This equivalence is why "Turing-computable" is a single, robust notion rather than depending on which TM flavor you pick.</p>
+      <h3 class="sub">TM variants — equally powerful (with one important exception)</h3>
+      <p>Multi-tape TMs, non-deterministic TMs (NTMs), and TMs with a two-way infinite tape are all <strong>equally powerful</strong> — every one of these variants recognizes exactly the same class of languages as a standard single-tape deterministic TM. But "equally powerful" is a statement about <em>computability</em> only, not about simulation cost, and the cost differs sharply by variant: converting a multi-tape TM to a single-tape TM costs at most a <strong>polynomial</strong> slowdown, but simulating an NTM deterministically can cost an <strong>exponential</strong> blowup in time in the worst case (see the GATE trap below — these are genuinely different overheads, don't conflate them). This equivalence is why "Turing-computable" is a single, robust notion rather than depending on which TM flavor you pick.</p>
+      <div class="card note">
+        <span class="label">The exception: a TM that can only move right</span>
+        <p>A TM restricted to only ever moving its head right (never left) is <strong>not</strong> in the equally-powerful group above — it's strictly weaker. Without the ability to move back and revisit earlier tape cells, such a machine can't backtrack or re-examine what it's already read/written, and its recognizable language class collapses down to the <strong>regular languages</strong> — the same class a plain DFA recognizes. Don't lump this variant in with multi-tape/NTM/two-way-infinite-tape; it is the one common "TM variant" question where the power genuinely changes.</p>
+      </div>
 
       <div class="card formula">
         <span class="label">The Church–Turing thesis</span>
@@ -650,7 +675,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>"Non-deterministic TM is more powerful than deterministic TM" is FALSE — unlike the DPDA/NPDA case (which genuinely differ in power), NTMs and DTMs recognize exactly the same class of languages. Non-determinism only affects potential speed (an NTM can be simulated by a DTM with an exponential blowup in the worst case, relevant to complexity theory), never which languages are recognizable at all.</p>
+        <p>"Non-deterministic TM is more powerful than deterministic TM" is FALSE — unlike the DPDA/NPDA case (which genuinely differ in power), NTMs and DTMs recognize exactly the same class of languages. Non-determinism only affects potential speed (an NTM can be simulated by a DTM with an exponential blowup in the worst case, relevant to complexity theory), never which languages are recognizable at all. Separately: "a TM that can only move right is just as powerful as a standard TM" is also FALSE — that restriction genuinely reduces power to regular languages, unlike multi-tape or non-determinism.</p>
       </div>
 
       <div class="practice">
@@ -690,7 +715,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
 
     <section class="topic" id="decidability">
       <div class="topic-head"><span class="idx">06</span><h2>Decidability &amp; Undecidability</h2></div>
-      <div class="topic-kicker">RECURSIVE VS RE · HALTING PROBLEM · REDUCTIONS · RICE'S THEOREM</div>
+      <div class="topic-kicker">RECURSIVE VS RE · HALTING PROBLEM · REDUCTIONS · PCP · RICE'S THEOREM</div>
 
       <h3 class="sub">Recursive vs. recursively enumerable — the key distinction</h3>
       <table>
@@ -714,6 +739,13 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
         <p>A reduction from A to B (A ≤ B) shows: <strong>if B is decidable, then A is decidable</strong> (equivalently: if A is undecidable, then B is undecidable). Students often reduce in the wrong direction — remember, you're using a hypothetical decider for the new problem B to build a decider for the already-known-undecidable A, which is what generates the contradiction.</p>
       </div>
 
+      <h3 class="sub">The Post Correspondence Problem (PCP) — another canonical undecidable problem</h3>
+      <p>Given two lists of strings A = (a₁,...,aₙ) and B = (b₁,...,bₙ) of equal length, PCP asks: does there exist a sequence of indices i₁,i₂,...,iₖ (repeats allowed, k≥1) such that a_{i₁}a_{i₂}...a_{iₖ} = b_{i₁}b_{i₂}...b_{iₖ}? In other words, can you pick tiles (each labeled with a top string from A and a bottom string from B) and lay them in some order so the concatenated top and bottom strings match exactly.</p>
+      <div class="card formula">
+        <span class="label">PCP is undecidable</span>
+        <p>There is no algorithm that decides, for an arbitrary pair of lists, whether a matching sequence exists. GATE doesn't expect you to reproduce the proof (it's a reduction from the Turing machine acceptance problem) — just to recognize PCP by name as a standard undecidable problem, and to know it's commonly used itself as the known-undecidable source problem when proving that certain grammar/language questions (like CFG ambiguity, or whether two CFGs' languages intersect) are undecidable, via a reduction FROM PCP.</p>
+      </div>
+
       <h3 class="sub">Rice's theorem</h3>
       <p>Any <strong>non-trivial property of the language recognized by a Turing machine</strong> (i.e., a property that's true for some RE languages and false for others — not about the machine's structure/code, only about the language it recognizes) is undecidable. This single theorem instantly settles a huge number of "is this property decidable" questions without needing a custom reduction each time.</p>
       <table>
@@ -726,15 +758,26 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
 
       <div class="card note">
         <span class="label">Decidable problems GATE also expects you to know</span>
-        <p>Membership/emptiness/equivalence problems ARE decidable for regular languages (given DFAs) and for context-free languages (given CFGs/PDAs) — the undecidability results in this section apply specifically once you reach the power of Turing machines, not to the lower levels of the Chomsky hierarchy.</p>
+        <p>For <strong>regular languages</strong> (given DFAs/NFAs/regex), every standard question is decidable — membership, emptiness, finiteness, equivalence, inclusion, and universality all have known algorithms (minimize and compare, build a product automaton, etc.). This is a lower-hierarchy result, unaffected by Rice's theorem, which only concerns Turing machines/RE languages.</p>
+        <p>For <strong>context-free languages</strong> (given CFGs/PDAs), only some of these carry over — don't assume the whole list transfers up a level. <strong>Membership and emptiness are decidable for CFLs, but equivalence, inclusion, and universality are undecidable in general.</strong></p>
+        <table>
+          <tr><th>Problem</th><th>Regular</th><th>Context-free</th></tr>
+          <tr><td>Membership</td><td>Decidable</td><td>Decidable</td></tr>
+          <tr><td>Emptiness</td><td>Decidable</td><td>Decidable</td></tr>
+          <tr><td>Finiteness</td><td>Decidable</td><td>Decidable</td></tr>
+          <tr><td>Equivalence</td><td>Decidable</td><td>Undecidable</td></tr>
+          <tr><td>Inclusion</td><td>Decidable</td><td>Undecidable</td></tr>
+          <tr><td>Universality</td><td>Decidable</td><td>Undecidable</td></tr>
+        </table>
       </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> Is it decidable whether two given DFAs accept the same language?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> Is it decidable whether two given DFAs accept the same language? Does the same hold for two given CFGs?</summary>
           <div class="ans">
             <p>Yes — DFA equivalence is decidable (e.g., minimize both DFAs and compare, or build a DFA for the symmetric difference and check it accepts nothing). This is a lower-hierarchy decidability result, unaffected by Rice's theorem, which only concerns Turing machines/RE languages.</p>
-            <p class="final">Answer: Yes, decidable</p>
+            <p>The same question for two CFGs does NOT hold — CFG (context-free language) equivalence is <strong>undecidable</strong> in general, even though CFG membership and emptiness are still decidable. Don't assume decidability carries over uniformly from regular to context-free just because both sit below the Turing-machine level.</p>
+            <p class="final">Answer: DFA equivalence — Yes, decidable. CFG equivalence — No, undecidable.</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Is it decidable whether a given Turing machine M accepts the empty language (L(M)=∅)?</summary>
@@ -802,8 +845,16 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
           <p>Unlike DPDA/NPDA, non-determinism never adds recognizing power to a Turing machine — only affects speed.</p>
         </div>
         <div class="card formula">
-          <span class="label">CFL non-closure</span>
-          <p>CFLs are NOT closed under intersection (of two CFLs) or complementation — only under union, concatenation, star, and intersection-with-regular.</p>
+          <span class="label">CFL closure</span>
+          <p>Closed under union, concatenation, star, reversal, and intersection-with-regular. NOT closed under CFL∩CFL, complement, or difference.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">CFL decidability — don't over-extend from regular</span>
+          <p>Membership, emptiness, and finiteness ARE decidable for CFLs. Equivalence, inclusion, and universality are UNDECIDABLE for CFLs — unlike for regular languages, where all six are decidable.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">PCP</span>
+          <p>The Post Correspondence Problem (matching tile sequences from two string lists) is undecidable — a second named canonical undecidable problem alongside HALT, often used as a reduction source.</p>
         </div>
         <div class="card formula">
           <span class="label">CNF derivation length</span>
