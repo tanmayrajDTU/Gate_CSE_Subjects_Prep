@@ -470,7 +470,8 @@ Continuous at a point      ⇏  Differentiable at that point</div>
       <div class="topic-kicker">FIRST &amp; SECOND DERIVATIVE TESTS · CRITICAL POINTS · CLOSED-INTERVAL EXTREMA</div>
 
       <h3 class="sub">Critical points</h3>
-      <p>A local max or min can only occur where f'(x) = 0 (stationary point) or where f'(x) doesn't exist (non-smooth point). These candidates are called <strong>critical points</strong>.</p>
+      <p>This is a statement about <strong>interior local extrema only</strong>. For an interior point c where f is differentiable, Fermat's theorem says: if f has a local max or min at c, then f'(c) = 0. Combined with points where f isn't differentiable at all, the full set of candidates for an interior local extremum is: where f'(x) = 0 (stationary point), or where f'(x) doesn't exist (non-smooth point). These candidates are called <strong>critical points</strong>.</p>
+      <p>Critical points alone are <em>not</em> the whole story for <strong>absolute</strong> extrema on a closed interval [a,b] — an absolute max/min can also occur at an endpoint a or b even where f'≠0 and f' is perfectly well-defined there, simply because the domain doesn't extend further in that direction for the "local" comparison to apply. See the closed-interval method below.</p>
 
       <h3 class="sub">First derivative test</h3>
       <p>Check the sign of f'(x) just before and just after a critical point c:</p>
@@ -478,8 +479,12 @@ Continuous at a point      ⇏  Differentiable at that point</div>
         <tr><th>f' before c</th><th>f' after c</th><th>Conclusion at c</th></tr>
         <tr><td>+</td><td>−</td><td>Local maximum</td></tr>
         <tr><td>−</td><td>+</td><td>Local minimum</td></tr>
-        <tr><td>Same sign both sides</td><td>—</td><td>Neither (inflection/saddle)</td></tr>
+        <tr><td>Same sign both sides</td><td>—</td><td>Neither a local max nor a local min</td></tr>
       </table>
+      <div class="card note">
+        <span class="label">"Same sign both sides" only rules out an extremum — it does NOT prove an inflection point</span>
+        <p>These are two separate questions answered by two different derivatives. "Is c a local extremum?" is answered by whether <strong>f'</strong> changes sign at c. "Is c an inflection point?" is answered by whether the <strong>concavity</strong> changes — i.e. whether f'' changes sign at c. These two questions aren't even always asked about the same points: inflection points don't require f'(c)=0 at all. Take <code>f(x) = x + x³</code>: f'(x) = 1 + 3x² &gt; 0 everywhere, so x=0 isn't even a critical point (there's no stationary point to apply the first-derivative table to), yet f''(x) = 6x changes sign at x=0 (concave down for x&lt;0, concave up for x&gt;0) — so x=0 <em>is</em> a genuine inflection point, despite never showing up as a critical point in the first place. Never infer "inflection" just from a critical point having same-sign f' on both sides; always check f'' separately.</p>
+      </div>
 
       <h3 class="sub">Second derivative test — faster when it applies</h3>
       <div class="eq">f'(c) = 0  and  f''(c) &lt; 0   ⟹  local maximum at c
@@ -493,7 +498,7 @@ f'(c) = 0  and  f''(c) = 0   ⟹  test is inconclusive — fall back to first de
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>f'(c) = 0 is necessary but not sufficient for an extremum — f(x) = x³ has f'(0) = 0, but x=0 is neither a max nor a min (it's an inflection point, since f'(x) = 3x² ≥ 0 on both sides — the sign never changes).</p>
+        <p>f'(c) = 0 is necessary but not sufficient for an extremum — f(x) = x³ has f'(0) = 0, but f'(x) = 3x² ≥ 0 on both sides (sign never changes), so x=0 is neither a max nor a min. Separately, x=0 also happens to be an inflection point here — but that's established by checking f''(x) = 6x, which changes sign from negative to positive at x=0 (concave down to concave up), not by the same-sign f' observation. The two facts (not-an-extremum, and inflection) need two separate checks even though they land on the same point in this example.</p>
       </div>
 
       <div class="practice">
@@ -518,7 +523,7 @@ f'(c) = 0  and  f''(c) = 0   ⟹  test is inconclusive — fall back to first de
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> f(x) = x³ has f'(0) = 0. Is x=0 a local extremum?</summary>
           <div class="ans">
-            <p>f'(x) = 3x² ≥ 0 for all x — it doesn't change sign around x=0 (positive on both sides), so there's no local max or min there; it's an inflection point (also f''(0)=0, second derivative test inconclusive too).</p>
+            <p>f'(x) = 3x² ≥ 0 for all x — it doesn't change sign around x=0 (positive on both sides), so there's no local max or min there. That sign test alone doesn't tell us whether x=0 is an inflection point, though — for that, check f''(x) = 6x separately: it's negative for x&lt;0 and positive for x&gt;0, a genuine sign change, so x=0 is confirmed as an inflection point by the concavity test (f''(0)=0 on its own would only be inconclusive, not sufficient — the sign change either side of it is what actually matters).</p>
             <p class="final">Answer: No, x=0 is an inflection point, not an extremum</p>
           </div>
         </details>
