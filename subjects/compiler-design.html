@@ -248,8 +248,8 @@ section.topic{scroll-margin-top:56px;}
         <tr><td>Code generation</td><td>IR → target code</td><td>register allocation</td></tr>
       </table>
       <div class="card note">
-        <span class="label">Front end vs back end</span>
-        <p>Lexical + syntax + semantic analysis + IR generation = <strong>front end</strong> (machine-independent). Optimization + code generation = <strong>back end</strong> (machine-dependent, though some optimization is machine-independent too). This split is why one front end can target multiple back ends.</p>
+        <span class="label">Front end / middle end / back end</span>
+        <p>Lexical + syntax + semantic analysis + IR generation = <strong>front end</strong> (depends only on the source language, machine-independent). Code generation = <strong>back end</strong> (machine-dependent: instruction selection, register allocation, target-specific scheduling). Optimization doesn't fit cleanly into either — most textbooks place machine-independent optimization (constant folding, dead-code elimination, common-subexpression elimination on the IR) in a conceptual <strong>middle end</strong> between the two, reserving "back end" for machine-dependent optimizations (peephole optimization, instruction scheduling) plus code generation itself. For GATE you don't need to insist on a strict three-way split, but don't flatly call optimization "back end" — say which kind of optimization (machine-independent vs machine-dependent) you mean.</p>
       </div>
 
       <h3 class="sub">Tokens, lexemes, and patterns</h3>
@@ -298,8 +298,8 @@ DFA    --Hopcroft/Moore minimization--> minimal DFA</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Classify the compiler phases into front end and back end, and explain why this split is useful for building compilers for multiple source languages and target machines.</summary>
           <div class="ans">
-            <p>Front end (lexical, syntax, semantic analysis, IR generation) depends only on the source language; back end (optimization, code generation) depends only on the target machine. Because they communicate through a shared machine-independent IR, you can mix-and-match — reuse one front end with several back ends (multiple targets) or one back end with several front ends (multiple source languages) instead of writing a full compiler for every language×machine pair.</p>
-            <p class="final">Answer: Front end = language-dependent (lexical/syntax/semantic/IR-gen); back end = machine-dependent (optimization/codegen); the IR boundary lets front/back ends be mixed and reused</p>
+            <p>Front end (lexical, syntax, semantic analysis, IR generation) depends only on the source language; back end (code generation, plus machine-dependent optimization) depends only on the target machine. Machine-independent optimization sits on the IR between the two and is often called the middle end. Because front and back ends communicate through a shared machine-independent IR, you can mix-and-match — reuse one front end with several back ends (multiple targets) or one back end with several front ends (multiple source languages) instead of writing a full compiler for every language×machine pair.</p>
+            <p class="final">Answer: Front end = language-dependent (lexical/syntax/semantic/IR-gen); back end = machine-dependent (codegen, machine-dependent optimization); machine-independent optimization sits between them (middle end); the IR boundary lets front/back ends be mixed and reused</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> A lexer encounters the character sequence <code>@</code> which matches no token pattern in the language. What is a typical panic-mode recovery action, and why is this kind of error relatively uncommon at the lexical stage?</summary>
@@ -663,7 +663,7 @@ A' → β₁ | β₂</div>
       </table>
 
       <h3 class="sub">Data-flow analyses — the three the GATE 2027 syllabus names</h3>
-      <p>The official GATE 2027 Compiler Design syllabus explicitly lists three data-flow analyses: <strong>constant propagation</strong>, <strong>liveness analysis</strong>, and <strong>common subexpression elimination</strong>. All three follow the same general framework: define GEN/KILL sets for each basic block, then iteratively compute IN/OUT sets across the CFG until a fixed point is reached.</p>
+      <p>The official GATE 2027 Compiler Design syllabus explicitly lists three data-flow analyses: <strong>constant propagation</strong>, <strong>liveness analysis</strong>, and <strong>common subexpression elimination</strong>. All three sit inside the same general <strong>iterative data-flow framework</strong> — a CFG, per-block IN/OUT information, transfer functions, and a meet operator combining information at join points, iterated to a fixed point — but their actual <strong>data-flow domains, transfer functions, and meet operators differ</strong>, so don't treat them as one interchangeable GEN/KILL recipe. Concretely: liveness is a set-based <em>backward</em> analysis, reaching definitions and common-subexpression/available-expressions analysis are set-based <em>forward</em> analyses (all three do reduce to GEN/KILL-style set equations), while constant propagation is a <em>lattice/value</em> analysis — its "state" per variable is a three-level lattice value (⊤ / constant / ⊥), not a set of definitions or expressions, and its meet operator combines lattice values rather than unioning or intersecting sets of statements.</p>
 
       <div class="card pyq">
         <span class="label">Reaching definitions (forward analysis)</span>
@@ -798,7 +798,7 @@ A' → β₁ | β₂</div>
       <div class="two-col">
         <div class="card formula">
           <span class="label">Compiler phases (order)</span>
-          <p>Lexical → Syntax → Semantic → IR generation → Optimization → Code generation. First four = front end (source-dependent); last two = back end (target-dependent).</p>
+          <p>Lexical → Syntax → Semantic → IR generation → Optimization → Code generation. First four = front end (source-dependent). Code generation = back end (target-dependent). Optimization straddles both: machine-independent optimization (middle end) sits right after IR generation; machine-dependent optimization belongs with the back end.</p>
         </div>
         <div class="card formula">
           <span class="label">Maximal munch</span>
@@ -887,8 +887,9 @@ A' → β₁ | β₂</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> True or false: a variable being "live" at a point guarantees it was also "reached" by some definition at that point.</summary>
           <div class="ans">
-            <p>True in the typical sense that liveness presumes some earlier definition exists to eventually reach a later use — but the two are answering different-direction questions (live variables looks forward to a future use; reaching definitions looks backward from a definition). In well-formed, properly initialized code, a live variable does have a reaching definition; the two analyses are complementary, not identical.</p>
-            <p class="final">Answer: True in practice for properly-initialized code — though the two analyses compute different, complementary information (forward defs vs backward uses)</p>
+            <p>False. Liveness asks "will the current value of x be used in the future before being overwritten?" while reaching definitions asks "which definitions of x may reach this point?" — these are independent analyses, and neither guarantees the other.</p>
+            <p>Counterexample: <code>int x; if (cond) x = 10; printf("%d", x);</code>. At the <code>printf</code>, x is live (its value will be used), but along the path where <code>cond</code> is false, no definition of x reaches that point — so a variable can be live without being reached by any definition.</p>
+            <p class="final">Answer: False — liveness and reaching definitions are independent; a live variable need not have a reaching definition</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Convert to postfix and generate 3AC for: <code>x = (a+b)*c - d</code>.</summary>
