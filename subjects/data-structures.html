@@ -281,7 +281,7 @@ section.topic{scroll-margin-top:56px;}
       <p>Every recursive call pushes a new frame onto the <strong>call stack</strong> containing local variables and return addresses. When the base case is reached, the stack unwinds, resolving the calls in reverse order (LIFO).</p>
 
       <h3 class="sub">Tail recursion</h3>
-      <p>A recursive function is <em>tail-recursive</em> if the recursive call is the very last operation performed in the function (nothing is evaluated after the recursive call returns). Tail recursion can be optimized by compilers to use O(1) stack space, avoiding stack overflow by reusing the current stack frame.</p>
+      <p>A recursive function is <em>tail-recursive</em> if the recursive call is the very last operation performed in the function (nothing is evaluated after the recursive call returns). A compiler or runtime <strong>may</strong> perform <strong>tail-call optimization (TCO)</strong> — reusing the current stack frame instead of pushing a new one — which turns the recursion into effectively O(1) stack space. But this is an optimization the implementation chooses to do, not a guarantee of the language: <strong>C does not require TCO</strong>, and whether a given compiler actually performs it depends on the compiler and the optimization flags used (e.g. gcc often does it only at <code>-O2</code>/<code>-O3</code>, not at <code>-O0</code>). Don't conclude that tail-recursive C code necessarily uses O(1) stack space — without confirmed TCO, it still uses O(n) stack space like any other recursion, and can still overflow the stack.</p>
 
       <div class="card formula">
         <span class="label">Recurrence relations</span>
@@ -413,10 +413,10 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
       <div class="topic-kicker">SINGLY · DOUBLY · CIRCULAR · OPERATIONS COMPLEXITY</div>
 
       <h3 class="sub">Variations</h3>
-      <p>Linked lists are dynamic collections of nodes where each node points to the next, allowing O(1) insertions/deletions if the location is known, but sacrificing random access.</p>
+      <p>Linked lists are dynamic collections of nodes where each node points to the next, sacrificing random access in exchange for cheap insertion/deletion — but "O(1) if the location is known" needs a caveat that depends on which kind of list and which node.</p>
       <ul>
-        <li><strong>Singly Linked List:</strong> Node = data + <code>next</code> pointer. Traversal is one-way. Insertion/deletion at head is O(1), but finding a node is O(n).</li>
-        <li><strong>Doubly Linked List:</strong> Node = <code>prev</code> + data + <code>next</code> pointer. Allows backward traversal. Deleting a given node pointer is O(1) because you have immediate access to the previous node.</li>
+        <li><strong>Singly Linked List:</strong> Node = data + <code>next</code> pointer. Traversal is one-way. Insertion/deletion at head is O(1). Deleting an arbitrary given node normally needs its <em>predecessor's</em> pointer (to relink <code>next</code>), not just a pointer to the node itself — so "O(1) deletion given a node pointer" doesn't hold for singly linked lists unless you also have the predecessor, or you use the copy-next-node trick (copy the next node's data into the target node, then delete the next node instead) — which fails if the target is the tail. Finding an arbitrary node is O(n).</li>
+        <li><strong>Doubly Linked List:</strong> Node = <code>prev</code> + data + <code>next</code> pointer. Allows backward traversal. Deleting a given node pointer is genuinely O(1) here, since the node itself carries a pointer to its predecessor — no separate traversal or trick needed.</li>
         <li><strong>Circular Linked List:</strong> The <code>next</code> pointer of the last node points back to the first node. Used in round-robin scheduling algorithms.</li>
       </ul>
 
@@ -732,6 +732,16 @@ Number of NULL pointers in a binary tree with n nodes = n + 1</div>
         </li>
       </ul>
       <p><strong>Balanced vs unbalanced:</strong> In the worst case (skewed tree), operations are O(n). In a balanced tree, operations are O(log n).</p>
+      <div class="card formula">
+        <span class="label">BST operation complexity — don't drop the worst case</span>
+        <table>
+          <tr><th>Operation</th><th>Balanced BST (e.g. AVL)</th><th>Unbalanced/skewed BST (worst case)</th></tr>
+          <tr><td>Search</td><td>O(log n)</td><td>O(n)</td></tr>
+          <tr><td>Insert</td><td>O(log n)</td><td>O(n)</td></tr>
+          <tr><td>Delete</td><td>O(log n)</td><td>O(n)</td></tr>
+        </table>
+        <p>A plain BST offers <strong>no</strong> guarantee of O(log n) — that bound holds only once the tree is height-balanced (h = O(log n)), which is exactly what self-balancing schemes like AVL and Red-Black trees exist to enforce. A GATE question that just says "BST" (not "balanced BST" or "AVL tree") should be read as potentially skewed — O(h) is the honest general answer, and h can be as large as n−1.</p>
+      </div>
 
       <h3 class="sub">AVL Trees</h3>
       <p>Self-balancing BST. The balance factor (BF) of any node is:</p>
@@ -744,6 +754,17 @@ Valid values: {−1, 0, 1}</div>
         <li><strong>LR (Left-Right):</strong> Requires left rotation on child, then right rotation on parent.</li>
         <li><strong>RL (Right-Left):</strong> Requires right rotation on child, then left rotation on parent.</li>
       </ul>
+      <div class="card formula">
+        <span class="label">AVL rotation lookup — quick recall table</span>
+        <table>
+          <tr><th>Imbalance case</th><th>Rotation to apply</th></tr>
+          <tr><td>LL (inserted into left subtree of left child)</td><td>Single Right rotation</td></tr>
+          <tr><td>RR (inserted into right subtree of right child)</td><td>Single Left rotation</td></tr>
+          <tr><td>LR (inserted into right subtree of left child)</td><td>Left rotation on the child, then Right rotation on the parent</td></tr>
+          <tr><td>RL (inserted into left subtree of right child)</td><td>Right rotation on the child, then Left rotation on the parent</td></tr>
+        </table>
+        <p>Mnemonic: the case name tells you which two rotations to chain — "LR" means Left first (on the child), then Right (on the parent); "RL" means Right first, then Left. The single-letter cases (LL, RR) need only the opposite single rotation.</p>
+      </div>
       <p>Height of an AVL tree with n nodes is O(log n), specifically bounded between log₂(n+1) and ≈1.44·log₂(n+2). The minimum nodes N(h) for an AVL tree of height h:</p>
       <div class="eq">N(h) = N(h−1) + N(h−2) + 1  (Fibonacci-like sequence)</div>
       
@@ -823,20 +844,26 @@ Right child of i = 2i + 1</div>
       <p>A Priority Queue is an abstract data type usually implemented using a heap.</p>
 
       <div class="card formula">
-        <span class="label">Complexity table</span>
+        <span class="label">Consolidated complexity sheet — standard binary heap (array-backed)</span>
+        <p>All complexities below assume a standard <strong>binary heap</strong> (array-backed, complete binary tree). Different heap variants (binomial, Fibonacci, pairing) have different amortized bounds — don't carry these numbers over to them.</p>
         <table>
           <tr><th>Operation</th><th>Time Complexity</th></tr>
-          <tr><td>Find-Max (in Max-Heap)</td><td>O(1)</td></tr>
-          <tr><td>Extract-Max</td><td>O(log n)</td></tr>
+          <tr><td>Peek (find min/max at root)</td><td>O(1)</td></tr>
           <tr><td>Insert</td><td>O(log n)</td></tr>
-          <tr><td>Build Heap</td><td>O(n)</td></tr>
-          <tr><td>Heap Sort</td><td>O(n log n)</td></tr>
+          <tr><td>Extract-min / Extract-max</td><td>O(log n)</td></tr>
+          <tr><td>Decrease-key / Increase-key</td><td>O(log n)</td></tr>
+          <tr><td>Build heap from an unsorted array</td><td>O(n)</td></tr>
+          <tr><td>Heap sort (build + n extracts)</td><td>O(n log n)</td></tr>
+          <tr><td>Search for an arbitrary value</td><td>O(n) — heaps aren't built for searching</td></tr>
         </table>
       </div>
 
       <div class="card pyq">
-        <span class="label">GATE trap</span>
-        <p>The time complexity of building a heap from an unsorted array is exactly O(n), NOT O(n log n). This is a classic GATE MCQ trap. Also, heap sort is NOT a stable sort. Finally, remember that heap search takes O(n) time — heaps are not meant for searching.</p>
+        <span class="label">GATE trap — build-heap is O(n), and here's why the "obvious" reasoning is wrong</span>
+        <p>The tempting (wrong) argument: "n insertions × O(log n) per insertion = O(n log n)." That bound is correct <strong>only</strong> for building a heap via <strong>repeated single insertion</strong> — inserting one element at a time into a growing heap really does cost O(n log n) total.</p>
+        <p><strong>Bottom-up build-heap</strong> (heapify-down starting from the last non-leaf node up to the root) is a different algorithm with a different bound: it's O(n) because most nodes sit near the <em>leaves</em>, where a sift-down has almost no distance to travel. Roughly n/2 nodes do O(1) work, n/4 nodes do O(2) work, n/8 nodes do O(3) work, and so on — summing height×count over all levels gives a series that converges to O(n), not O(n log n). Also remember: heap sort is NOT a stable sort, and heap search takes O(n) time — heaps aren't built for searching.</p>
+        <div class="eq">repeated insertion (n calls to insert)              → O(n log n)
+bottom-up build-heap (heapify from n/2−1 down to 0)  → O(n)</div>
       </div>
 
       <div class="practice">
@@ -907,7 +934,7 @@ Max edges in directed graph: V(V−1)</div>
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>Mix-ups between BFS and DFS applications are common. Remember: shortest path = BFS, topological sort / cycle detection = DFS. Also, pay attention to graph representation — if a question assumes adjacency matrix, DFS/BFS is O(V²), not O(V+E). Handshaking lemma is tested frequently via degree sequences.</p>
+        <p>Mix-ups between BFS and DFS applications are common, but "shortest path = BFS" is only true in a specific setting — don't over-generalize it. Precisely: <strong>BFS gives shortest paths only in an unweighted graph (or one where every edge has equal weight)</strong>, because BFS explores in layers of equal "distance" (edge count) and that only corresponds to true shortest distance when every edge costs the same. For weighted graphs, BFS's level order says nothing about path weight — you need <strong>Dijkstra's algorithm</strong> for non-negative edge weights, or <strong>Bellman-Ford</strong> if any edge weight can be negative (and to detect negative-weight cycles). Topological sort / cycle detection = DFS. Also, pay attention to graph representation — if a question assumes adjacency matrix, DFS/BFS is O(V²), not O(V+E). Handshaking lemma is tested frequently via degree sequences.</p>
       </div>
 
       <div class="practice">
@@ -976,20 +1003,38 @@ Max edges in directed graph: V(V−1)</div>
         </div>
         <div class="card formula">
           <span class="label">BST &amp; AVL</span>
-          <p>BST operations O(h). Inorder gives sorted order. AVL balance factor: h(L) − h(R) ∈ {−1, 0, 1}. Rotations restore balance.</p>
+          <p>BST operations O(h). Inorder gives sorted order. Deletion: 0 children → delete; 1 child → replace by child; 2 children → successor/predecessor. AVL balance factor: h(L) − h(R) ∈ {−1, 0, 1}. Rotations restore balance.</p>
         </div>
         <div class="card formula">
           <span class="label">Binary Heaps</span>
-          <p>Build heap O(n). 0-indexed formulas: parent = ⌊(i−1)/2⌋, left = 2i+1, right = 2i+2. Heap sort O(n log n).</p>
+          <p>Bottom-up build-heap = O(n) — NOT n×O(log n) = O(n log n); that bound applies only to repeated single insertion. 0-indexed formulas: parent = ⌊(i−1)/2⌋, left = 2i+1, right = 2i+2. Heap sort O(n log n).</p>
         </div>
         <div class="card formula">
           <span class="label">Graphs</span>
-          <p>Handshaking lemma: ∑ deg = 2|E|. BFS (Queue, shortest path), DFS (Stack, cycle detection). Tree has V−1 edges.</p>
+          <p>Handshaking lemma: ∑ deg = 2|E|. BFS (Queue, shortest path in <em>unweighted</em> graph only), DFS (Stack, cycle detection). Weighted shortest path: Dijkstra (non-negative weights) / Bellman-Ford (negative weights allowed). Tree has V−1 edges.</p>
         </div>
         <div class="card formula">
           <span class="label">Complexities</span>
           <p>Hash tables expected O(1) search/insert. Sorting: Merge/Heap O(n log n), Quick expected O(n log n), worst O(n²).</p>
         </div>
+      </div>
+
+      <div class="card pyq" style="margin-top:26px;">
+        <span class="label">BST deletion — the 3 cases, canonical form</span>
+        <div class="eq">0 children (leaf)  →  delete the node directly
+1 child            →  replace the node with that single child
+2 children         →  replace with inorder successor (or predecessor),
+                       then delete THAT node from its new position
+                       (which now has at most 1 child — reduces to a case above)</div>
+        <p><strong>In-order successor = minimum of the right subtree</strong> (go right once, then left as far as possible). In-order predecessor = maximum of the left subtree (go left once, then right as far as possible). Either choice yields a valid BST — GATE sometimes asks which one a trace used, not which is "more correct."</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">Why build-heap is O(n), not O(n log n)</span>
+        <p>Wrong intuition: "n insertions × O(log n) each = O(n log n)." That reasoning only applies to building a heap via <strong>repeated single insertion</strong>.</p>
+        <p><strong>Bottom-up build-heap</strong> (heapify-down from the last non-leaf node up to the root) is O(n) instead, because most nodes sit near the leaves and have very little sift-down work to do — only a handful of nodes near the root pay the full O(log n) cost.</p>
+        <div class="eq">repeated insert         → O(n log n)
+bottom-up build-heap    → O(n)</div>
       </div>
 
       <div class="card note" style="margin-top:26px;">
@@ -998,11 +1043,11 @@ Max edges in directed graph: V(V−1)</div>
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> What is the pre-order traversal of a BST if the post-order is 2, 4, 3, 7, 9, 8, 5?</summary>
+        <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">6 questions</span></div>
+        <details class="qcard"><summary><span class="qn">Q1</span> Assuming all keys are distinct, what is the pre-order traversal of a BST if the post-order is 2, 4, 3, 7, 9, 8, 5?</summary>
           <div class="ans">
-            <p>Root is last in post-order: 5. BST property splits into left {2,4,3} and right {7,9,8}. Reconstructing yields pre-order: 5, 3, 2, 4, 8, 7, 9.</p>
-            <p class="final">Answer: 5, 3, 2, 4, 8, 7, 9</p>
+            <p>Root is last in post-order: 5. BST property splits into left {2,4,3} and right {7,9,8}. Reconstructing yields pre-order: 5, 3, 2, 4, 8, 7, 9. (This reconstruction relies on all keys being distinct — with duplicate keys, whether equal values go left or right depends on the implementation's convention, and reconstruction from a single traversal can become ambiguous.)</p>
+            <p class="final">Answer: 5, 3, 2, 4, 8, 7, 9 (assumes distinct keys)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> In an adjacency list representation of a directed graph, how do you find the in-degree of all vertices?</summary>
@@ -1023,10 +1068,16 @@ Max edges in directed graph: V(V−1)</div>
             <p class="final">Answer: Full</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> What is the time complexity to find the median element in a min-heap?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> A min-heap of n elements is given, with no other information about how it was built. What is the worst-case time to find the median if we inspect all heap elements and use a linear-time selection algorithm (e.g. median-of-medians)?</summary>
           <div class="ans">
-            <p>A min-heap does not maintain full sorted order. Finding the median requires extracting half the elements or searching most of the tree, which takes O(n log n) or O(n) space/time operations.</p>
-            <p class="final">Answer: O(n log n) (using extracts) or O(n) (using selection)</p>
+            <p>A min-heap only guarantees the root is the smallest — it maintains no order among the rest of the elements, so there's no way to locate the median faster than looking at all n elements. Once all n values are available (e.g. by an O(n) traversal of the underlying array), a linear-time selection algorithm finds the median (the n/2-th order statistic) in O(n) worst-case time, without needing to fully sort.</p>
+            <p class="final">Answer: O(n) — O(n) to read all elements + O(n) for linear-time selection</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5b</span> Same min-heap of n elements — but this time, find the median by repeatedly extracting the minimum until reaching the middle element. What is the time complexity now?</summary>
+          <div class="ans">
+            <p>Each extract-min on a heap of current size k costs O(log k). To reach the median you must extract roughly n/2 elements, and each of those extractions costs up to O(log n), so the total cost is the sum of n/2 individual O(log n) operations.</p>
+            <p class="final">Answer: O(n log n) — this method is correct but asymptotically worse than the O(n) selection approach in Q5</p>
           </div>
         </details>
       </div>
