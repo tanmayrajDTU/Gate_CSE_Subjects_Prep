@@ -290,7 +290,7 @@ DFA    --Hopcroft/Moore minimization--> minimal DFA</div>
             <p class="final">Answer: A single identifier token "ifx" (maximal munch overrides the keyword match)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> An NFA for a certain regex has 5 states. What is the theoretical worst-case upper bound on the number of states in the equivalent minimized DFA (before minimization)?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> An NFA for a certain regex has 5 states. What is the maximum number of states in the DFA produced by subset construction, before minimization?</summary>
           <div class="ans">
             <p>Subset construction builds one DFA state per distinct reachable subset of the NFA's state set — worst case, all 2⁵ subsets are reachable and distinct.</p>
             <p class="final">Answer: 2⁵ = 32 states (worst case, before minimization)</p>
@@ -298,14 +298,14 @@ DFA    --Hopcroft/Moore minimization--> minimal DFA</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Classify the compiler phases into front end and back end, and explain why this split is useful for building compilers for multiple source languages and target machines.</summary>
           <div class="ans">
-            <p>Front end (lexical, syntax, semantic analysis, IR generation) depends only on the source language; back end (code generation, plus machine-dependent optimization) depends only on the target machine. Machine-independent optimization sits on the IR between the two and is often called the middle end. Because front and back ends communicate through a shared machine-independent IR, you can mix-and-match — reuse one front end with several back ends (multiple targets) or one back end with several front ends (multiple source languages) instead of writing a full compiler for every language×machine pair.</p>
+            <p>Front end (lexical, syntax, semantic analysis, IR generation) is primarily source-language dependent; back end (code generation, plus machine-dependent optimization) is primarily target-machine dependent. In practice this is an idealization — real compilers can have target-dependent semantic constraints, ABI considerations, target-specific IR decisions, and other source-target interactions that blur the boundary somewhat. IR generation itself is commonly classed as part of the front end, but some compiler architectures place parts of IR construction/transformation in the middle end instead — treat this as a terminology convention rather than a fixed rule. Machine-independent optimization sits on the IR between the two and is often called the middle end. Because front and back ends communicate through a shared, largely machine-independent IR, you can mix-and-match — reuse one front end with several back ends (multiple targets) or one back end with several front ends (multiple source languages) instead of writing a full compiler for every language×machine pair.</p>
             <p class="final">Answer: Front end = language-dependent (lexical/syntax/semantic/IR-gen); back end = machine-dependent (codegen, machine-dependent optimization); machine-independent optimization sits between them (middle end); the IR boundary lets front/back ends be mixed and reused</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> A lexer encounters the character sequence <code>@</code> which matches no token pattern in the language. What is a typical panic-mode recovery action, and why is this kind of error relatively uncommon at the lexical stage?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> A lexer encounters the character sequence <code>@</code> which matches no token pattern in the language. What is a typical panic-mode recovery action?</summary>
           <div class="ans">
-            <p>Typical recovery: delete/skip the offending character and resume scanning from the next one, reporting an error. This kind of error is uncommon because almost any legal character sequence forms at least a valid identifier or numeric lexeme — genuine lexical errors happen only for characters entirely outside the language's alphabet (like a stray "@" in a language that doesn't use it).</p>
-            <p class="final">Answer: Skip/delete the bad character and resume scanning; lexical errors are rare since most sequences still match some valid token pattern</p>
+            <p>Typical recovery: delete/skip the offending character and resume scanning from the next one, reporting an error. Note that lexical errors aren't limited to stray illegal characters like this — they also include cases such as unterminated string literals, malformed numeric literals, invalid escape sequences, and unterminated comments, each of which may call for a different recovery heuristic (e.g. scanning to the next quote/newline/delimiter).</p>
+            <p class="final">Answer: Skip/delete the bad character and resume scanning, reporting an error</p>
           </div>
         </details>
       </div>
@@ -360,7 +360,7 @@ A' → β₁ | β₂</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> For the grammar S→aS|aSbS|ε (a genuinely ambiguous grammar for a classic language), why does LL(1) table construction necessarily fail?</summary>
           <div class="ans">
-            <p>Both productions S→aS and S→aSbS begin with terminal "a", so FIRST of both alternatives overlaps at "a" — the LL(1) table cell M[S,a] would need to hold both productions simultaneously, which is disallowed. This isn't fixable by simple left-factoring alone since the underlying grammar itself is ambiguous (some strings have 2 distinct parse trees), and no LL(1) grammar can be ambiguous.</p>
+            <p>Both productions S→aS and S→aSbS begin with terminal "a", so FIRST of both alternatives overlaps at "a" — the LL(1) table cell M[S,a] would need to hold both productions simultaneously, which is disallowed. Left-factoring itself is a purely mechanical step (factor out the common "a" prefix) and can always be applied here; the deeper problem is that this grammar is ambiguous (some strings, like "aab", have 2 distinct parse trees), and no LL(1) grammar can be ambiguous. So even after factoring out the common prefix, the resulting grammar still can't be made LL(1) — the ambiguity would have to be removed by rewriting the grammar's structure (not just factoring prefixes) before an LL(1) table could exist for it.</p>
             <p class="final">Answer: FIRST sets of the two S-productions both contain "a" → table conflict; ambiguous grammars can never be LL(1)</p>
           </div>
         </details>
@@ -376,10 +376,10 @@ A' → β₁ | β₂</div>
             <p class="final">Answer: Stmt → if E then Stmt Stmt' ,  Stmt' → else Stmt | ε</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> True or false, with justification: "Every regular language's grammar can be parsed by some LL(1) parser."</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> Does every regular language have an equivalent LL(1) grammar? (Note: this is different from asking whether every grammar someone writes for a regular language is automatically LL(1) — it usually isn't, e.g. S→Sa|a for a⁺ is left-recursive and not LL(1) as written.)</summary>
           <div class="ans">
-            <p>False in general as stated for an arbitrary given grammar — a specific grammar for a regular language might still be ambiguous or left-recursive as written (e.g. S→Sa|a for a⁺), making that particular grammar not LL(1). However, since regular languages are a strict subset of deterministic context-free languages, some equivalent unambiguous, non-left-recursive grammar for it CAN typically be constructed (often trivially via a right-linear form), which would be LL(1) — the false claim is about the grammar AS GIVEN, not about the language's inherent parsability.</p>
-            <p class="final">Answer: False as stated — an arbitrary grammar for a regular language need not itself be LL(1), even though some equivalent LL(1) grammar usually exists</p>
+            <p>Yes. Since regular languages are a strict subset of deterministic context-free languages, an equivalent unambiguous, non-left-recursive grammar can always be constructed for one (typically via a right-linear form derived from its DFA), and such a grammar is LL(1). This is a claim about the language's inherent parsability, not about any one arbitrary grammar someone happens to write for it — a specific grammar for a regular language can still be ambiguous or left-recursive as given, making that particular grammar not LL(1), even though an LL(1)-equivalent grammar for the same language exists.</p>
+            <p class="final">Answer: Yes — every regular language has an equivalent LL(1) grammar, even though an arbitrarily-written grammar for it need not itself be LL(1).</p>
           </div>
         </details>
       </div>
@@ -898,10 +898,10 @@ A' → β₁ | β₂</div>
             <p class="final">Answer: t1 = a+b; t2 = t1*c; t3 = t2-d; x = t3</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> A function is called recursively 5 levels deep. How many access links point to the SAME activation record if the function is not lexically nested inside anything (a top-level function calling itself)?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> A function is called recursively 5 levels deep. What do the access links point to if the function is not lexically nested inside anything (a top-level function calling itself)?</summary>
           <div class="ans">
-            <p>Since the function is top-level (not nested inside any other function), its lexically enclosing scope is the global scope, not itself — so every one of the 5 activation records' access links point to the same single global-scope AR, not to each other's frames at all (unlike the control/dynamic links, which chain caller→callee down the 5 levels).</p>
-            <p class="final">Answer: All 5 access links point to the same (global-scope) AR, since the function isn't lexically nested inside another function</p>
+            <p>Since the function is top-level (not nested inside any other function), it has NO lexically enclosing procedure at all — so the access link isn't pointing to some other function's activation record. What actually happens depends on the implementation: many textbook treatments model this by giving each activation record an access link to a shared global/static environment, but that "global AR" framing is a teaching simplification, not a universal rule — real implementations commonly resolve top-level/global names directly through the compiler's global/static data area (fixed addresses, a global symbol table, etc.) rather than through an access-link chain at all. Either way, the key fact holds regardless of implementation: since there's no lexically enclosing procedure, every one of the 5 activation records reaches the SAME global/static environment through whatever mechanism the implementation uses — this is unlike the control/dynamic links, which do chain caller→callee down the 5 levels.</p>
+            <p class="final">Answer: All 5 activation records reach the same global/static environment (not each other's frames) since there's no lexically enclosing procedure — but exactly how that's implemented (a shared "global AR" vs direct static/global storage access) is implementation-dependent, not a fixed rule</p>
           </div>
         </details>
       </div>
