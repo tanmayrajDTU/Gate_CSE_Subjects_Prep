@@ -326,13 +326,19 @@ section.topic{scroll-margin-top:56px;}
             <li><strong>T(n) = T(n/2) + T(n/3) + n</strong> — multiple subproblems of DIFFERENT relative sizes (unequal splitting). The standard Master Theorem assumes all a subproblems are the same size n/b; here they aren't, so it doesn't apply directly. Use the Akra–Bazzi method (a generalization) or recursion-tree analysis instead.</li>
             <li><strong>Irregular/unequal subproblem sizes in general</strong> — e.g. T(n) = T(n/3) + T(2n/3) + n. Same issue as above: no single b to compare against. Recursion-tree or Akra–Bazzi, not Master Theorem.</li>
             <li><strong>f(n) falling in a "gap" between cases</strong> — e.g. T(n) = 2T(n/2) + n/log n. Here f(n) = n/log n is asymptotically smaller than n = n^(log₂2) (ruling out Case 2) but not polynomially smaller by any ε &gt; 0 (ruling out Case 1 too) — it falls in the gap between Case 1 and Case 2, where none of the three cases apply. These need the more general (Akra–Bazzi-style) extended master theorem or direct analysis.</li>
-            <li><strong>Non-polynomial f(n) with log/other factors</strong> that don't fit the nᵏ log^p n extended form (used above for T(n)=2T(n/2)+n log n) also require care — verify the extended form's conditions before applying it, rather than assuming any log-containing f(n) automatically fits.</li>
+            <li><strong>T(n) = 2T(n/2) + n log n</strong> — another gap case, this time straddling Case 2 and Case 3: f(n) = n log n grows faster than n = n^(log₂2) (so it's not Case 2 as stated) but not polynomially faster by any fixed ε &gt; 0, since log n grows slower than any nᵉ (so it's not Case 3 either). The basic three cases genuinely don't cover it — it needs the extended nᵏ log^p n form (giving Θ(n log² n) here) or a recursion-tree argument, not a direct plug-in to Case 2 or 3.</li>
+            <li><strong>Non-polynomial f(n) with log/other factors</strong> that don't fit the nᵏ log^p n extended form also require care — verify the extended form's conditions before applying it, rather than assuming any log-containing f(n) automatically fits.</li>
           </ul>
         </div>
       </div>
 
       <h3 class="sub">Amortized Analysis</h3>
-      <p>Worst-case-per-operation analysis can be overly pessimistic for a sequence of operations where expensive operations are rare and "pay for themselves" across the sequence. <strong>Amortized analysis</strong> gives the average cost per operation over any sequence of operations, guaranteed — not a probabilistic average, but a worst-case bound on the total cost divided by the number of operations.</p>
+      <p>Worst-case-per-operation analysis can be overly pessimistic for a sequence of operations where expensive operations are rare and "pay for themselves" across the sequence. The precise guarantee amortized analysis gives: <strong>for every sequence of m operations, the total cost is bounded by O(m × amortized cost per operation)</strong> — this is a worst-case bound on the total, holding for EVERY possible sequence, not a statement about typical or expected behavior. "Average cost per operation" is sometimes used as a shorthand for this, and it's mathematically fine as a description of what falls out of dividing total cost by m — but lead with the total-cost-bound framing above, because "average" too easily gets conflated with a different idea entirely:</p>
+      <div class="card note">
+        <span class="label">Don't confuse amortized analysis with expected/average-case analysis</span>
+        <p><strong>Amortized analysis</strong> is a deterministic, worst-case guarantee about a sequence of operations — no randomness or probability distribution over inputs is involved; the O(m × amortized cost) bound holds for the single worst possible sequence of m operations, guaranteed, every time. <strong>Expected/average-case analysis</strong> (e.g. quicksort's expected O(n log n)) is a probabilistic statement — it assumes a distribution over inputs (or over random choices the algorithm makes) and reasons about the mean outcome, which some particular run could still exceed. These are fundamentally different kinds of claims that happen to share the word "average" in casual descriptions — amortized cost is not a probabilistic average at all.</p>
+      </div>
+
       <div class="card pyq">
         <span class="label">Canonical example — dynamic array (e.g. C++ vector, Java ArrayList) doubling</span>
         <p>Appending to a dynamic array that doubles its capacity when full: a single append is usually O(1) (just place the element), but occasionally — when the array is full — it triggers a resize: allocate a new array of double the capacity and copy all existing elements over, an O(n) operation for that one append.</p>
@@ -358,8 +364,8 @@ section.topic{scroll-margin-top:56px;}
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Solve T(n) = 2T(n/2) + n log n.</summary>
           <div class="ans">
-            <p>This is an extension of Master Theorem Case 2. Since f(n) = Θ(n^(log₂2) · log n) = Θ(n log n), the solution is T(n) = Θ(n log² n).</p>
-            <p class="final">Answer: Θ(n log² n)</p>
+            <p>Under the basic three-case formulation as many textbooks state it (Case 2 requiring f(n) = Θ(n^(log_b a)) exactly, with no log factor), this falls outside the stated cases: with a=2, b=2, f(n) = n log n compares against n^(log₂2) = n¹, and n log n is asymptotically larger than n but not polynomially larger by any fixed ε > 0 (log n grows slower than any nᵉ), so it doesn't cleanly satisfy Case 3's polynomial-gap requirement either. However, under the commonly used generalized Master Theorem for f(n) = n^k log^p n, this is exactly Case 2 with k=1, p=1: when f(n) = Θ(n^(log_b a) · log^p n) — i.e. a = b^k — the solution is T(n) = Θ(n^k · log^(p+1) n). Plugging in k=1, p=1 gives T(n) = Θ(n log² n).</p>
+            <p class="final">Answer: Θ(n log² n) — falls outside the basic three-case Master Theorem, but is Case 2 of the generalized nᵏ log^p n version</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> True or False: 2^(n+1) = O(2ⁿ).</summary>
@@ -421,8 +427,8 @@ section.topic{scroll-margin-top:56px;}
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> How many comparisons are required in the worst case to find an element in a sorted array of 1024 elements using binary search?</summary>
           <div class="ans">
-            <p>Worst-case comparisons = ⌈log₂(n+1)⌉ = ⌈log₂(1025)⌉ = 11. Or simply checking bounds: 1024 → 512 → 256 → 128 → 64 → 32 → 16 → 8 → 4 → 2 → 1 → 0.</p>
-            <p class="final">Answer: 11</p>
+            <p>Convention: each iteration counts as one comparison — the equality test against the middle element (a "3-way" comparison: less / equal / greater) — and the count below is for the worst case (an unsuccessful search, or a successful search for the last element found). Worst-case comparisons = ⌈log₂(n+1)⌉ = ⌈log₂(1025)⌉ = 11. Or simply checking bounds: 1024 → 512 → 256 → 128 → 64 → 32 → 16 → 8 → 4 → 2 → 1 → 0.</p>
+            <p class="final">Answer: 11 (under this counting convention). If GATE's own answer key uses a different comparison convention, the count can shift by one — when precision matters more than the exact number, it's safer to answer O(log n).</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Given an array A of n distinct elements, we want to find both the minimum and maximum elements. What is the minimum number of comparisons needed?</summary>
@@ -433,7 +439,7 @@ section.topic{scroll-margin-top:56px;}
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> What is the time complexity of searching in a sorted linked list?</summary>
           <div class="ans">
-            <p>Even though the list is sorted, random access is not possible. You cannot find the middle element in O(1) time. Thus, binary search takes O(n) time, equivalent to linear search.</p>
+            <p>Even though the list is sorted, random access is not possible — finding the midpoint itself requires traversal from a known point, costing O(n) just to locate it. Binary search can still be performed conceptually (halving the search range each step), but each halving pays an O(n) traversal cost to find that step's midpoint, so the total running time is O(n) overall — it provides no asymptotic advantage over linear search on a linked list, even though the underlying procedure (repeatedly comparing against a midpoint and discarding half the range) is not literally the same algorithm as linear search.</p>
             <p class="final">Answer: O(n)</p>
           </div>
         </details>
@@ -515,7 +521,7 @@ section.topic{scroll-margin-top:56px;}
         <details class="qcard"><summary><span class="qn">Q2</span> You need to sort a very large dataset that cannot fit into RAM. Which sorting algorithm is best?</summary>
           <div class="ans">
             <p>External Merge Sort is used for data that is too large to fit in memory (external memory). It sorts chunks in RAM, writes them to disk, and then merges them.</p>
-            <p class="final">Answer: Merge Sort</p>
+            <p class="final">Answer: External Merge Sort</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> What is the worst-case time complexity of Quick Sort, and what input causes it (assuming the pivot is the first element)?</summary>
@@ -570,8 +576,12 @@ section.topic{scroll-margin-top:56px;}
     </div>
     <div class="card formula">
       <span class="label">Expected probes</span>
-      <div class="eq">Chaining successful = 1 + α/2
-Open addressing successful ≈ (1/α)ln(1/(1−α))</div>
+      <div class="eq">Chaining successful   ≈ 1 + α/2
+Chaining unsuccessful ≈ 1 + α</div>
+      <p>Under the standard <strong>uniform-hashing approximation</strong> (each probe sequence treated as equally likely to be any permutation of the table — the idealized model that double hashing comes closest to matching in practice), open addressing gives:</p>
+      <div class="eq">Open addressing unsuccessful ≈ 1/(1−α)
+Open addressing successful   ≈ (1/α)·ln(1/(1−α))</div>
+      <p>These two formulas are <strong>not universal</strong> — they hold under the uniform-hashing idealization, not for every probing scheme exactly as implemented. <strong>Linear probing</strong> is the standard counterexample: because of primary clustering, its real expected probe counts run noticeably worse than these idealized formulas predict, especially as α approaches 1 — GATE sometimes expects you to know linear probing underperforms this bound, not match it exactly.</p>
     </div>
   </div>
 
@@ -634,7 +644,7 @@ Open addressing successful ≈ (1/α)ln(1/(1−α))</div>
   <div class="topic-kicker">DIVIDE · CONQUER · COMBINE · RECURRENCES · CLASSIC ALGORITHMS</div>
 
   <h3 class="sub">The D&amp;C Paradigm</h3>
-  <p>Split problem into subproblems, solve recursively, combine solutions. Works well for problems with optimal substructure that decompose cleanly into independent subproblems.</p>
+  <p>Split problem into subproblems, solve recursively, combine solutions. Divide and conquer works well when a problem can be decomposed into smaller, sufficiently <strong>independent</strong> subproblems whose solutions can be recursively combined — independence/separability plus a combine step is the defining property, not "optimal substructure" (that's primarily a dynamic-programming/optimization concept — see the D&amp;C vs DP comparison later in this page for why the two shouldn't be conflated).</p>
 
   <h3 class="sub">Classic D&amp;C algorithms</h3>
   <table>
@@ -650,15 +660,18 @@ Open addressing successful ≈ (1/α)ln(1/(1−α))</div>
 
   <div class="card formula">
     <span class="label">Master Theorem quick reference</span>
-    <p>For recurrences of the form T(n) = aT(n/b) + O(nᵏ logᵖ n), compare a with bᵏ:</p>
-    <div class="eq">If a &gt; bᵏ  ⟹  T(n) = O(n^(log_b a))
-If a = bᵏ  ⟹  T(n) = O(nᵏ log^(p+1) n)  (if p ≥ 0)
-If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
+    <p>For recurrences of the form T(n) = aT(n/b) + Θ(nᵏ logᵖ n), compare a with bᵏ:</p>
+    <div class="eq">If a &gt; bᵏ  ⟹  T(n) = Θ(n^(log_b a))
+If a = bᵏ  ⟹  T(n) = Θ(nᵏ log^(p+1) n)  (if p ≥ 0)
+If a &lt; bᵏ  ⟹  T(n) = Θ(nᵏ logᵖ n)</div>
+    <p>These clean, exact Θ conclusions require f(n) itself to be pinned down by a matching <strong>Θ(nᵏ logᵖ n)</strong> bound. An upper bound alone — f(n) = O(nᵏ logᵖ n), without a matching lower bound — is <strong>not sufficient</strong> to derive a tight Θ result for T(n): a looser O-only bound can leave real gaps where none of the three cases (or even the extended form) cleanly applies, and you'd need recursion-tree analysis or the more general Akra–Bazzi method instead.</p>
   </div>
 
   <div class="card note">
     <span class="label">Comparison: D&amp;C vs DP</span>
-    <p>D&amp;C has independent subproblems, whereas DP has overlapping subproblems. Both rely on optimal substructure.</p>
+    <p><strong>Divide &amp; Conquer</strong> breaks a problem into independent smaller subproblems and combines their solutions. Optimal substructure is NOT a defining requirement of D&amp;C — merge sort is the textbook example: its two halves share no overlap, and there's no "optimal choice" being made anywhere in the algorithm, yet it's still canonical D&amp;C.</p>
+    <p><strong>Dynamic Programming</strong> specifically exploits <strong>overlapping subproblems</strong> together with an appropriate optimal-substructure/recurrence relationship — that overlap (and the resulting redundant recomputation) is exactly what memoization/tabulation is built to eliminate. 0/1 Knapsack is the classic example: subproblems on smaller capacities/item-sets recur repeatedly across different branches of the recursion.</p>
+    <p>Don't collapse this into "both rely on optimal substructure" — overlapping subproblems is the property that actually distinguishes DP from D&amp;C. Optimal substructure alone is necessary but not sufficient to make something DP; plenty of D&amp;C algorithms (e.g. finding the max of an array via D&amp;C) have optimal substructure too, without ever becoming DP.</p>
   </div>
 
   <div class="card pyq">
@@ -669,10 +682,10 @@ If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
   <div class="practice">
     <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
     
-    <details class="qcard"><summary><span class="qn">Q1</span> Solve the recurrence T(n) = 2T(n/2) + n log n.</summary>
+    <details class="qcard"><summary><span class="qn">Q1</span> Solve the recurrence T(n) = 2T(n/2) + n/log n.</summary>
       <div class="ans">
-        <p>Here a=2, b=2, f(n) = n log n. Since log_b(a) = log_2(2) = 1, we compare f(n) with n¹. It matches the extended Master Theorem form nᵏ logᵖ n with k=1, p=1. Since a = bᵏ (2 = 2¹), T(n) = Θ(nᵏ log^(p+1) n).</p>
-        <p class="final">Answer: Θ(n log² n)</p>
+        <p>Here a=2, b=2, f(n) = n/log n. Compare f(n) with n^(log_b a) = n^(log₂2) = n¹: f(n) = n/log n is asymptotically <em>smaller</em> than n (since 1/log n → 0), which points toward Case 1 — but it's not polynomially smaller by any fixed ε &gt; 0, since 1/log n shrinks slower than any n⁻ᵉ. So it fails Case 1's strict polynomial-gap requirement just as it fails to exactly match Case 2 (f(n) = Θ(n¹) would need f(n) growing at the same polynomial rate, not slower). This falls in the gap between Case 1 and Case 2 that the basic three-case Master Theorem doesn't cover — a recursion-tree argument is needed instead. At depth i (0 ≤ i &lt; log₂n), there are 2ⁱ subproblems each of size n/2ⁱ contributing (n/2ⁱ)/log(n/2ⁱ) work; summing across all log₂n levels gives a total of Θ(n log log n).</p>
+        <p class="final">Answer: Θ(n log log n) — via recursion-tree analysis, since this falls in a genuine gap between Master Theorem Case 1 and Case 2</p>
       </div>
     </details>
 
@@ -790,7 +803,7 @@ If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
 
     <details class="qcard"><summary><span class="qn">Q3</span> Which of the following problems cannot be solved optimally using a Greedy approach? (A) Huffman Coding (B) Fractional Knapsack (C) 0/1 Knapsack (D) Job Sequencing with Deadlines</summary>
       <div class="ans">
-        <p>0/1 Knapsack requires considering all combinations to maximize value without exceeding weight (overlapping subproblems), which requires Dynamic Programming. The rest have greedy choice properties.</p>
+        <p>0/1 Knapsack does not generally admit a greedy-choice strategy — a locally optimal item choice can lead to a suboptimal overall solution, unlike Fractional Knapsack. Dynamic Programming is the standard exact approach (pseudo-polynomial O(nW)), though it's not the only possible exact technique — approaches like branch-and-bound or meet-in-the-middle can also solve particular formulations. The rest have greedy choice properties.</p>
         <p class="final">Answer: (C) 0/1 Knapsack</p>
       </div>
     </details>
@@ -804,8 +817,8 @@ If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
 
     <details class="qcard"><summary><span class="qn">Q5</span> Dijkstra's algorithm is a greedy algorithm. Under what condition does it fail to find the optimal shortest path?</summary>
       <div class="ans">
-        <p>Dijkstra's assumes that once a node's shortest path is finalized, it will never be improved. This assumption breaks when the graph contains edges with negative weights, as a later, longer path could have a massive negative edge that reduces the total cost.</p>
-        <p class="final">Answer: When the graph has negative edge weights</p>
+        <p>Dijkstra's assumes that once a node's shortest path is finalized, it will never be improved. This assumption's guarantee breaks when the graph contains edges with negative weights, as a later, longer path could have a massive negative edge that reduces the total cost — so the algorithm is no longer guaranteed to be correct (it isn't that every negative-weight graph necessarily produces a wrong answer, just that correctness can no longer be relied on).</p>
+        <p class="final">Answer: Its correctness is no longer guaranteed once the graph has negative edge weights</p>
       </div>
     </details>
   </div>
@@ -833,7 +846,11 @@ If a &lt; bᵏ  ⟹  T(n) = O(nᵏ logᵖ n)</div>
       <h3 class="sub">Classic DP Problems</h3>
       <p><strong>0/1 Knapsack:</strong> Items cannot be split. DP[i][w] is the maximum value using first i items and weight limit w.</p>
       <div class="eq">DP[i][w] = max(DP[i-1][w], val[i] + DP[i-1][w-wt[i]])</div>
-      <p>Time: O(nW), Space: O(nW). Space optimization: 1D array O(W) when only the previous row is needed.</p>
+      <p>Time: O(nW). Space: <strong>2D table = O(nW)</strong>; since each row depends only on the row directly above it, this optimizes down to a <strong>1D array = O(W)</strong>, reused across items.</p>
+      <div class="card pyq">
+        <span class="label">GATE trap — iterate capacity BACKWARD in the 1D optimization</span>
+        <p>When collapsing the 2D table to a 1D array, the capacity loop must run <strong>from W down to wt[i]</strong> (backward), not from 0 up to W. Updating forward would let an item's own just-updated value feed into a LATER (higher-capacity) update within that same item's pass — effectively letting that item be picked more than once, which silently turns 0/1 Knapsack into <strong>Unbounded Knapsack</strong>. Iterating backward guarantees every value read on the right-hand side still belongs to the previous item's row, preserving the "each item used at most once" constraint. This single implementation detail is one of the most common 0/1 Knapsack bugs and a frequent GATE trace-the-code question.</p>
+      </div>
 
       <p><strong>Longest Common Subsequence (LCS):</strong> Length of the longest subsequence common to both strings X and Y.</p>
       <div class="eq">DP[i][j] = DP[i-1][j-1] + 1                     if X[i] = Y[j]
@@ -863,16 +880,17 @@ DP[i][j] = min(DP[i][j-1]+1, DP[i-1][j]+1, DP[i-1][j-1] + cost)</div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> To compute the LCS of two strings of lengths m and n, what is the maximum number of distinct subproblems solved?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> To compute the LCS of two strings of lengths m and n, how many entries does the conventional DP table have, including the base-case row/column for empty prefixes?</summary>
           <div class="ans">
-            <p>The DP table size is m × n, meaning there are mn distinct subproblems to solve, each taking O(1) time. The total number of distinct subproblems is strictly bounded by m·n.</p>
-            <p class="final">Answer: m × n</p>
+            <p>The conventional LCS DP table is indexed by prefix lengths 0..m and 0..n (to include the empty-prefix base cases), giving (m+1) × (n+1) table entries. If you only count the non-base states (prefixes of length ≥1 on both sides), that's m × n distinct "real" subproblems — but the full table including base cases has (m+1)(n+1) entries.</p>
+            <p class="final">Answer: (m+1) × (n+1) table entries (m × n non-base subproblems)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> Can the 0/1 Knapsack DP table be space-optimized to a 1D array?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> Can the 0/1 Knapsack DP table be space-optimized to a 1D array, and why must the capacity loop go backward?</summary>
           <div class="ans">
-            <p>Yes. The recurrence DP[i][w] only depends on the previous row (i-1). By updating a 1D array backwards (from capacity W down to 0), space complexity reduces from O(nW) to O(W).</p>
-            <p class="final">Answer: Yes, space can be reduced to O(W)</p>
+            <p>Yes. The recurrence DP[i][w] only depends on row i−1, so a 1D array of size W+1, reused across items, is enough — reducing space from the 2D table's O(nW) down to O(W).</p>
+            <p>The capacity loop must iterate <strong>backward</strong> (from W down to wt[i]) for correctness, not just style: updating forward would let an item's own already-updated (current-row) value leak into a later, higher-capacity update within the same item's pass — which effectively lets that single item be selected more than once, turning 0/1 Knapsack into Unbounded Knapsack by accident. Going backward guarantees every value read on the right-hand side still belongs to the previous item's row.</p>
+            <p class="final">Answer: Yes, space reduces to O(W) — but only if the capacity loop runs backward; forward iteration silently breaks the 0/1 (each-item-once) constraint</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Is the O(nW) time complexity of the 0/1 Knapsack problem considered polynomial?</summary>
@@ -889,8 +907,8 @@ DP[i][j] = min(DP[i][j-1]+1, DP[i-1][j]+1, DP[i-1][j-1] + cost)</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> How can we identify whether a problem should be solved with DP instead of Greedy?</summary>
           <div class="ans">
-            <p>DP is used when a problem has optimal substructure AND overlapping subproblems, but the greedy choice property cannot be proven (i.e., local optimal choices do not guarantee a global optimum, like in 0/1 Knapsack).</p>
-            <p class="final">Answer: When greedy fails to guarantee a global optimum despite having optimal substructure</p>
+            <p>DP is especially appropriate when the problem has optimal substructure and subproblems overlap substantially, allowing memoization/tabulation to reuse computed results and avoid repeated work — that combination is the primary practical criterion, not just about greedy "failing." (Overlapping subproblems isn't a strict mathematical requirement for applying memoization — you technically could memoize even with little or no overlap — but without substantial overlap there's nothing to save, so DP wouldn't offer its usual asymptotic advantage over plain recursion/D&C.) Within the optimal-substructure class, greedy is worth considering only when a greedy-choice property can additionally be proven (an optimal solution can always be built by making the locally best choice at each step). But the failure of a greedy strategy alone doesn't automatically point to DP — plenty of problems without a greedy-choice property are instead solved with divide and conquer, graph algorithms, backtracking, branch-and-bound, flow algorithms, or other techniques. DP specifically fits when that failure is paired with the optimal-substructure + overlapping-subproblems combination described above (e.g. 0/1 Knapsack).</p>
+            <p class="final">Answer: When the problem has optimal-substructure + substantially overlapping subproblems — a failed greedy strategy alone doesn't imply DP is the right tool; other techniques (D&C, backtracking, branch-and-bound, etc.) may fit instead</p>
           </div>
         </details>
       </div>
@@ -914,8 +932,18 @@ DP[i][j] = min(DP[i][j-1]+1, DP[i-1][j]+1, DP[i-1][j-1] + cost)</div>
         <li><strong>Kahn's Algorithm (BFS-based):</strong> repeatedly find and remove a vertex with in-degree 0 (place it in the output, and decrement the in-degree of its neighbors), using a queue to track vertices whose in-degree has just dropped to 0. If the algorithm terminates having output <strong>fewer than V vertices</strong>, the remaining vertices form a cycle — this is Kahn's built-in way to detect a non-DAG, distinct from DFS's back-edge check.</li>
       </ul>
 
+      <div class="card pyq">
+        <span class="label">GATE trap — a DAG can have MULTIPLE valid topological orders</span>
+        <p>Don't assume "the" topological order is unique — most DAGs admit several valid linear orderings, and GATE frequently asks you to count them or list all of them. Kahn's algorithm gives a direct, mechanical way to read off <strong>whether</strong> multiple orders exist, right from the trace itself:</p>
+        <ul>
+          <li>If, at some step, <strong>more than one</strong> vertex simultaneously has in-degree 0, you have a genuine choice of which to output next — this branching means <strong>multiple valid topological orders exist</strong> (one for each possible choice at that step, and at every subsequent step where the same thing happens).</li>
+          <li>Conversely, if at <strong>every</strong> step exactly <strong>one</strong> vertex has in-degree 0 (no ties, ever), there was never a choice to make — the topological order is <strong>unique</strong>.</li>
+        </ul>
+        <p>This also gives a fast way to count total topological orders for small DAGs: multiply together the number of available choices at each step where a choice existed (though for graphs with more complex structure, the choices at different steps aren't always independent, so this simple product can overcount — full enumeration or careful counting is needed in general).</p>
+      </div>
+
       <h3 class="sub">Minimum Spanning Tree (MST)</h3>
-      <p>MST properties, stated precisely (tie cases matter — this is a classic GATE trap): the <strong>Cut Property</strong> says a <em>lightest</em> edge crossing any cut belongs to <strong>some</strong> MST — not necessarily every MST, unless that lightest edge is the unique minimum for that cut, in which case it belongs to <strong>every</strong> MST. The <strong>Cycle Property</strong> says a <em>strictly heaviest</em> edge on any cycle cannot belong to any MST — but if there are ties for maximum weight on that cycle, a maximum-weight edge may still belong to some MST (just not all of them, and not together with another tied max edge on the same cycle unless removing it doesn't disconnect anything relevant). The MST is unique overall if all edge weights in the graph are distinct.</p>
+      <p>MST properties, stated precisely (tie cases matter — this is a classic GATE trap): the <strong>Cut Property</strong> says a <em>lightest</em> edge crossing any cut belongs to <strong>some</strong> MST — not necessarily every MST, unless that lightest edge is the unique minimum for that cut, in which case it belongs to <strong>every</strong> MST. The <strong>Cycle Property</strong> says a <em>strictly heaviest</em> edge on any cycle cannot belong to any MST — but if there are ties for maximum weight on that cycle, a maximum-weight edge may still belong to some MST (just not all of them, and not together with another tied max edge on the same cycle unless removing it doesn't disconnect anything relevant). For a connected graph, the MST is unique overall if all edge weights in the graph are distinct (a disconnected graph has no single MST to begin with — only a minimum spanning forest).</p>
       <div class="card pyq">
         <span class="label">GATE trap</span>
         <p>Don't read "min edge crossing a cut belongs to the MST" as "the MST" (definite article, implying uniqueness) when weights can tie — with ties, multiple different MSTs can exist and a given lightest-crossing edge is only guaranteed to be in <em>at least one</em> of them. The property becomes a uniqueness guarantee only when the minimum (or maximum, for the cycle property) is strict/unique.</p>
@@ -954,12 +982,22 @@ DP[i][j] = min(DP[i][j-1]+1, DP[i-1][j]+1, DP[i-1][j-1] + cost)</div>
       <div class="two-col">
         <div class="card">
           <h4 class="subsub">Dijkstra &amp; Bellman-Ford</h4>
-          <p>Dijkstra uses a greedy min-heap approach. Bellman-Ford relaxes all edges V−1 times. If a V-th relaxation succeeds, it detects a negative weight cycle.</p>
+          <p>Dijkstra uses a greedy min-heap approach, and its correctness guarantee requires all edge weights to be non-negative. Bellman-Ford relaxes all edges V−1 times. If a V-th relaxation succeeds, it detects a negative weight cycle reachable from the source (cycles the source can't reach go undetected).</p>
         </div>
         <div class="card">
           <h4 class="subsub">Floyd-Warshall</h4>
-          <p>Uses DP on intermediate vertices: dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]). Handles negative weights, but not negative cycles.</p>
+          <p>Uses DP on intermediate vertices: dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]). Handles negative weights; a negative value on the diagonal (D[i][i] &lt; 0) after completion signals a negative cycle through vertex i — see the caveat below on what that means for the rest of the matrix.</p>
         </div>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — why a negative cycle actually matters, not just "detect and stop"</span>
+        <p>Don't memorize "Bellman-Ford detects negative cycles" as an isolated fact — understand what breaks. If a <strong>source-reachable</strong> negative-weight cycle exists, you can loop around it indefinitely, making the total path weight to any vertex reachable FROM that cycle arbitrarily small (trending toward −∞). In other words, for every vertex reachable from a source-reachable negative cycle, <strong>shortest-path distance is not a well-defined finite minimum at all</strong> — there's no smallest value, only an unbounded downward sequence. This is exactly why Bellman-Ford's extra Vth pass exists: it isn't just a diagnostic flag, it's catching a case where the entire premise of "shortest path distance" breaks down for the affected vertices.</p>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — after Floyd-Warshall finds D[i][i] &lt; 0, not every entry stays meaningful</span>
+        <p>A negative value on the diagonal (D[i][i] &lt; 0 for some i) correctly signals that vertex i lies on a negative-weight cycle. But don't assume every OTHER entry D[p][q] in the completed matrix is still a valid, meaningful shortest-path distance — any pair (p,q) whose shortest path is affected by (passes through, or can be re-routed through) that negative cycle no longer has a well-defined finite shortest distance either, for the same reason as Bellman-Ford: you could route through the cycle repeatedly to make that path arbitrarily small. Only pairs entirely unaffected by any negative cycle retain their computed D[p][q] as a genuine shortest-path value — treat the whole matrix as suspect once any diagonal entry is negative, not just that one row/column.</p>
       </div>
 
       <div class="card formula">
@@ -977,7 +1015,7 @@ Floyd-Warshall:          O(V³)</div>
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>Adding a constant positive weight to all edges of a graph <strong>does not</strong> preserve the shortest paths (a path with more edges gets penalized more heavily). However, adding a constant weight to all edges <strong>does</strong> preserve the Minimum Spanning Tree. Dijkstra fundamentally fails with negative edges—GATE loves giving a graph with one negative edge to trick you into tracing Dijkstra's.</p>
+        <p>Adding a constant positive weight to all edges of a graph <strong>does not</strong> preserve the shortest paths (a path with more edges gets penalized more heavily). However, adding a constant weight to all edges <strong>does</strong> preserve the Minimum Spanning Tree. Dijkstra's correctness guarantee requires non-negative edges—GATE loves giving a graph with one negative edge to trick you into tracing Dijkstra's and trusting the result.</p>
       </div>
 
       <div class="card pyq">
@@ -1005,10 +1043,10 @@ Floyd-Warshall:          O(V³)</div>
             <p class="final">Answer: Union-Find (Disjoint Set)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> In Bellman-Ford, how many passes of edge relaxation are required to detect a negative weight cycle?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> In Bellman-Ford, how many passes of edge relaxation are required to detect a negative weight cycle reachable from the source?</summary>
           <div class="ans">
-            <p>The shortest path can have at most V−1 edges. The algorithm normally does V−1 passes. A V-th pass is done strictly to detect negative cycles (if any distance updates, a cycle exists).</p>
-            <p class="final">Answer: V passes in total</p>
+            <p>The shortest path can have at most V−1 edges. The algorithm normally does V−1 passes. A V-th pass is done strictly to detect negative cycles: if any distance can still be relaxed on this extra pass, a negative-weight cycle reachable from the source exists. This "reachable from the source" qualifier matters — Bellman-Ford only relaxes edges along paths from the source, so a negative cycle sitting in a part of the graph the source can't reach (a disconnected component, or a component only reachable INTO, not FROM, the cycle) will never trigger a relaxation on the V-th pass and goes undetected by this run.</p>
+            <p class="final">Answer: V passes in total (V−1 normal passes + 1 detection pass), and this detects only source-reachable negative cycles</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> True or False: Topological sorting can be performed on any directed graph.</summary>
@@ -1017,16 +1055,16 @@ Floyd-Warshall:          O(V³)</div>
             <p class="final">Answer: False (only for DAGs)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> If all edge weights in a graph are distinct, how many Minimum Spanning Trees can it have?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> For a connected undirected weighted graph, if all edge weights are distinct, how many Minimum Spanning Trees can it have?</summary>
           <div class="ans">
-            <p>A standard property of MSTs is that if all edge weights are distinct, the MST is absolutely unique.</p>
-            <p class="final">Answer: Exactly one</p>
+            <p>A standard property of MSTs is that for a connected graph, if all edge weights are distinct, the MST is absolutely unique. The "connected" condition matters: an MST is only defined for a connected graph in the first place — a disconnected graph has no single spanning tree at all, only a minimum spanning <em>forest</em> (one MST per connected component), and the uniqueness argument applies separately within each component.</p>
+            <p class="final">Answer: Exactly one (for a connected graph)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> Why does Dijkstra's algorithm fail on graphs with negative edge weights?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why is Dijkstra's algorithm not guaranteed to be correct on graphs with negative edge weights?</summary>
           <div class="ans">
-            <p>Dijkstra's is a greedy algorithm. Once a vertex is extracted from the min-heap, its shortest path is considered "finalized". A negative edge could offer a cheaper path to a finalized vertex later, which Dijkstra's ignores.</p>
-            <p class="final">Answer: It assumes extracted vertices are strictly finalized</p>
+            <p>Dijkstra's is a greedy algorithm. Once a vertex is extracted from the min-heap, its shortest path is considered "finalized" and never revisited. A negative edge could offer a cheaper path to an already-finalized vertex later, which Dijkstra's ignores by construction. Note the precise phrasing: this is a correctness <em>guarantee</em>, not a claim that Dijkstra necessarily produces a wrong answer on every graph with a negative edge — on some specific negative-edge graphs (and orderings) the greedy choices happen to still land on the correct distances by luck. Dijkstra's proof of correctness assumes non-negative weights, so it's unsafe to rely on whenever a negative edge is present, whether or not a particular instance happens to come out right.</p>
+            <p class="final">Answer: Because the algorithm's correctness proof depends on extracted vertices being truly finalized, an assumption that non-negative weights guarantee and negative weights can violate</p>
           </div>
         </details>
       </div>
@@ -1043,7 +1081,7 @@ Floyd-Warshall:          O(V³)</div>
         </div>
         <div class="card formula">
           <span class="label">Searching &amp; Lower Bounds</span>
-          <p>Binary Search: O(log n). Lower bound for comparison-based sorting: Ω(n log n). Lower bound to search an unsorted array: Ω(n).</p>
+          <p>Binary Search: O(log n). Any comparison-based sorting algorithm has <strong>worst-case</strong> lower bound Ω(n log n) — not every execution of every run; e.g. insertion sort takes O(n) on already-sorted input. Lower bound to search an unsorted array: Ω(n).</p>
         </div>
         <div class="card formula">
           <span class="label">Sorting Algorithm Limits</span>
@@ -1051,7 +1089,7 @@ Floyd-Warshall:          O(V³)</div>
         </div>
         <div class="card formula">
           <span class="label">Hashing Basics</span>
-          <p>Load factor α = n/m. Chaining: average O(1 + α), worst case O(n) (all keys collide). Open addressing expected probes for unsuccessful search: 1/(1−α) — depends on load factor and probing scheme; worst case O(n).</p>
+          <p>Load factor α = n/m. Chaining: average O(1 + α), worst case O(n). Under the standard uniform-hashing approximation, open addressing's expected probes for unsuccessful search ≈ 1/(1−α) — this is idealized (real behavior depends on probing scheme too, e.g. linear probing runs worse); worst case O(n) regardless.</p>
         </div>
         <div class="card formula">
           <span class="label">Divide &amp; Conquer</span>
@@ -1063,7 +1101,7 @@ Floyd-Warshall:          O(V³)</div>
         </div>
         <div class="card formula">
           <span class="label">Dynamic Programming</span>
-          <p>0/1 Knapsack O(nW), LCS O(mn), LIS O(n log n), MCM O(n³). DP requires optimal substructure AND overlapping subproblems.</p>
+          <p>0/1 Knapsack: time O(nW); space O(nW) as 2D, optimized to O(W) as 1D — but only with the capacity loop iterated backward. LCS O(mn), LIS O(n log n), MCM O(n³). DP requires optimal substructure AND overlapping subproblems.</p>
         </div>
         <div class="card formula">
           <span class="label">Graph: Spanning Trees</span>
@@ -1071,7 +1109,7 @@ Floyd-Warshall:          O(V³)</div>
         </div>
         <div class="card formula">
           <span class="label">Graph: Shortest Paths</span>
-          <p>Dijkstra O((V+E)log V), fails on negative edges. Bellman-Ford O(VE), detects negative cycles. Floyd-Warshall O(V³), all-pairs DP.</p>
+          <p>Dijkstra O((V+E)log V), fails on negative edges. Bellman-Ford O(VE), detects source-reachable negative cycles — affected vertices have no well-defined finite shortest distance. Floyd-Warshall O(V³), all-pairs DP; D[i][i]&lt;0 signals a negative cycle, which taints other affected entries too, not just the diagonal.</p>
         </div>
         <div class="card formula">
           <span class="label">Key Distinctions</span>
@@ -1088,8 +1126,9 @@ Floyd-Warshall:          O(V³)</div>
         <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What is the worst-case time complexity of Quick Sort?</summary>
           <div class="ans">
-            <p>When the pivot is consistently the smallest or largest element (e.g., already sorted array), the recurrence is T(n) = T(n−1) + O(n).</p>
-            <p class="final">Answer: O(n²)</p>
+            <p>For standard comparison-based Quick Sort, the worst-case complexity is Θ(n²) — this is a property of the algorithm in general, independent of any particular pivot-selection strategy or input.</p>
+            <p>A concrete example that <em>causes</em> this worst case: if the pivot is consistently the smallest or largest element of the (sub)array being partitioned — e.g. always picking the first or last element as pivot on an already-sorted array — each partition step only shrinks the problem by 1, giving the recurrence T(n) = T(n−1) + O(n), which solves to Θ(n²). This is one example that triggers the worst case, not a definition of what the worst-case complexity is.</p>
+            <p class="final">Answer: Θ(n²) (worst case), e.g. triggered by always picking the smallest/largest element as pivot</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> True or False: Adding a constant weight to all edges in a graph preserves the shortest paths.</summary>
