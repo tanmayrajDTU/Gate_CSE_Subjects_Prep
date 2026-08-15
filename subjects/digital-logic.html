@@ -362,7 +362,7 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Find the Gray code equivalent of binary 1011.</summary>
           <div class="ans">
-            <p>Indexing left-to-right here (b₀ = leftmost/MSB of 1011, b₃ = rightmost/LSB — note this is the opposite of the usual b₀=LSB convention, so don't mix the two): g₀ = b₀ = 1. g₁ = b₁⊕b₀ = 0⊕1 = 1. g₂ = b₂⊕b₁ = 1⊕0 = 1. g₃ = b₃⊕b₂ = 1⊕1 = 0.</p>
+            <p>Working left to right by position (no subscript convention needed): the Gray code's leftmost (MSB) bit equals the binary's leftmost bit. Each subsequent Gray bit is the XOR of the binary bit at that position with the binary bit immediately to its left. Binary: 1 0 1 1. Gray bit 1 (leftmost) = 1 (same as binary). Gray bit 2 = 1⊕0 = 1. Gray bit 3 = 0⊕1 = 1. Gray bit 4 (rightmost) = 1⊕1 = 0.</p>
             <p class="final">Answer: 1110</p>
           </div>
         </details>
@@ -453,7 +453,7 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
       </div>
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>Minterm index i and maxterm index i are complementary rows of the <em>same</em> truth table: if a function's minterm list is {1,3,5,6}, its maxterm list is everything else — {0,2,4,7}. GATE frequently asks you to convert Σm ↔ ΠM directly without redrawing the truth table.</p>
+        <p>SOP is naturally formed from the minterms where F=1 (the rows the function is true for); POS is naturally formed from the maxterms where F=0 (the rows the function is false for). Minterm index i and maxterm index i are complementary rows of the <em>same</em> truth table: if a function's minterm list is {1,3,5,6}, its maxterm list is everything else — {0,2,4,7}. So for the same function, <strong>F = Σm(1,3,5,6) = ΠM(0,2,4,7)</strong> — the same F, expressed two ways, using complementary index sets over the full range of rows. GATE frequently asks you to convert Σm ↔ ΠM directly without redrawing the truth table; the most common mistake is listing the same index set for both instead of complementing it.</p>
       </div>
 
       <div class="practice">
@@ -466,8 +466,16 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Express F = AB + C'D using only NOR gates (apply De Morgan).</summary>
           <div class="ans">
-            <p>F = AB + C'D. Double-complement: F = ((AB + C'D)')' = ((AB)'·(C'D)')'. Each factor and the outer complement can each be built from NOR gates (a NOR with tied inputs gives NOT; OR-of-NOTs plus a final NOR gives the AND-like combination) — mechanically, replace every AND with De Morgan's OR-of-complements form and implement every OR/complement stage with NOR.</p>
-            <p class="final">Key idea: repeatedly apply (X)'' = X and De Morgan until every operator is expressible as NOR</p>
+            <p>F = AB + C'D. Double-complement: F = ((AB + C'D)')' = ((AB)'·(C'D)')'. Mechanically, replace every AND with De Morgan's OR-of-complements form and implement every OR/complement stage with NOR (written X↓Y = (X+Y)'). Concretely, using NOR with tied inputs for NOT:</p>
+            <ul>
+              <li>A' = A↓A, B' = B↓B</li>
+              <li>AB = A'↓B' (since (A'+B')' = A·B by De Morgan)</li>
+              <li>C' = C↓C, D' = D↓D</li>
+              <li>C'D = C↓D' (since (C+D')' = C'·D by De Morgan)</li>
+              <li>F = (AB↓C'D)↓(AB↓C'D) (the standard double-NOR construction for OR: NOR(X,Y) fed into itself gives X+Y)</li>
+            </ul>
+            <p>So F = (AB↓C'D)↓(AB↓C'D). Counting each NOR used in the construction above: A' (1), B' (1), AB (1), C' (1), D' (1), C'D (1), plus the final double-NOR OR stage which itself takes 2 NOR gates (one to compute AB↓C'D, one more to feed that result into itself to recover the OR) — 6 + 2 = 8 two-input NOR gates total. (This is the gate count for the specific construction shown, not a claim that 8 is the global minimum for a NOR-only implementation of this function.)</p>
+            <p class="final">Key idea: repeatedly apply (X)'' = X and De Morgan until every operator is expressible as NOR — see the gate-by-gate construction above for F = (AB↓C'D)↓(AB↓C'D); this construction uses 8 two-input NOR gates</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> F(A,B,C,D) = ΠM(0,2,4,6,8,10,12,14). Write F in Σm form.</summary>
@@ -543,6 +551,25 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
 
       <h3 class="sub">Don't-care conditions</h3>
       <p>Arise when certain input combinations physically cannot occur (e.g. invalid BCD codes 1010–1111) or their output value is irrelevant to the design. Marked <code>X</code> or <code>d</code> in the map/table — treat as 1 or 0, whichever minimizes the expression further.</p>
+
+      <h3 class="sub">Static hazards — the K-map trap that's easy to miss</h3>
+      <p>A <strong>hazard</strong> is a momentary, unwanted glitch in a combinational circuit's output caused by different propagation delays along different paths, when more than one input literal changes for a given transition. Two flavors matter most for GATE:</p>
+      <div class="two-col">
+        <div class="card">
+          <h4 class="subsub">Static-1 hazard</h4>
+          <p>The output is supposed to <strong>stay at 1</strong> across the transition, but it can briefly glitch down to 0 before settling back at 1.</p>
+        </div>
+        <div class="card">
+          <h4 class="subsub">Static-0 hazard</h4>
+          <p>The output is supposed to <strong>stay at 0</strong> across the transition, but it can briefly glitch up to 1 before settling back at 0.</p>
+        </div>
+      </div>
+      <div class="card pyq">
+        <span class="label">GATE trap — spotting and fixing a static-1 hazard on the K-map</span>
+        <p>A static-1 hazard shows up on a K-map exactly where <strong>two adjacent 1-cells are covered by two DIFFERENT groups, with no single group covering both</strong> — the transition between those two cells crosses a "seam" between product terms, and if one term is turning off exactly as the other is turning on, a brief dip to 0 can occur if the off-path is faster than the on-path.</p>
+        <p><strong>Fix: add a redundant (consensus) implicant that covers that exact adjacent pair</strong> — a group that is not needed for the minimum SOP's logical coverage (both cells are already covered by other groups individually) but overlaps the seam between them, so at least one term stays 1 throughout the transition and the output never has a reason to dip. This redundant group typically corresponds to the "consensus term" of the two overlapping groups' terms. The cost is a slightly less minimal circuit (one extra gate/term) in exchange for glitch-free behavior across that transition — a classic minimality-vs-hazard-freedom trade-off GATE likes to test conceptually.</p>
+        <p>Static-0 hazards are handled the mirror-image way, using a POS (product-of-sums) K-map covering the 0-cells and adding a redundant sum term across the seam between two adjacent 0-groups.</p>
+      </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
@@ -691,9 +718,9 @@ Final sum (Sₙ₋₁, the most-significant sum bit)  ≈  (n−1) × t_carry  +
             <p class="final">Answer: 6 + 3 = 9 gate-delays</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> How many two-input gates are needed for the minimal NAND-only implementation of a half adder?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> Assuming only 2-input NAND gates are allowed and intermediate outputs may be freely reused, what is the minimum number of 2-input NAND gates needed to implement a half adder?</summary>
           <div class="ans">
-            <p>A half adder needs S = A⊕B and C = AB. A standard NAND-only build uses 5 two-input NAND gates total (the classic XOR-from-NAND network of 4 gates plus 1 more NAND, inverted, to derive AB from intermediate signals).</p>
+            <p>A half adder needs S = A⊕B and C = AB. Under these assumptions, a standard NAND-only build uses 5 two-input NAND gates total (the classic XOR-from-NAND network of 4 gates, reusing its intermediate signals, plus 1 more NAND, inverted, to derive AB).</p>
             <p class="final">Answer: 5 NAND gates</p>
           </div>
         </details>
@@ -898,10 +925,11 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> In an SR latch, inputs S=1, R=1 are applied and then both are dropped to S=0, R=0 simultaneously. What happens?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> For a NOR-based, active-high SR latch, inputs S=1, R=1 are applied and then both are dropped to S=0, R=0 simultaneously. What happens?</summary>
           <div class="ans">
-            <p>Two distinct things are happening here, and it's worth keeping them separate. First, S=R=1 is the <strong>forbidden/invalid input combination</strong> — it forces both Q and Q' toward 0, violating their required complementary relationship (Q and Q' are supposed to always be opposite). Second, when both inputs then drop to 0 at exactly the same instant from that invalid state, which output settles to 1 depends on tiny, unequal gate-propagation-delay mismatches between the two cross-coupled gates — this specific unpredictable settling is <strong>metastability / an indeterminate final state due to unequal propagation delays</strong>, not the same phenomenon as "race-around" (which specifically refers to a level-triggered JK latch with J=K=1 toggling repeatedly for as long as its enable/clock pulse stays high — see the JK section). Don't use "race-around" for this SR case; reserve that term for the JK toggling issue.</p>
-            <p class="final">Answer: Next state is indeterminate — a metastable outcome caused by unequal propagation delays, distinct from JK's "race-around"</p>
+            <p>This is specifically about the NOR-based active-high SR latch, where S=R=1 is the invalid combination. The interpretation flips for a NAND-based active-low SR latch (S=R=1 → hold, S=R=0 → invalid), so always check which implementation a question means before applying either analysis.</p>
+            <p>Two distinct things are happening here, and it's worth keeping them separate. First, S=R=1 is the <strong>forbidden/invalid input combination</strong> — it forces both Q and Q' toward 0, violating their required complementary relationship (Q and Q' are supposed to always be opposite). Second, when both inputs then drop to 0 at exactly the same instant from that invalid state, which output settles to 1 depends on tiny, unequal gate-propagation-delay mismatches between the two cross-coupled gates — this specific unpredictable settling is an <strong>indeterminate/unpredictable final state caused by propagation-delay mismatch</strong>. In practical implementations this race can also trigger genuine metastability (the output hovering at an invalid intermediate voltage before resolving), but "indeterminate final state" and "metastability" aren't strictly the same thing — don't equate every such race directly with metastability. This is also not the same phenomenon as "race-around" (which specifically refers to a level-triggered JK latch with J=K=1 toggling repeatedly for as long as its enable/clock pulse stays high — see the JK section). Don't use "race-around" for this SR case; reserve that term for the JK toggling issue.</p>
+            <p class="final">Answer: Next state is indeterminate — an unpredictable settling outcome caused by unequal propagation delays (which can also trigger metastability in practice), distinct from JK's "race-around"</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Derive the J and K inputs needed to make a JK flip-flop behave as a D flip-flop.</summary>
@@ -966,6 +994,13 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
           <h4 class="subsub">Johnson (twisted-ring) counter</h4>
           <p>Like a ring counter but the <strong>complemented</strong> output of the last stage feeds back to the first. Produces 2n valid states from n flip-flops — double the states of a ring counter for the same hardware.</p>
         </div>
+      </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — a ring counter needs a valid one-hot start, or it locks up</span>
+        <p>The n valid states of a basic ring counter are the n one-hot patterns (exactly one flip-flop is 1, the rest are 0). This only works if the counter is <strong>initialized into one of those one-hot states</strong> — typically via a preset/clear pulse at startup, since flip-flops don't reliably power up into any particular known state on their own.</p>
+        <p>Crucially, the <strong>all-zero state (0000...0) is NOT one of the n valid states, and is a lock-up state</strong> for the basic ring counter: once every flip-flop is 0, shifting a 0 into a 0 keeps producing 0 forever — there's no 1 anywhere in the loop to circulate, so the counter can never recover into a valid one-hot pattern on its own. Any of the 2ⁿ − n other non-one-hot states (including all-zero, and any pattern with more than one 1) are similarly invalid — a basic ring counter has no self-correcting mechanism to return to a valid state once it strays into one of these, unlike counters designed with explicit unused-state handling.</p>
+        <p>Johnson counters have their own separate, complete cycle of 2n valid states (not n) — don't apply the ring counter's n-state / all-zero-is-invalid reasoning directly to a Johnson counter without adjusting for its doubled, differently-structured state cycle.</p>
       </div>
 
       <h3 class="sub">Shift registers</h3>
@@ -1064,10 +1099,10 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
             <p class="final">Answer: 3 states</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> A 2-state Mealy machine has state A producing output 0 on input 0 and output 1 on input 1 (both self-loops or transitions to B differently). Why might converting it to Moore require more than 2 states?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> A Mealy state A produces two different outputs depending on which input triggers its transition (e.g. output 0 on input 0, output 1 on input 1). Why may state splitting be necessary when converting such a machine to Moore?</summary>
           <div class="ans">
-            <p>In Moore, output must depend on state alone — a single value per state. If Mealy state A produces two different outputs (0 and 1) depending on the input, no single Moore state can replicate both behaviors; A must be split into two Moore states, one for each output value, before the same transition logic can be reproduced.</p>
-            <p class="final">Answer: At least 3 Moore states are needed (state A splits into two)</p>
+            <p>In Moore, output must depend on state alone — a single value per state. If Mealy state A produces two different outputs (0 and 1) depending on the input, no single Moore state can replicate both behaviors; A must be split into two Moore states, one for each output value, so that each resulting state has a single well-defined output. The exact number of states in the final Moore machine depends on the full transition structure of the original Mealy machine, not on this splitting rule alone.</p>
+            <p class="final">Answer: A Moore state can only emit one output value, so any Mealy state with input-dependent outputs must be split into multiple Moore states — one per distinct output value it produces</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Two states S1 and S2 have identical outputs for every input, and on every input both transition to the same next state. Are they equivalent?</summary>
@@ -1129,7 +1164,7 @@ Equivalently: overflow happens only when adding two numbers of the SAME sign
         <span class="label">Special encodings</span>
         <ul style="margin-bottom:0;">
           <li>Exponent all 0s, mantissa 0 → ±0</li>
-          <li>Exponent all 0s, mantissa ≠ 0 → denormalized number (no implicit leading 1)</li>
+          <li>Exponent all 0s, mantissa ≠ 0 → subnormal number (also called denormalized/denormal — older but still common terminology; no implicit leading 1)</li>
           <li>Exponent all 1s, mantissa 0 → ±∞</li>
           <li>Exponent all 1s, mantissa ≠ 0 → NaN</li>
         </ul>
@@ -1231,7 +1266,11 @@ Equivalently: overflow happens only when adding two numbers of the SAME sign
         </div>
         <div class="card formula">
           <span class="label">Mod-N counter</span>
-          <p>Needs ⌈log₂N⌉ flip-flops; unused states → don't-cares (unless self-correcting is required).</p>
+          <p>Needs ⌈log₂N⌉ flip-flops; the 2ⁿ−N unused states exist regardless, but only become usable don't-cares if self-correcting behavior isn't required — otherwise their transitions must be specified.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Ring vs Johnson counter</span>
+          <p>Ring: n flip-flops → n valid one-hot states; needs one-hot initialization or it locks up (all-zero is invalid, no self-recovery). Johnson: n flip-flops → 2n valid states, separate complete cycle.</p>
         </div>
         <div class="card formula">
           <span class="label">2's complement range</span>
@@ -1299,22 +1338,22 @@ Equivalently: overflow happens only when adding two numbers of the SAME sign
             <p class="final">Answer: 4 select lines (16:1 MUX)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> A synchronous mod-10 (decade) counter uses how many flip-flops minimum, and how many states are left as don't-cares?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> A synchronous mod-10 (decade) counter uses how many flip-flops minimum, and how many of the unused states may be treated as don't-cares?</summary>
           <div class="ans">
-            <p>⌈log₂10⌉ = 4 flip-flops (2⁴=16 ≥ 10). Unused states = 16 − 10 = 6, usable as don't-cares in the excitation K-maps.</p>
-            <p class="final">Answer: 4 flip-flops, 6 don't-care states</p>
+            <p>⌈log₂10⌉ = 4 flip-flops (2⁴=16 ≥ 10). Unused states = 16 − 10 = 6 — that count is fixed regardless of design choices. Whether those 6 states are actually usable as don't-cares in the excitation K-maps is a separate design decision, not automatic: treating them as don't-cares is only valid if the design doesn't need to specify what happens should the counter ever land in one of those states (e.g. on power-up or due to a glitch). If the design instead requires <strong>self-starting/self-correcting</strong> behavior — guaranteeing that any invalid state transitions back into the valid counting sequence within a bounded number of clocks — then the next-state behavior of some or all of those 6 states must be explicitly specified rather than left as "don't care," which can change (and typically increases) the minimized excitation equations.</p>
+            <p class="final">Answer: 4 flip-flops; 6 unused states exist, and they may be used as don't-cares only if the design doesn't require self-starting/self-correcting behavior — otherwise their transitions must be defined</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> A JK flip-flop currently at Q=1 must go to Q(next)=1. What are the required J,K values from the excitation table?</summary>
           <div class="ans">
-            <p>From the JK excitation table, the transition 1→1 requires J=X (don't care) and K=0 — either J=0 (hold) or J=1,K=1 would also toggle back to 1, but K must stay 0 to guarantee no reset.</p>
+            <p>From the JK excitation table, the transition 1→1 requires J=X (don't care) and K=0. With K=0, J=0 holds at 1 and J=1 sets/holds at 1 — either way Q stays 1, which is why J is don't-care. K must stay 0, since K=1 would reset (J=0) or toggle (J=1) Q to 0.</p>
             <p class="final">Answer: J = X, K = 0</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> An IEEE-754 single precision number has exponent field = 00000000 and a non-zero mantissa. What category does it fall into, and why is there no implicit leading 1?</summary>
           <div class="ans">
-            <p>An all-zero exponent field is reserved for denormalized numbers (or true zero if the mantissa is also zero). Denormals exist to represent values smaller than the smallest normalized number, and they drop the implicit leading 1 (using 0.Mantissa instead of 1.Mantissa) specifically so the format can gracefully represent numbers approaching zero rather than jumping straight from the smallest normal value to zero.</p>
-            <p class="final">Answer: Denormalized number; no implicit 1 because it extends range closer to zero than normalized encoding allows</p>
+            <p>An all-zero exponent field is reserved for subnormal numbers (also called denormalized/denormal numbers — older but still common terminology), or true zero if the mantissa is also zero. Subnormals exist to represent values smaller than the smallest normalized number, and they drop the implicit leading 1 (using 0.Mantissa instead of 1.Mantissa) specifically so the format can gracefully represent numbers approaching zero rather than jumping straight from the smallest normal value to zero.</p>
+            <p class="final">Answer: Subnormal (denormalized) number; no implicit 1 because it extends range closer to zero than normalized encoding allows</p>
           </div>
         </details>
       </div>
