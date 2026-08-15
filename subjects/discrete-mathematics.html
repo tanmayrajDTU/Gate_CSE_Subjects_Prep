@@ -494,7 +494,7 @@ Bijective functions (needs m=n): n!</div>
 
       <div class="card note">
         <span class="label">Order of a group / order of an element</span>
-        <p>Order of the group = number of elements in it. Order of an element a = smallest positive integer n such that aⁿ = e (identity). In a finite group, the order of every element divides the order of the group (Lagrange's theorem) — a fast filter for what element orders are even possible.</p>
+        <p>Order of the group = number of elements in it. Order of an element a = smallest positive integer n such that aⁿ = e (identity). In a finite group, the order of every element divides the order of the group (Lagrange's theorem) — a fast filter for what element orders are even possible. Note this is a necessary condition only: Lagrange's theorem doesn't by itself guarantee that every divisor of the group's order is actually realized as some element's order — that requires additional, group-specific structural facts (e.g. cyclicity).</p>
       </div>
 
       <div class="card pyq">
@@ -516,10 +516,11 @@ Bijective functions (needs m=n): n!</div>
             <p class="final">Answer: No — it's a monoid, not a group (inverse fails)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> In a group of order 15, what are the possible orders of its elements (using Lagrange's theorem)?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> In a group of order 15, which element orders are permitted by Lagrange's theorem?</summary>
           <div class="ans">
-            <p>By Lagrange's theorem, every element's order must divide the group's order. Divisors of 15: 1, 3, 5, 15.</p>
-            <p class="final">Answer: Possible element orders: 1, 3, 5, 15</p>
+            <p>By Lagrange's theorem, every element's order must divide the group's order — this gives a necessary condition (a fast filter for what's possible), not a guarantee that every divisor is actually realized by some element. Divisors of 15: 1, 3, 5, 15.</p>
+            <p>(As a separate, deeper fact beyond Lagrange alone: since 15 = 3×5 with 3 and 5 prime and 3∤(5−1), every group of order 15 is in fact cyclic — and a cyclic group of order n does have an element of every order dividing n, so for this specific order all four permitted values 1, 3, 5, 15 do actually occur. That conclusion needs more than Lagrange's theorem by itself, though.)</p>
+            <p class="final">Answer: Orders permitted by Lagrange's theorem: 1, 3, 5, 15 (and for order 15 specifically, all four are also known to actually occur, though that requires more than Lagrange's theorem alone)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Find the order of the element 2 in the group (ℤ₆, +) [integers mod 6 under addition, identity=0].</summary>
@@ -712,7 +713,7 @@ Repeated root r:            aₙ = (A + Bn)·rⁿ
         </div>
         <div class="card formula">
           <span class="label">Group axioms</span>
-          <p>Closure, Associativity, Identity, Inverse. Monoid = first three only (no inverse required). Lagrange: element order divides group order.</p>
+          <p>Closure, Associativity, Identity, Inverse. Monoid = first three only (no inverse required). Lagrange: element order divides group order (necessary, not sufficient — not every divisor is guaranteed to be realized).</p>
         </div>
         <div class="card formula">
           <span class="label">Handshake lemma</span>
