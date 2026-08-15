@@ -297,8 +297,12 @@ section.topic{scroll-margin-top:20px;}
         <p>Signed integer overflow (e.g. <code>INT_MAX + 1</code>) is <strong>undefined behaviour</strong> in standard C — the compiler is not required to wrap, saturate, or do anything predictable. Do not default to "it wraps to INT_MIN" as a general rule. Only compute a specific wrapped value when the question <em>explicitly</em> tells you to assume a particular machine/compiler representation (e.g. "assume 32-bit 2's complement") — in that case, and only then, discuss the implementation-specific result.</p>
       </div>
 
-      <h3 class="sub">Floating point representation (IEEE-754)</h3>
-      <p><code>float</code> (32-bit) and <code>double</code> (64-bit) follow IEEE-754: 1 sign bit, exponent (biased), and mantissa with an implicit leading 1.</p>
+      <h3 class="sub">Floating point representation</h3>
+      <div class="card pyq">
+        <span class="label">GATE trap — IEEE-754 is NOT mandated by the C standard</span>
+        <p>The C language itself does <strong>not</strong> require <code>float</code> to be 32 bits, <code>double</code> to be 64 bits, or either to use IEEE-754 representation at all — the standard only specifies minimum precision/range requirements and leaves the exact format implementation-defined. What follows below (IEEE-754 binary32/binary64, 4/8 bytes) is the overwhelmingly common implementation on virtually every modern platform (x86, ARM, etc.) — reasonable to assume by default, and exactly what a GATE question means when it says "assume IEEE-754 single/double precision." But don't state it as a language-level guarantee: if a GATE question describes a different floating-point format explicitly, use THAT instead of defaulting to IEEE-754 from memory.</p>
+      </div>
+      <p>The common implementation: <code>float</code> (32-bit) and <code>double</code> (64-bit) follow IEEE-754: 1 sign bit, exponent (biased), and mantissa with an implicit leading 1.</p>
       <table>
         <tr><th>Type</th><th>Bits</th><th>Sign</th><th>Exponent</th><th>Mantissa</th><th>Bias</th></tr>
         <tr><td>float</td><td>32</td><td>1</td><td>8</td><td>23</td><td>127</td></tr>
@@ -306,7 +310,7 @@ section.topic{scroll-margin-top:20px;}
       </table>
       <div class="card note">
         <span class="label">Why 0.1 + 0.2 != 0.3 in C</span>
-        <p>0.1 and 0.2 have no exact finite binary fraction representation (like 1/3 in decimal) — they're stored as the nearest rounded double. Adding the rounded values produces a result that's close to, but not bit-identical to, the rounded representation of 0.3. Never compare floats with <code>==</code>; compare <code>fabs(a-b) &lt; epsilon</code> instead.</p>
+        <p>0.1 and 0.2 have no exact finite binary fraction representation (like 1/3 in decimal) — they're stored as the nearest rounded double. Adding the rounded values produces a result that's close to, but not bit-identical to, the rounded representation of 0.3. Avoid using <code>==</code> to test mathematical equality of independently computed floating-point values when rounding error is expected — compare <code>fabs(a-b) &lt; epsilon</code> instead. (<code>==</code> itself isn't universally wrong for floats — it's valid when exact equality is genuinely intended, e.g. comparing against literal 0.0 in a controlled context, checking values produced by identical deterministic operations, or comparing special values like infinities — the guidance is about comparing independently-computed values expected to match mathematically, not about the operator being unusable.)</p>
       </div>
 
       <h3 class="sub">Character representation</h3>
@@ -316,16 +320,16 @@ printf("%d", ch);      <span class="c">// prints 65 — char promotes to int in 
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> A program has a function <code>void foo();</code> declared (prototype) but never defined, and <code>foo()</code> is never called anywhere. Will it compile and link successfully?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> A program has a function <code>void foo(void);</code> declared (prototype) but never defined, and <code>foo()</code> is never called anywhere. Will it compile and link successfully?</summary>
           <div class="ans">
-            <p>An unused declaration with no call and no definition needs no linking resolution — the linker only complains about references it must resolve. Since <code>foo</code> is never referenced (called), there's nothing to resolve.</p>
+            <p>An unused declaration with no call and no definition needs no linking resolution — the linker only complains about references it must resolve. Since <code>foo</code> is never referenced (called), there's nothing to resolve. (Note: <code>void foo(void);</code> is a true prototype — it specifies the parameter list as empty. <code>void foo();</code> is an old-style declaration with an <em>unspecified</em> parameter list, not a prototype; it doesn't tell the compiler foo takes no arguments.)</p>
             <p class="final">Answer: Yes, it compiles and links successfully</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> What is the output of <code>printf("%d", 'A' + 1);</code>?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> Assuming an ASCII execution character set, what is the output of <code>printf("%d", 'A' + 1);</code>?</summary>
           <div class="ans">
-            <p><code>'A'</code> is 65. In the expression <code>'A' + 1</code>, the char undergoes integer promotion to <code>int</code> before the addition, giving 65 + 1 = 66. Printed with <code>%d</code> it shows as a number, not a character.</p>
-            <p class="final">Answer: 66</p>
+            <p>C does not require ASCII, so <code>'A'</code>'s numeric value is technically implementation-defined — under the stated ASCII assumption, <code>'A'</code> is 65. In the expression <code>'A' + 1</code>, the char undergoes integer promotion to <code>int</code> before the addition, giving 65 + 1 = 66. Printed with <code>%d</code> it shows as a number, not a character.</p>
+            <p class="final">Answer: 66 (assuming ASCII)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> A question explicitly states: "Assume a 32-bit, 2's complement machine with wraparound on overflow." Under that stated assumption, what is the value of <code>INT_MAX + 1</code>?</summary>
@@ -352,18 +356,34 @@ printf("%d", ch);      <span class="c">// prints 65 — char promotes to int in 
       <div class="topic-head"><span class="idx">02</span><h2>Data Types, Type Conversion &amp; Integer Promotion</h2></div>
       <div class="topic-kicker">SIZES · IMPLICIT CONVERSION · USUAL ARITHMETIC CONVERSIONS · PROMOTION RULES</div>
 
-      <h3 class="sub">Typical sizes (assume a 64-bit LP64 environment — Linux/macOS with GCC/Clang — unless a question states otherwise)</h3>
-      <table>
-        <tr><th>Type</th><th>Typical size</th><th>Notes</th></tr>
-        <tr><td>char</td><td>1 byte</td><td>signedness implementation-defined</td></tr>
-        <tr><td>short</td><td>2 bytes</td><td>at least 16 bits</td></tr>
-        <tr><td>int</td><td>4 bytes</td><td>at least 16 bits (usually 32)</td></tr>
-        <tr><td>long</td><td>8 bytes (LP64: 64-bit Linux/macOS)</td><td>4 bytes on LLP64 (64-bit Windows) — long's size is the single biggest cross-platform trap; GATE questions should state which model applies</td></tr>
-        <tr><td>long long</td><td>8 bytes</td><td>at least 64 bits (C99+)</td></tr>
-        <tr><td>float</td><td>4 bytes</td><td>IEEE-754 single</td></tr>
-        <tr><td>double</td><td>8 bytes</td><td>IEEE-754 double</td></tr>
-        <tr><td>pointer (any type)</td><td>8 bytes under LP64/LLP64 64-bit models</td><td>4 bytes under 32-bit models — pointer size follows the machine's address width, not any particular data type's size</td></tr>
-      </table>
+      <h3 class="sub">Type sizes — what C actually guarantees vs. typical implementation</h3>
+      <div class="card formula">
+        <span class="label">What the C standard actually guarantees (language-level facts)</span>
+        <table>
+          <tr><th>Guarantee</th><th>Detail</th></tr>
+          <tr><td><code>sizeof(char)</code> = 1</td><td>By definition — always exactly 1, though that 1 "byte" is <code>CHAR_BIT</code> bits, guaranteed only to be &ge; 8, not necessarily exactly 8</td></tr>
+          <tr><td>Minimum widths</td><td><code>short</code> and <code>int</code> &ge; 16 bits; <code>long</code> &ge; 32 bits; <code>long long</code> &ge; 64 bits (C99+) — these are floors, not fixed sizes</td></tr>
+          <tr><td>Ordering of sizes</td><td><code>sizeof(char) &le; sizeof(short) &le; sizeof(int) &le; sizeof(long) &le; sizeof(long long)</code> — guaranteed non-decreasing, but exact sizes and even whether some are equal is NOT fixed</td></tr>
+          <tr><td>float/double representation</td><td>NOT mandated to be IEEE-754, and NOT mandated to be exactly 32/64 bits — the standard only fixes minimum precision/range, not the bit layout</td></tr>
+          <tr><td>Pointer size</td><td>NOT specified at all by the language — follows the machine's address width and ABI, which C says nothing about</td></tr>
+        </table>
+        <p>Everything above is a hard guarantee — true on every conforming C implementation, no matter the platform. Anything more specific than this table is implementation-defined, not a property of the C language itself.</p>
+      </div>
+      <div class="card note">
+        <span class="label">Typical GATE / modern-implementation assumption (NOT a language guarantee &mdash; just the overwhelmingly common case, 64-bit LP64 environment such as Linux/macOS with GCC/Clang)</span>
+        <table>
+          <tr><th>Type</th><th>Typical size</th><th>Notes</th></tr>
+          <tr><td>char</td><td>1 byte</td><td>signedness implementation-defined</td></tr>
+          <tr><td>short</td><td>2 bytes</td><td>at least 16 bits (guaranteed)</td></tr>
+          <tr><td>int</td><td>4 bytes</td><td>at least 16 bits (guaranteed); usually 32 in practice</td></tr>
+          <tr><td>long</td><td>8 bytes (LP64: 64-bit Linux/macOS)</td><td>4 bytes on LLP64 (64-bit Windows) — long's size is the single biggest cross-platform trap; GATE questions should state which model applies</td></tr>
+          <tr><td>long long</td><td>8 bytes</td><td>at least 64 bits (guaranteed, C99+)</td></tr>
+          <tr><td>float</td><td>4 bytes</td><td>commonly IEEE-754 single &mdash; not guaranteed by C itself (see box above)</td></tr>
+          <tr><td>double</td><td>8 bytes</td><td>commonly IEEE-754 double &mdash; not guaranteed by C itself (see box above)</td></tr>
+          <tr><td>pointer (any type)</td><td>8 bytes under LP64/LLP64 64-bit models</td><td>4 bytes under 32-bit models — pointer size follows the machine's address width, not any particular data type's size, and isn't specified by C at all</td></tr>
+        </table>
+        <p>Assume this table (the common LP64 convention) ONLY when a question just says "64-bit system" without giving exact sizes — and treat it as a stated assumption, not a fact derived from the C standard. When a question gives explicit sizes, always use those instead.</p>
+      </div>
       <div class="card note">
         <span class="label">"64-bit system" alone doesn't fix these sizes</span>
         <p>A 64-bit architecture doesn't uniquely determine <code>sizeof(long)</code>, <code>sizeof(int)</code>, or pointer size — those depend on the data model (LP64, LLP64, ILP64, etc.), which varies by OS/compiler even on identical 64-bit hardware. GATE exam questions normally state the exact sizes to assume; when a question just says "64-bit system" without giving sizes, the safe default to use is the common LP64 convention above (8-byte long/pointer, 4-byte int) — but flag the assumption rather than treating it as a universal law.</p>
@@ -407,16 +427,17 @@ if (a &lt; b) printf("yes"); else printf("no");
         </div>
       </div>
       <div class="card note">
-        <span class="label">Truncation direction</span>
-        <p>float/double → int conversion always truncates <strong>toward zero</strong>: <code>(int)-3.7 == -3</code>, not −4. This differs from the mathematical floor function for negative numbers.</p>
+        <span class="label">Truncation direction — and the representability caveat</span>
+        <p>float/double → int conversion truncates <strong>toward zero</strong> WHEN the resulting integral value is representable in the destination integer type: <code>(int)-3.7 == -3</code>, not −4. This differs from the mathematical floor function for negative numbers.</p>
+        <p>That "when representable" condition matters: if the integral part of the value doesn't fit in the destination type's range (e.g. casting a value like 1e100, or any float/double whose truncated value exceeds INT_MAX or is below INT_MIN, to <code>int</code>), the conversion is <strong>undefined behavior</strong> in C — not a predictable wraparound, not a clamped value, and not a compile error either. Never treat such a cast as having a deterministic numeric answer.</p>
       </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> Predict the output: <code>printf("%d", sizeof(char) + sizeof(short));</code></summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> Assuming sizeof(short) = 2 (the common case, though the standard only guarantees ≥ 2), predict the output: <code>printf("%zu", sizeof(char) + sizeof(short));</code></summary>
           <div class="ans">
-            <p><code>sizeof</code> returns type <code>size_t</code> (unsigned). Typical values: sizeof(char)=1, sizeof(short)=2. Their sum is 3, and since both operands are unsigned already, no signed/unsigned surprise occurs here.</p>
-            <p class="final">Answer: 3 (implementation-dependent, but standard on GATE's assumed platform)</p>
+            <p><code>sizeof</code> returns type <code>size_t</code> (unsigned), so the correct conversion specifier is <code>%zu</code>, not <code>%d</code> — passing a <code>size_t</code> where <code>%d</code> expects <code>int</code> is a type mismatch with <code>printf</code>'s variadic arguments and is technically undefined behavior, even though it happens to print the right digits on most common platforms. sizeof(char) is always exactly 1 by definition; sizeof(short) is assumed 2 here (the standard guarantees only sizeof(short) ≥ sizeof(char), i.e. at least 2, not necessarily exactly 2). Under this assumption their sum is 3.</p>
+            <p class="final">Answer: 3 (assuming sizeof(short)=2; not guaranteed by the standard in general)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> What does this print? <code>int a = -1; unsigned int b = 1; printf("%d", a &lt; b);</code></summary>
@@ -425,10 +446,11 @@ if (a &lt; b) printf("yes"); else printf("no");
             <p class="final">Answer: 0 (false)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> What is the output of <code>char c = 127; c = c + 1; printf("%d", c);</code> assuming signed 8-bit char?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> What is the output of <code>char c = 127; c = c + 1; printf("%d", c);</code>, assuming an 8-bit signed char and that the implementation converts out-of-range signed char values using two's-complement modulo wrapping?</summary>
           <div class="ans">
-            <p><code>c</code> is promoted to int for the addition: 127+1=128 (fine as int). Assigning 128 back into a signed 8-bit char overflows: 128 in 8-bit 2's complement wraps to −128.</p>
-            <p class="final">Answer: −128</p>
+            <p><code>c</code> is promoted to <code>int</code> for the addition: 127+1=128. This addition happens entirely in <code>int</code>, well within <code>int</code>'s range, so it is ordinary, well-defined arithmetic — no signed-overflow UB occurs here at all.</p>
+            <p>The interesting step is assigning that <code>int</code> value 128 back into an 8-bit signed <code>char</code>, which cannot represent 128. Converting an out-of-range value to a signed integer type is <strong>implementation-defined</strong> behavior per the C standard (not undefined behavior, and not "signed arithmetic overflow" — no arithmetic overflow occurred). Under the stated assumption that the implementation performs two's-complement modulo wrapping for this conversion, 128 wraps to −128. Without that stated assumption, the result is implementation-defined and can't be pinned to a single value.</p>
+            <p class="final">Answer: −128 (only under the stated two's-complement wrapping assumption for the conversion)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Evaluate <code>printf("%d", (int)(3.9 + 3.9));</code> and explain the rounding rule used.</summary>
@@ -647,6 +669,13 @@ a ^= b;   <span class="c">// swaps a and b using only XOR — fails silently if 
             <p class="final">Answer: It's undefined behaviour — multiple unsequenced modifications of i in the same expression</p>
           </div>
         </details>
+        <details class="qcard"><summary><span class="qn">Q6</span> Given <code>int i = 0; printf("%d %d", f1(), f2());</code> where <code>f1</code> and <code>f2</code> have no side effects on shared state, is the order in which <code>f1()</code> and <code>f2()</code> are called guaranteed by the C standard? How does this differ from the UB in <code>i++ + i++</code>?</summary>
+          <div class="ans">
+            <p>The order of evaluation of function arguments (and of the function designator relative to its arguments) is <strong>unspecified</strong> — a compiler may call <code>f2()</code> before <code>f1()</code> or vice versa, and different compilers (or even different calls) are free to choose either order legally. This is <em>not</em> undefined behaviour: the program's behaviour is still well-defined, just not fixed to one particular order that the standard guarantees.</p>
+            <p>Contrast this with <code>i++ + i++</code>: there, the same object <code>i</code> is modified twice with no sequencing between those modifications, which the standard flags as <strong>undefined behaviour</strong> — the entire program's behaviour becomes unpredictable, not just the order of two independent side-effect-free calls. Unspecified evaluation order (pick one of several legal orders, result still well-defined) and undefined behaviour (no constraints at all, anything can happen) are different categories — don't conflate them.</p>
+            <p class="final">Answer: Call order is unspecified (not UB) as long as f1/f2 have no overlapping side effects; i++ + i++ is UB because it modifies the same variable twice without a sequence point</p>
+          </div>
+        </details>
       </div>
     </section>
     <section class="topic" id="functions">
@@ -719,9 +748,9 @@ int r = MAX(x++, 10);   <span class="c">// x++ may be textually substituted TWIC
             <p class="final">Answer: No — x and y remain unchanged in the caller</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> A recursive function makes 4 nested calls before returning. How many activation records exist on the stack at the deepest point (including the first call)?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> A recursive function's call chain has 4 active calls at its deepest point, including the original call. How many activation records exist on the stack at that point?</summary>
           <div class="ans">
-            <p>Each call (including the original/outermost one) pushes its own activation record, and none is popped until its own call returns. With calls nested 4 deep from the first, that's 4 records simultaneously on the stack at maximum depth.</p>
+            <p>Each call (including the original/outermost one) pushes its own activation record, and none is popped until its own call returns. With 4 active calls in the chain at maximum depth, that's 4 records simultaneously on the stack.</p>
             <p class="final">Answer: 4 activation records</p>
           </div>
         </details>
@@ -977,7 +1006,23 @@ int main(){
 int (*p)[4] = a;      <span class="c">// correct: p points to "array of 4 ints"</span>
 p = p + 1;             <span class="c">// moves forward by 4*sizeof(int) = 16 bytes → next row</span></div>
 
-      <h3 class="sub">Pointer comparisons and NULL</h3>
+      <h3 class="sub">String literals — pointer to literal vs writable array copy</h3>
+      <p>These two declarations look almost identical but behave very differently at runtime — one of the highest-value GATE pointer traps:</p>
+      <div class="eq">char *p = "hello";
+p[0] = 'H';     // undefined behavior — p points into a string literal, which may be stored read-only
+
+char a[] = "hello";
+a[0] = 'H';     // valid — a is a separate, writable array initialized by COPYING the literal's contents</div>
+      <div class="card pyq">
+        <span class="label">GATE trap — the canonical comparison</span>
+        <table>
+          <tr><th>Declaration</th><th>What's actually stored</th><th>Modifying an element</th></tr>
+          <tr><td><code>char *p = "abc";</code></td><td>p is a pointer variable holding the address of a string-literal object (typically placed in a read-only/text segment by the implementation)</td><td>Undefined behavior — <code>p[0] = 'X'</code> attempts to modify the literal itself; on many systems this segfaults, on some it silently corrupts other data, and it may even appear to "work" — none of these outcomes is guaranteed</td></tr>
+          <tr><td><code>char a[] = "abc";</code></td><td>a is a full array object, sized to fit "abc\0" (4 bytes), initialized by copying the literal's characters into a's own writable storage</td><td>Fully valid — <code>a[0] = 'X'</code> just writes to a's own memory, same as any other array</td></tr>
+        </table>
+        <p>The key insight: <code>char *p = "abc"</code> makes p point directly AT the literal — there's no copy, so writing through p writes to the literal itself, which the standard does not guarantee is writable (and in practice, on most modern systems, is placed in read-only memory specifically to catch this bug). <code>char a[] = "abc"</code> is fundamentally different — it's array initialization syntax, so the compiler allocates a's own storage and copies the literal's bytes in; after that, a and the original literal are unrelated, and a's storage is exactly as writable as any other local/global array. Also note the size difference this implies: <code>sizeof(a)</code> is 4 (array of 4 chars including the null terminator), while <code>sizeof(p)</code> is the pointer's size (e.g. 8 on a common 64-bit system) — p never held the string's bytes, only their address.</p>
+      </div>
+
       <p>Equality and relational comparison of pointers are governed by <strong>different rules</strong> — don't lump them together as "compare within the same array only."</p>
       <table>
         <tr><th>Operation</th><th>Important rule</th></tr>
@@ -1015,7 +1060,7 @@ p = p + 1;             <span class="c">// moves forward by 4*sizeof(int) = 16 by
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> Is <code>arr[i]</code> equivalent to <code>i[arr]</code> in C? Explain using the underlying definition of array indexing.</summary>
           <div class="ans">
-            <p>Array indexing <code>x[y]</code> is defined by the standard as pure syntactic sugar for <code>*(x+y)</code>. Since pointer/integer addition is commutative (arr+i == i+arr), *(arr+i) and *(i+arr) are the same expression, and therefore arr[i] and i[arr] compile to the exact same code and give the same result.</p>
+            <p>Array indexing <code>x[y]</code> is defined by the standard as pure syntactic sugar for <code>*(x+y)</code>. Since pointer/integer addition is commutative (arr+i == i+arr), *(arr+i) and *(i+arr) are the same expression, and therefore arr[i] and i[arr] are semantically equivalent and give the same result. A compiler may well generate identical machine code for both, but the C standard only guarantees the semantic equivalence — it doesn't mandate identical code generation.</p>
             <p class="final">Answer: Yes, they're equivalent — both expand to *(arr + i)</p>
           </div>
         </details>
@@ -1023,19 +1068,49 @@ p = p + 1;             <span class="c">// moves forward by 4*sizeof(int) = 16 by
     </section>
     <section class="topic" id="advanced-pointers">
       <div class="topic-head"><span class="idx">09</span><h2>Advanced Pointers, Dynamic Memory &amp; Miscellaneous</h2></div>
-      <div class="topic-kicker">MALLOC/CALLOC/REALLOC/FREE · DANGLING/WILD POINTERS · FUNCTION POINTERS · VOID POINTERS</div>
+      <div class="topic-kicker">MALLOC/CALLOC/REALLOC/FREE · MEMCPY/MEMMOVE/MEMSET · DANGLING/WILD POINTERS · STRICT ALIASING · FUNCTION POINTERS · VOID POINTERS</div>
 
       <h3 class="sub">Dynamic memory allocation family</h3>
       <table>
         <tr><th>Function</th><th>Behaviour</th><th>Initializes to</th></tr>
-        <tr><td>malloc(n)</td><td>allocates n bytes</td><td>garbage (uninitialized)</td></tr>
+        <tr><td>malloc(n)</td><td>allocates n bytes</td><td>indeterminate values (uninitialized storage — not zeroed, not any predictable pattern)</td></tr>
         <tr><td>calloc(n,size)</td><td>allocates n*size bytes</td><td>all-bits-zero</td></tr>
-        <tr><td>realloc(p,n)</td><td>resizes block pointed to by p to n bytes</td><td>old data preserved up to min(old,new) size; rest garbage</td></tr>
+        <tr><td>realloc(p,n)</td><td>resizes block pointed to by p to n bytes</td><td>old contents preserved up to min(old,new) bytes; any newly added portion (when n &gt; old size) has indeterminate values</td></tr>
         <tr><td>free(p)</td><td>releases the block</td><td>—</td></tr>
       </table>
       <div class="card note">
         <span class="label">realloc's return value</span>
-        <p><code>realloc</code> may move the block to a new address if it can't grow in place — always check its return value before committing to it. The risk with <code>p = realloc(p, n);</code> isn't the syntax itself, it's that if realloc fails and returns NULL, that assignment overwrites your only copy of the original pointer — the original block is still allocated, but now unreachable and leaked. Correct pattern: assign to a temporary first, and only overwrite p once you know the call succeeded — <code>void *tmp = realloc(p, n); if (tmp) p = tmp;</code>. (If <code>n == 0</code>, behaviour is implementation-defined/varies by standard version — don't assume a fixed outcome without the question stating one.)</p>
+        <p><code>realloc</code> may move the block to a new address if it can't grow in place — always check its return value before committing to it. The risk with <code>p = realloc(p, n);</code> isn't the syntax itself, it's that if realloc fails and returns NULL, that assignment overwrites your only copy of the original pointer — the original block is still allocated, but now unreachable and leaked. Correct pattern: assign to a temporary first, and only overwrite p once you know the call succeeded — <code>void *tmp = realloc(p, n); if (tmp) p = tmp;</code></p>
+      </div>
+      <div class="card pyq">
+        <span class="label">GATE trap — realloc(p, 0) is not portable, treat it as a trap edge case</span>
+        <p>The behavior of <code>realloc(p, 0)</code> has genuinely differed across C standard versions and implementations — depending on which, it may free the block and return NULL, or return a non-NULL pointer to a zero-size allocation that must still eventually be freed. <strong>Avoid relying on realloc(p, 0) for portable code</strong>; explicitly handle the zero-size case yourself (e.g. call <code>free(p)</code> directly instead of calling realloc with a size of 0) rather than assuming a single fixed outcome, unless a GATE question explicitly states which behavior/standard version to assume.</p>
+      </div>
+
+      <h3 class="sub">memcpy vs memmove — the overlapping-region trap</h3>
+      <table>
+        <tr><th>Function</th><th>Overlapping source/destination</th></tr>
+        <tr><td>memcpy(dest, src, n)</td><td>Undefined behaviour if source and destination regions overlap</td></tr>
+        <tr><td>memmove(dest, src, n)</td><td>Correctly handles overlap (behaves as if src were first copied to a temporary buffer)</td></tr>
+      </table>
+      <div class="card pyq">
+        <span class="label">GATE trap — shifting an array in place needs memmove, not memcpy</span>
+        <p>Shifting elements of an array within itself — e.g. <code>memmove(a + 1, a, 5);</code> (shift 5 bytes one position to the right, in place) — has source and destination regions that overlap. Using <code>memcpy</code> for this is undefined behaviour: a typical naive forward byte-by-byte implementation would overwrite source bytes before they've been read, corrupting the data. <code>memmove</code> is specifically designed to detect and handle this correctly (conceptually, by copying through a temporary buffer, or by choosing a copy direction that avoids the clobber) — whenever overlap is possible or you're not certain it isn't, default to <code>memmove</code>; the safety costs at most a small, usually negligible performance difference versus memcpy.</p>
+      </div>
+
+      <h3 class="sub">memset — a byte-fill operation, not a value-fill operation</h3>
+      <p><code>memset(ptr, value, n)</code> writes the single byte <code>(unsigned char)value</code> into each of the <code>n</code> bytes starting at <code>ptr</code> — it operates purely at the byte level, with no awareness of the pointed-to type's actual size or representation.</p>
+      <div class="eq">int arr[5];
+memset(arr, 0, sizeof arr);   <span class="c">// commonly used to zero an int array</span>
+<span class="out">// works correctly because all-bits-zero represents integer 0 on every
+// conventional (2's-complement) system — a byte-level coincidence, not
+// memset "understanding" that arr holds ints</span></div>
+      <div class="card pyq">
+        <span class="label">GATE trap — memset(arr, 1, ...) does NOT set every int to 1</span>
+        <div class="eq">int arr[5];
+memset(arr, 1, sizeof arr);   <span class="c">// writes the byte 0x01 into EVERY byte, not the value 1 into every int</span>
+<span class="out">// each 4-byte int becomes 0x01010101 = 16843009, NOT 1</span></div>
+        <p>memset has no concept of "the int value 1" — it only knows bytes. Filling every byte of a multi-byte int with 0x01 produces the int whose byte pattern is 0x01010101, not the small integer 1. This only "accidentally works as expected" for the specific fill value 0 (and, separately, for an all-bits-one pattern via <code>memset(arr, 0xFF, ...)</code>, which happens to give −1 for a 2's-complement signed int) — never assume <code>memset(arr, v, n)</code> sets each element to the value v for any other v.</p>
       </div>
 
       <h3 class="sub">Dangling, wild, and NULL pointers</h3>
@@ -1059,7 +1134,35 @@ p = p + 1;             <span class="c">// moves forward by 4*sizeof(int) = 16 by
       <p>A <strong>memory leak</strong> occurs when the last reference to allocated memory is lost without calling <code>free</code> — the program permanently loses the ability to access or free that block for the rest of its run. Whether the underlying memory pages are ever given back to the OS is a separate question: that depends on the allocator's implementation and strategy (some allocators return large freed regions to the OS eagerly, others hold onto freed memory in their own free list for reuse and only release it under specific conditions, if ever) — don't assume either behavior as a blanket rule. A <strong>double free</strong> (calling <code>free</code> twice on the same pointer without reallocating in between) is undefined behaviour, often corrupting the heap's internal bookkeeping.</p>
 
       <h3 class="sub">void pointers</h3>
-      <p><code>void *</code> is a generic pointer — it can hold the address of any type, but cannot be dereferenced directly (no type = no known size to read) and requires an explicit cast first. <code>malloc</code> returns <code>void *</code> so it can be assigned to any pointer type without a cast in C (a cast IS required in C++).</p>
+      <p><code>void *</code> is the generic <strong>object</strong> pointer type — it can hold the address of any object type, and converting a <code>void *</code> back to the original object-pointer type is always safe (no data loss). It cannot be dereferenced directly (no type = no known size to read) and requires an explicit cast first. <code>malloc</code> returns <code>void *</code> so it can be assigned to any object-pointer type without a cast in C (a cast IS required in C++).</p>
+      <div class="card pyq">
+        <span class="label">GATE trap — void * is NOT a portable generic pointer for function pointers</span>
+        <p>Don't overgeneralize "void * can hold the address of any type" — it applies to <strong>object</strong> pointers (pointers to data: int, struct, array elements, and so on). <strong>Function pointers are a separate category</strong>: the C standard does not guarantee that a function pointer can be converted to <code>void *</code> and back without loss of information on all implementations (though POSIX explicitly requires this convertibility as an extension, because dlsym() needs it). In strictly portable, standard C, treat object pointers and function pointers as two distinct pointer worlds — <code>void *</code> is the generic member of the first, not the second.</p>
+      </div>
+
+      <h3 class="sub">Strict aliasing — accessing an object through an incompatible pointer type</h3>
+      <p>C's <strong>strict aliasing rule</strong> says an object may generally only be accessed through an lvalue of its own type (with a few explicitly permitted exceptions: a compatible type, a qualified version of its type, the signed/unsigned counterpart of its type, or <code>char</code>/<code>unsigned char</code>). Accessing it through an lvalue of an unrelated, incompatible type violates this rule and is undefined behaviour — even when the reinterpretation "looks like it should work" at the byte level.</p>
+      <div class="eq">int x = 10;
+float *p = (float *)&amp;x;
+printf("%f", *p);    <span class="c">// UB — reads the int's bytes through an incompatible float lvalue,</span>
+                      <span class="c">// violating strict aliasing; NOT a legitimate way to "reinterpret" int as float</span></div>
+      <div class="card pyq">
+        <span class="label">GATE trap — this is NOT a valid int→float reinterpretation trick</span>
+        <p>The snippet above compiles, and might even appear to run and print something on a specific compiler/optimization level — but it invokes undefined behaviour, not a defined reinterpretation. An optimizing compiler is free to assume <code>int x</code> and <code>*p</code> never alias the same memory (since their types are incompatible), and can reorder or eliminate accesses based on that assumption — producing results that don't match a naive byte-level mental model at all once optimizations are enabled. Never present this pattern as a legitimate way to reinterpret one type's bit pattern as another.</p>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h4 class="subsub">Correct alternative 1: memcpy</h4>
+          <p>Copying the bytes via <code>memcpy</code> is always well-defined and is the standard-recommended way to reinterpret a bit pattern as a different type:</p>
+          <div class="eq">int x = 10;
+float f;
+memcpy(&amp;f, &amp;x, sizeof(f));   <span class="c">// well-defined byte copy — no aliasing violation</span></div>
+        </div>
+        <div class="card">
+          <h4 class="subsub">Correct alternative 2: union (with caveats)</h4>
+          <p>As covered in Module 10, reading a union member other than the one most recently written IS explicitly legal in C (unlike raw pointer-cast aliasing) — but the resulting VALUE is still implementation-dependent (endianness, padding, representation details). Treat union-based inspection as legal-but-not-portable, and reach for it specifically when you need that kind of representation inspection, not as a casual substitute for memcpy.</p>
+        </div>
+      </div>
 
       <h3 class="sub">Function pointers</h3>
       <p>A function pointer stores the address of executable code, letting you call functions indirectly — the basis of callbacks and dynamic dispatch tables in C.</p>
@@ -1083,12 +1186,35 @@ printf("%d", fp(3,4));       <span class="c">// calls add(3,4) indirectly → 7<
         </div>
       </div>
 
+      <div class="card pyq">
+        <span class="label">GATE trap — the classic four-way const-pointer table</span>
+        <p>Read each declaration <strong>right to left</strong> starting from the variable name — that's the fastest way to parse which part is const. <code>const</code> binds to whatever is immediately to its left (or, if nothing is to its left, to whatever is immediately to its right) — this is exactly why <code>const int *p</code> and <code>int const *p</code> are the SAME declaration: in the first, const has nothing on its left, so it binds right to int; in the second, const binds left to int — either way, it's the pointed-to int that's const, not the pointer.</p>
+        <table>
+          <tr><th>Declaration</th><th>Read as</th><th>Can modify <code>*p</code> (pointee)?</th><th>Can modify <code>p</code> (the pointer itself)?</th></tr>
+          <tr><td><code>const int *p</code><br><code>int const *p</code> (identical meaning)</td><td>p is a pointer to a const int</td><td>❌ No</td><td>✅ Yes</td></tr>
+          <tr><td><code>int *const p</code></td><td>p is a const pointer to int</td><td>✅ Yes</td><td>❌ No</td></tr>
+          <tr><td><code>const int *const p</code></td><td>p is a const pointer to a const int</td><td>❌ No</td><td>❌ No</td></tr>
+        </table>
+        <p>Mnemonic: find the <code>*</code> in the declaration — <code>const</code> written BEFORE the <code>*</code> locks the pointee (what's pointed to); <code>const</code> written AFTER the <code>*</code> (i.e. directly next to the variable name, as in <code>*const p</code>) locks the pointer itself. When both appear, both are locked. This distinction is one of the highest-frequency GATE C-pointer MCQs — always locate the <code>*</code> first, then check which side(s) of it carry <code>const</code>.</p>
+      </div>
+
+      <h3 class="sub">volatile — the other type qualifier</h3>
+      <p><code>volatile</code> tells the compiler that an object's value may change for reasons outside the normal flow of the current code (a hardware register updated by external circuitry, a variable modified by an interrupt handler or a signal handler, or by another thread) — so the compiler must not optimize accesses to it away or merge/reorder/cache them in a register as if the value were stable between reads. Every read and write of a <code>volatile</code> object must actually happen, in program order, exactly as written — the compiler can't assume "I already read this value, no need to read it again."</p>
+      <div class="eq">volatile int flag;
+while (flag == 0) { }   <span class="c">// without volatile, an optimizer could hoist the read of flag
+                          // out of the loop entirely, turning it into an infinite loop
+                          // even if some other code (an ISR, another thread) sets flag=1</span></div>
+      <div class="card pyq">
+        <span class="label">GATE trap — volatile is NOT about atomicity or thread synchronization</span>
+        <p>The critical distinction: <code>volatile</code> only controls compiler <em>optimization</em> behavior — it forces the compiler to actually generate the load/store instructions instead of assuming a cached value. It does <strong>NOT</strong> make an operation atomic, and it does <strong>NOT</strong> provide any thread synchronization guarantee. A read-modify-write like <code>volatile_counter++</code> is still multiple separate machine instructions (load, increment, store) — two threads can still race on it and lose updates, exactly as with a non-volatile variable. For actual atomicity or synchronization between threads, you need real synchronization primitives (mutexes, atomic operations, memory barriers) — <code>volatile</code> alone guarantees none of that. This is the exact trap GATE likes to set: don't answer "volatile makes this thread-safe."</p>
+      </div>
+
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> What's the key difference between <code>malloc(10)</code> and <code>calloc(10,1)</code> in terms of the bytes returned?</summary>
           <div class="ans">
-            <p>Both allocate 10 bytes total. malloc leaves that memory uninitialized (garbage values), while calloc initializes every byte of the allocated block to all-bits-zero before returning it. That's a statement about the byte representation, not about the C value it produces — all-bits-zero is guaranteed to give 0 for integer types, but it is not a universally portable representation of every type's "zero" (e.g. a null pointer or a floating-point 0.0 need not be all-bits-zero on every platform, though this holds on the common ones GATE assumes).</p>
-            <p class="final">Answer: malloc leaves memory as garbage; calloc sets every byte to all-bits-zero</p>
+            <p>Both allocate 10 bytes total. malloc leaves that memory uninitialized (indeterminate values — not zeroed, not any predictable pattern), while calloc initializes every byte of the allocated block to all-bits-zero before returning it. That's a statement about the byte representation, not about the C value it produces — all-bits-zero is guaranteed to give 0 for integer types, but it is not a universally portable representation of every type's "zero" (e.g. a null pointer or a floating-point 0.0 need not be all-bits-zero on every platform, though this holds on the common ones GATE assumes).</p>
+            <p class="final">Answer: malloc leaves memory with indeterminate (uninitialized) values; calloc sets every byte to all-bits-zero</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> What's wrong with this code?<br><span class="code">int *get(){
@@ -1096,8 +1222,8 @@ printf("%d", fp(3,4));       <span class="c">// calls add(3,4) indirectly → 7<
   return &amp;x;
 }</span></summary>
           <div class="ans">
-            <p>x is a local (auto) variable living on get()'s stack frame. Once get() returns, that stack frame is reclaimed/invalidated, so the returned address points to memory that's no longer reserved for x — a dangling pointer. Using the returned pointer afterward is undefined behaviour.</p>
-            <p class="final">Answer: Returns a dangling pointer to a destroyed local variable's stack memory</p>
+            <p>x has automatic storage duration and ceases to exist once get() returns — the C standard guarantees this lifetime rule but doesn't mandate how it's implemented. Implementations commonly store such objects on a stack frame, which is reclaimed/invalidated on return, so the returned address points to memory that's no longer reserved for x — a dangling pointer. Using the returned pointer afterward is undefined behaviour, regardless of the underlying storage mechanism.</p>
+            <p class="final">Answer: Returns a dangling pointer to a local variable whose (automatic-duration) lifetime ended when the function returned</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Declare a pointer to a function that takes two <code>double</code> arguments and returns a <code>double</code>, and explain why the parentheses around the pointer name are mandatory.</summary>
@@ -1116,6 +1242,13 @@ printf("%d", fp(3,4));       <span class="c">// calls add(3,4) indirectly → 7<
           <div class="ans">
             <p><code>const int *p</code> means the value pointed to is treated as constant through p — <code>*p = 20</code> is illegal (compile error). But p itself is an ordinary (non-const) pointer variable, so reassigning where it points, e.g. <code>p = NULL;</code>, is perfectly legal.</p>
             <p class="final">Answer: p = NULL; is legal; *p = 20; is a compile error</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q6</span> Given <code>int a[10] = {0,1,2,3,4,5,6,7,8,9};</code>, what is the difference in behaviour between <code>memcpy(a + 1, a, 5 * sizeof(int));</code> and <code>memmove(a + 1, a, 5 * sizeof(int));</code>?</summary>
+          <div class="ans">
+            <p>Both calls target overlapping regions of the same array — <code>a+1</code> starts only one <code>int</code> after <code>a</code>, while 5 ints are being copied, so source and destination ranges overlap. <code>memcpy</code> does not guarantee correct behaviour when source and destination overlap — it's undefined behaviour, and a typical forward byte-by-byte implementation would overwrite source elements before they're read, corrupting the result (e.g. element 0 gets copied into element 1, but by the time element 1 is due to be copied into element 2, it may already have been clobbered).</p>
+            <p><code>memmove</code> is explicitly specified to handle overlapping regions correctly, as if the source were first copied to a temporary buffer before writing to the destination — so <code>memmove(a+1, a, 5*sizeof(int))</code> reliably copies the original a[0..4] = {0,1,2,3,4} into a[1..5], giving a final array of {0,0,1,2,3,4,6,7,8,9} (a[0] and a[6..9] unchanged; a[1..5] now hold the shifted values).</p>
+            <p class="final">Answer: memcpy is undefined behaviour on overlapping regions and may corrupt data; memmove is guaranteed correct for overlap and safely performs the in-place shift</p>
           </div>
         </details>
       </div>
@@ -1162,11 +1295,17 @@ printf("%d", ptr-&gt;x);    <span class="c">// arrow operator: same as (*ptr).x<
         </div>
         <div class="card formula">
           <span class="label">union</span>
-          <p>All members <strong>share the same memory</strong> — size = size of the largest member (plus alignment padding). Writing one member overwrites the bytes of all others; only one member is "meaningfully valid" at a time.</p>
+          <p>All members <strong>share the same memory</strong> — size = size of the largest member (plus alignment padding). Writing one member overwrites the bytes of all others.</p>
         </div>
       </div>
       <div class="eq">union U { int i; float f; char c[4]; };
 printf("%zu", sizeof(union U));   <span class="c">// = 4 (size of the largest member, int or float)</span></div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — reading a different member than you last wrote ("type punning")</span>
+        <p>The common beginner framing — "only one member is meaningfully valid at a time" — is too simplistic. C explicitly permits reading a member other than the one most recently written: union members overlap the same storage, writing one member changes the stored bit representation, and reading a different member reinterprets those same bytes according to that member's type. This IS legal C (unlike the analogous case in C++, which is murkier) — the C standard explicitly allows it, subject to representation rules.</p>
+        <p>What's NOT guaranteed is <strong>portability of the resulting value</strong>: what you actually read back depends on implementation-defined and unspecified details — byte order (endianness), padding bits, the exact in-memory representation of the written type, and trap representations for some types. The little-endian byte-extraction example below works exactly as shown only on little-endian machines; a big-endian system would put the same int's most-significant byte at <code>c[0]</code> instead. Treat union type-punning results as implementation-dependent, not as a portable, universally predictable trick — GATE questions on this topic normally state the endianness explicitly for exactly this reason.</p>
+      </div>
 
       <h3 class="sub">typedef with structures</h3>
       <p><code>typedef struct { int x, y; } Point;</code> creates an alias so you can write <code>Point p;</code> instead of <code>struct Point p;</code> — this doesn't create a new type, just a new name for the existing (possibly anonymous) struct type.</p>
@@ -1176,13 +1315,13 @@ printf("%zu", sizeof(union U));   <span class="c">// = 4 (size of the largest me
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> Given <code>struct S { char a; int b; char c; };</code> on a system with 4-byte int alignment, compute sizeof(struct S).</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> Given <code>struct S { char a; int b; char c; };</code>, assuming sizeof(int) = 4 and 4-byte int alignment (with the usual ABI padding rules), compute sizeof(struct S).</summary>
           <div class="ans">
             <p>a: offset 0 (1 byte), then 3 bytes padding so b aligns to offset 4. b: offset 4 (4 bytes), ends at offset 8. c: offset 8 (1 byte), then 3 bytes trailing padding so the struct's total size is itself a multiple of its largest alignment requirement (4).</p>
             <p class="final">Answer: 12 bytes</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> Reorder the members of <code>struct S { char a; int b; char c; };</code> to minimize sizeof, and give the new size.</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> Under the same assumption (sizeof(int) = 4, 4-byte int alignment), reorder the members of <code>struct S { char a; int b; char c; };</code> to minimize sizeof, and give the new size.</summary>
           <div class="ans">
             <p>Group the two 1-byte chars together so they share a single alignment slot: <code>struct S2 { int b; char a; char c; };</code>. b: offset 0 (4 bytes). a: offset 4 (1 byte). c: offset 5 (1 byte). Trailing padding: 2 bytes, to round total up to a multiple of 4.</p>
             <p class="final">Answer: struct S2 { int b; char a; char c; }; → 8 bytes (down from 12)</p>
@@ -1202,7 +1341,7 @@ printf("%zu", sizeof(union U));   <span class="c">// = 4 (size of the largest me
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> A struct is passed by value into <code>void f(struct Big b)</code> where struct Big is 200 bytes, and the function modifies <code>b.field</code>. Does the caller's original struct change? What's the performance implication?</summary>
           <div class="ans">
-            <p>Pass-by-value for structs copies the entire struct's bytes onto the callee's stack frame — same principle as any other by-value parameter, just scaled up. Modifying the local copy b inside f() has no effect on the caller's original struct. The performance cost is copying all 200 bytes on every call, which is why large structs are typically passed by pointer instead.</p>
+            <p>C passes the struct by value: the callee receives its own independent copy of the struct's value, semantically distinct from the caller's original. Modifying the local copy b inside f() has no effect on the caller's original struct. The exact physical mechanism (stack copy, registers, hidden pointer to a caller-allocated copy, etc.) is ABI/compiler dependent, but conceptually a full 200-byte copy is made on every call — which is why large structs are typically passed by pointer instead.</p>
             <p class="final">Answer: No change to the caller's struct — a full 200-byte copy was modified locally; passing by pointer avoids this copy cost</p>
           </div>
         </details>
