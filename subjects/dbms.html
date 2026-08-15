@@ -284,6 +284,12 @@ section.topic{scroll-margin-top:56px;}
         <li><strong>Referential integrity</strong> — every non-NULL foreign key value must match an existing primary key value in the referenced relation. Whether NULL is permitted at all depends on the FK column's own definition: a <em>nullable</em> FK may hold NULL; one declared <strong>NOT NULL</strong> (e.g. to enforce total participation) cannot; and a <em>composite</em> FK adds further nuance, since SQL's handling of a key where only some component columns are NULL is implementation/standard-dependent (MATCH FULL / MATCH PARTIAL / MATCH SIMPLE semantics differ).</li>
       </ul>
 
+      <div class="card pyq">
+        <span class="label">GATE trap — UNIQUE is not just "a nullable primary key"</span>
+        <p><strong>Primary key</strong> is unambiguous: entity integrity forbids NULL entirely, so a table has at most one row per key value AND no row can leave that column(s) empty.</p>
+        <p><strong>UNIQUE</strong> only enforces that no two <em>non-NULL</em> values in the column are equal — but how many NULLs the column may hold is <strong>SQL-semantic / DBMS-dependent</strong>, not a single universal rule. The reasoning behind the common (though not universally mandated) behavior: ordinary equality comparisons treat NULL as unknown, so two NULLs are never considered "equal" for a uniqueness check, which is why most SQL implementations (e.g. PostgreSQL, SQL Server, SQLite, MySQL) permit <strong>multiple NULLs</strong> in a UNIQUE column — but this isn't identical across every system or every reading of the standard, and some configurations restrict it to at most one NULL. Don't memorize "UNIQUE = primary key except nullable" as a universal identity — memorize the actual distinction: primary key forbids NULL outright (entity integrity); UNIQUE only constrains non-NULL values, with NULL-count behavior left to the specific DBMS.</p>
+      </div>
+
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A relation R(A,B,C,D) has candidate key {A}. How many superkeys does R have?</summary>
@@ -310,9 +316,9 @@ section.topic{scroll-margin-top:56px;}
             <p class="final">Answer: Only if the FK column permits NULL (i.e. isn't separately constrained NOT NULL) — referential integrity alone never forbids a NULL FK, only a non-matching non-NULL value would violate it</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> A ternary relationship connects entities A, B, and C with cardinality constraints such that each (A,B) pair maps to at most one C. How is this typically mapped to a relational table?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> A ternary relationship connects entities A, B, and C with cardinality constraints such that each (A,B) pair maps to at most one C. Assume each relationship instance is uniquely identified by its participating entity combination and there are no duplicate relationship instances. How is this typically mapped to a relational table?</summary>
           <div class="ans">
-            <p>A single table is created for the relationship with foreign keys to A, B, and C. Since each (A,B) pair determines at most one C, the primary key of this relationship table can be just (A's key, B's key) rather than all three keys together — reflecting that A and B together are sufficient to identify a unique row.</p>
+            <p>A single table is created for the relationship with foreign keys to A, B, and C. Since each (A,B) pair determines at most one C, the primary key of this relationship table can be just (A's key, B's key) rather than all three keys together — reflecting that A and B together are sufficient to identify a unique row. (The uniqueness assumption stated in the question is what rules out the relationship set itself containing duplicate/repeated (A,B,C) instances — without it, "the primary key" wouldn't be well-defined at all, since a relational table's rows must be distinct.)</p>
             <p class="final">Answer: One relationship table with FKs to A, B, C; primary key = (A_id, B_id) only, since that pair determines C uniquely</p>
           </div>
         </details>
@@ -398,10 +404,10 @@ section.topic{scroll-margin-top:56px;}
             <p class="final">Answer: Same arity and matching attribute domains — needed so the result is itself a well-formed relation</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> R(A,B) and S(B,C) are joined with a natural join. If R has 4 tuples and S has 3 tuples, and every B value in R matches exactly one B value in S, at most how many tuples can R ⋈ S produce?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> R(A,B) and S(B,C) are joined with a natural join. R has 4 tuples and S has 3 tuples, and for every tuple of R, exactly one tuple of S has the same B value. How many tuples does R ⋈ S produce?</summary>
           <div class="ans">
-            <p>Natural join matches rows where the shared attribute B agrees. If every B value in R matches exactly one distinct B in S (a one-to-one style match per row), each of R's 4 tuples pairs with exactly one S tuple — giving at most 4 result tuples (bounded also by however many of R's tuples actually find a match, up to 4).</p>
-            <p class="final">Answer: At most 4 tuples (bounded by |R|, since each R-tuple matches at most one S-tuple here)</p>
+            <p>Natural join matches rows where the shared attribute B agrees. Since every tuple of R has exactly one matching tuple in S (by B value), each of R's 4 tuples contributes exactly one result tuple — no tuple of R is dropped (no match failure) and no tuple of R is duplicated (no multiple matches).</p>
+            <p class="final">Answer: Exactly 4 tuples</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> Explain what "safety" means for a tuple relational calculus expression, and why unsafe expressions are excluded from being considered relationally complete.</summary>
@@ -458,6 +464,16 @@ R.id | S.id | S.val
         <span class="label">GATE trap — NULL comparisons and NOT IN</span>
         <p><code>x = NULL</code> is always UNKNOWN, never TRUE — must use <code>IS NULL</code> instead. Even more subtle: <code>WHERE x NOT IN (1, 2, NULL)</code> returns <strong>zero rows always</strong> for ANY x, because NOT IN expands to a chain of AND'd <code>&lt;&gt;</code> comparisons, and <code>x &lt;&gt; NULL</code> is UNKNOWN — ANDing UNKNOWN into the chain poisons the whole condition to never be definitively TRUE.</p>
       </div>
+      <div class="card note">
+        <span class="label">Prefer NOT EXISTS over NOT IN when the subquery could contain NULLs</span>
+        <p>The point isn't that <code>NOT EXISTS</code> and <code>NOT IN</code> are universally interchangeable — they aren't, precisely because of the NULL-poisoning trap above. For anti-join semantics (rows in R with no matching row in S) where S's join column might contain NULLs, <code>NOT EXISTS</code> is the safer default, because its correlated subquery compares row-by-row and never builds a flat value list that a stray NULL can silently poison:</p>
+        <div class="eq">WHERE NOT EXISTS (
+    SELECT 1
+    FROM S
+    WHERE S.x = R.x
+)</div>
+        <p>When S.x has no NULLs, <code>NOT IN (SELECT x FROM S)</code> and this <code>NOT EXISTS</code> form give the same result. The moment S.x can contain NULL, <code>NOT IN</code> silently returns zero rows for everything (as shown above), while <code>NOT EXISTS</code> continues to behave correctly — it only asks "does S.x = R.x hold for any S-row," which is simply FALSE (not UNKNOWN-poisoned) when no match exists, NULLs included.</p>
+      </div>
 
       <h3 class="sub">Aggregate functions and GROUP BY rules</h3>
       <p>Every column in SELECT that is NOT wrapped in an aggregate function MUST appear in GROUP BY (strict SQL standard) — otherwise the value to display for that column within a group is ambiguous.</p>
@@ -497,10 +513,11 @@ R.id | S.id | S.val
             <p class="final">Answer: COUNT(dept) = 3, COUNT(*) = 5</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> Table A(id) has values {1,2,3}. Table B(id) has values {1, NULL}. What does <code>SELECT * FROM A WHERE id NOT IN (SELECT id FROM B);</code> return?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> Table A(id) has values {1,2,3}. Table B(id) has values {1, NULL}. Under standard SQL three-valued logic, what does <code>SELECT * FROM A WHERE id NOT IN (SELECT id FROM B);</code> return?</summary>
           <div class="ans">
-            <p>NOT IN expands to AND-chained inequality checks against every value in the subquery result, including NULL. For any row of A, the comparison "id &lt;&gt; NULL" evaluates to UNKNOWN, and ANDing UNKNOWN with anything else can never produce definite TRUE — so the WHERE condition is never satisfied for any row, no matter what id value it has.</p>
-            <p class="final">Answer: Empty result (zero rows) — the NULL inside the NOT IN subquery poisons the entire condition</p>
+            <p>SQL uses three-valued logic: every comparison evaluates to TRUE, FALSE, or UNKNOWN, and a row is returned only if the WHERE condition evaluates to TRUE (UNKNOWN is treated like FALSE for filtering, but still "poisons" AND chains differently from FALSE). NOT IN expands to AND-chained inequality checks against every value in the subquery result, including NULL. For any row of A, the comparison "id &lt;&gt; NULL" evaluates to UNKNOWN (not TRUE or FALSE), and ANDing UNKNOWN with anything else (e.g. TRUE AND UNKNOWN → UNKNOWN) can never produce definite TRUE — so the WHERE condition is never satisfied for any row, no matter what id value it has.</p>
+            <p><strong>GATE trap:</strong> this is exactly why <code>NOT IN</code> is dangerous whenever the subquery could return NULLs — <code>NOT EXISTS</code> is the safer default for anti-join logic like this, since it never gets NULL-poisoned this way.</p>
+            <p class="final">Answer: Empty result (zero rows) — the NULL inside the NOT IN subquery poisons the entire condition under three-valued logic</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Emp(1000 rows) LEFT OUTER JOIN Dept(50 rows) ON Emp.dept_id=Dept.id, where 30 employees have a dept_id that doesn't match any Dept row (including possibly NULL dept_id). How many rows does the result have, at minimum?</summary>
@@ -558,7 +575,7 @@ R.id | S.id | S.val
       <div class="two-col">
         <div class="card formula">
           <span class="label">Lossless-join decomposition</span>
-          <p>R decomposed into R1, R2 is lossless iff (R1∩R2) → R1 OR (R1∩R2) → R2 — the common attributes must be a key (or superkey) of at least one of the two pieces.</p>
+          <p>For a decomposition of R into R1, R2 governed by FD set F, it is lossless iff (R1∩R2) → R1 <strong>or</strong> (R1∩R2) → R2 holds in <strong>F⁺</strong> (the closure of F) — not just among the FDs literally listed, but among everything derivable from them. The common attributes must be a key (or superkey) of at least one of the two pieces; testing this properly means computing (R1∩R2)⁺ under F, not merely scanning F's given FDs by eye.</p>
         </div>
         <div class="card formula">
           <span class="label">Dependency-preserving decomposition</span>
@@ -582,20 +599,20 @@ R.id | S.id | S.val
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> R(A,B,C) has candidate key {A} and FD chain A→B, B→C, where C is non-prime. Is R in 3NF? Is it in BCNF?</summary>
           <div class="ans">
-            <p>C depends on A only transitively (through B), not directly — a transitive dependency of non-prime C via non-prime B, which is exactly what 3NF forbids UNLESS the escape clause saves it (it doesn't here, since C is non-prime and B is not a superkey). So R violates 3NF, and since 3NF is stricter... actually violating 3NF automatically means violating BCNF too, since BCNF is strictly stronger than 3NF.</p>
+            <p>By the formal test (for every non-trivial FD X→A: X is a superkey, or A is a prime attribute), check the FD B→C: B is not a superkey (the only candidate key is {A}), and C is non-prime, so this FD satisfies neither disjunct — the escape clause doesn't save it. So R violates 3NF. (Informally, this shows up as C depending on A only transitively, through B — "transitive dependency of a non-prime attribute" is a useful intuition for this case, but the formal test above is what actually decides it, since a transitive-looking chain can still be fine in 3NF if the final attribute happens to be prime.) Since BCNF is stricter than 3NF (BCNF ⇒ 3NF), the contrapositive holds: violating 3NF automatically means violating BCNF too.</p>
             <p class="final">Answer: R violates both 3NF (transitive dependency A→B→C) and consequently BCNF too</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> R(A,B,C) is decomposed into R1(A,B) and R2(B,C). Given FD B→C holds in R, is this decomposition lossless?</summary>
           <div class="ans">
-            <p>The common attribute between R1 and R2 is B. Lossless-join requires (R1∩R2)→R1 or (R1∩R2)→R2, i.e., B→(A,B) or B→(B,C). We're given B→C holds, and B→B holds trivially (reflexivity), so B→(B,C) holds — satisfying the lossless-join condition via the second disjunct.</p>
-            <p class="final">Answer: Yes, lossless — because B→C (given) combined with B→B (trivial) gives B→R2, satisfying the lossless-join test</p>
+            <p>The common attribute between R1 and R2 is B. Lossless-join requires (R1∩R2)→R1 or (R1∩R2)→R2 to hold in <strong>F⁺</strong> (the closure of the given FD set) — i.e. B→(A,B) or B→(B,C) must be derivable, not necessarily listed outright. Compute B⁺ under F: B→C is given, and B→B holds trivially by reflexivity, so B⁺ ⊇ {B,C}, meaning B→(B,C) is in F⁺ — satisfying the lossless-join condition via the second disjunct.</p>
+            <p class="final">Answer: Yes, lossless — because B→BC is derivable in F⁺ (from the given B→C plus trivial reflexivity), satisfying the lossless-join test</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> Why can BCNF decomposition sometimes fail to be dependency-preserving, while 3NF decomposition never has this problem?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> Why can BCNF decomposition sometimes fail to be dependency-preserving, while the standard 3NF synthesis algorithm always guarantees it?</summary>
           <div class="ans">
-            <p>BCNF requires every non-trivial FD's LHS to be a superkey, with NO exceptions — so if an FD X→Y exists where X is not a superkey but Y happens to be prime (part of some other candidate key), BCNF still forces you to decompose it away, and that FD may end up spanning two separate decomposed relations with no single relation able to verify it locally. 3NF explicitly permits exactly this situation (its "Y is prime" escape clause), which is precisely why the 3NF synthesis algorithm can always guarantee both losslessness AND dependency preservation simultaneously, while BCNF decomposition cannot always guarantee both together.</p>
-            <p class="final">Answer: BCNF has no escape clause for FDs whose RHS is prime, so decomposing to satisfy BCNF can split such an FD across relations and lose the ability to check it locally — 3NF's escape clause avoids exactly this case</p>
+            <p>BCNF requires every non-trivial FD's LHS to be a superkey, with NO exceptions — so if an FD X→Y exists where X is not a superkey but Y happens to be prime (part of some other candidate key), BCNF still forces you to decompose it away, and that FD may end up spanning two separate decomposed relations with no single relation able to verify it locally. 3NF explicitly permits exactly this situation (its "Y is prime" escape clause), which is precisely why the 3NF synthesis algorithm can always guarantee both losslessness AND dependency preservation simultaneously, while BCNF decomposition cannot always guarantee both together. Note this guarantee is specific to the standard 3NF synthesis algorithm (built from a minimal cover of the FDs) — it doesn't mean every arbitrary decomposition into 3NF relations is automatically dependency-preserving.</p>
+            <p class="final">Answer: The standard 3NF synthesis algorithm can guarantee dependency preservation, whereas BCNF decomposition may sacrifice it — BCNF has no escape clause for FDs whose RHS is prime, so decomposing to satisfy BCNF can split such an FD across relations and lose the ability to check it locally</p>
           </div>
         </details>
       </div>
@@ -816,10 +833,10 @@ T2: W(B)
             <p class="final">Answer: No, not conflict-serializable (the precedence graph has a cycle)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> Does every conflict-serializable schedule guarantee no deadlock will occur during its actual execution under 2PL? Explain.</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> Does two-phase locking (2PL) guarantee freedom from deadlock merely because the schedules it produces are conflict-serializable? Explain.</summary>
           <div class="ans">
-            <p>No — conflict-serializability is a property of the FINAL schedule (the actual order operations ended up executing in), evaluated after the fact. Deadlock is a runtime execution hazard that can occur while transactions are contending for locks, potentially preventing that serializable schedule from ever completing at all — 2PL guarantees serializability of whatever schedule DOES complete, but doesn't prevent transactions from deadlocking while trying to acquire locks in the first place.</p>
-            <p class="final">Answer: No — 2PL guarantees serializability of completed schedules, but does not itself prevent deadlock during execution</p>
+            <p>No — conflict-serializability is a property of a completed schedule (the actual order operations ended up executing in), evaluated after the fact. Deadlock is a runtime lock-acquisition hazard that can occur while transactions are contending for locks, potentially preventing any schedule from ever completing at all — 2PL guarantees that whatever schedule DOES complete is conflict-serializable, but doesn't by itself prevent transactions from deadlocking while trying to acquire locks in the first place.</p>
+            <p class="final">Answer: No — 2PL guarantees conflict-serializability of completed schedules, but does not itself prevent deadlock during execution</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Under the wait-die deadlock prevention scheme, an older transaction Ti requests a lock held by younger transaction Tj. What happens?</summary>
@@ -883,6 +900,7 @@ T2: W(B)
       </table>
 
       <h3 class="sub">Primary vs secondary index — defined by the DATA FILE's order, not the index itself</h3>
+      <p>The classification below follows the <strong>classical file-organization terminology used in GATE/DBMS textbooks</strong> (Silberschatz-style) — it's a standard, widely-taught model, but treat it as that specific classical framework rather than a universal property every real-world database implementation is bound to.</p>
       <div class="two-col">
         <div class="card formula">
           <span class="label">Primary index</span>
@@ -890,12 +908,28 @@ T2: W(B)
         </div>
         <div class="card formula">
           <span class="label">Secondary index</span>
-          <p>Built on a field that does NOT determine the data file's physical order. Must always be <strong>dense</strong>, since consecutive index entries don't correspond to physically adjacent records.</p>
+          <p>Under this same classical terminology: built on a field that does NOT determine the data file's physical order. Must always be <strong>dense</strong>, since consecutive index entries don't correspond to physically adjacent records.</p>
         </div>
       </div>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — "primary index" and "clustered index" are not synonyms</span>
+        <p>These two terms answer genuinely different questions, and it's easy to blur them together:</p>
+        <ul>
+          <li><strong>Primary index</strong> is defined relative to WHICH KEY the index is built on and searches by — an index whose search key is the ordering key the file is defined to be sorted on (in most textbook treatments used for GATE, this is the relation's primary key).</li>
+          <li><strong>Clustered index</strong> is defined relative to PHYSICAL STORAGE — it means the data records THEMSELVES are physically stored/ordered according to that index's key, whatever that key happens to be.</li>
+        </ul>
+        <p>In the standard textbook examples used for GATE, a table's primary index and its clustered index usually coincide — the file is kept sorted by the primary key, so the primary index is also the clustered one. But they are not interchangeable by definition: a real DBMS can build a clustered index on a non-primary-key column (any single column the physical rows get sorted by), and conceptually "primary" describes the choice of key while "clustered" describes the physical row ordering. Only one clustered index can exist per table (data can only be physically sorted one way at a time); a table can have many non-clustered (secondary) indexes alongside it.</p>
+      </div>
+
+      <table>
+        <tr><th>Index type</th><th>Typical property</th></tr>
+        <tr><td>Dense</td><td>Index entry for every search-key value / record</td></tr>
+        <tr><td>Sparse</td><td>Entries for only some search-key values / blocks</td></tr>
+      </table>
       <div class="card pyq">
         <span class="label">GATE trap — sparse index requires the file to be sorted on that field</span>
-        <p>A <strong>sparse index</strong> has one entry per BLOCK (not per record) — it only works if the file is physically sorted by the indexed field, so the index can point to a block and a sequential scan within that block finds the target. A sparse index is therefore always a primary index; a secondary index can never be sparse, because the data file isn't ordered by the secondary key.</p>
+        <p>A <strong>sparse index</strong> has one entry per BLOCK (not per record) — it only works if the file is physically sorted by the indexed field, so the index can point to a block and a sequential scan within that block finds the target. Sparse indexing therefore generally requires the underlying data file to be ordered on the search key — which is exactly why a sparse index is always a primary/clustering index; a secondary index can never be sparse, because the data file isn't ordered by the secondary key.</p>
       </div>
       <div class="card note">
         <span class="label">Dense index</span>
@@ -987,6 +1021,10 @@ T2: W(B)
           <p>If a single attribute is the only candidate key among n total attributes, superkey count = 2^(n−1).</p>
         </div>
         <div class="card formula">
+          <span class="label">Primary key vs UNIQUE</span>
+          <p>Primary key: entity integrity forbids NULL outright. UNIQUE: only constrains non-NULL values to be distinct; how many NULLs it permits is DBMS/SQL-semantic dependent (most allow multiple). Never treat "UNIQUE = nullable primary key" as a universal rule.</p>
+        </div>
+        <div class="card formula">
           <span class="label">Total vs partial participation</span>
           <p>Total = double line, ER-level mandatory participation (commonly mapped to NOT NULL FK, but that's a mapping choice, not the definition). Partial = single line, optional. Put the FK on the total-participation side of a 1:1.</p>
         </div>
@@ -1016,7 +1054,7 @@ T2: W(B)
         </div>
         <div class="card formula">
           <span class="label">Lossless-join test</span>
-          <p>R1, R2 decomposition of R is lossless iff (R1∩R2)→R1 or (R1∩R2)→R2.</p>
+          <p>Decomposition of R into R1, R2 is lossless iff (R1∩R2)→R1 or (R1∩R2)→R2 holds in <strong>F⁺</strong> (the closure of the FD set) — compute (R1∩R2)⁺, don't just eyeball the given FDs.</p>
         </div>
         <div class="card formula">
           <span class="label">Conflict-serializability test</span>
@@ -1040,7 +1078,11 @@ T2: W(B)
         </div>
         <div class="card formula">
           <span class="label">Sparse index requires sorted file</span>
-          <p>Sparse = 1 entry/block, only valid when file is physically sorted on the indexed field → always primary, never secondary.</p>
+          <p>Sparse = 1 entry/block, only valid when file is physically sorted on the indexed field → always primary/clustering, never secondary. Dense = 1 entry/record, works either way.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Primary index ≠ clustered index</span>
+          <p>Primary index = which KEY the index searches by. Clustered index = whether the DATA ROWS are physically stored in that key's order. They often coincide in textbook examples but aren't synonyms — a table has at most one clustered index but can have many secondary ones.</p>
         </div>
         <div class="card formula">
           <span class="label">B+-Tree over B-Tree</span>
