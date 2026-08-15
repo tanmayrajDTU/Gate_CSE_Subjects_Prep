@@ -310,13 +310,13 @@ section.topic{scroll-margin-top:56px;}
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Choose the correct sentence: (a) "Neither of the answers are correct." (b) "Neither of the answers is correct."</summary>
           <div class="ans">
-            <p>"Neither" is always singular, regardless of the plural noun phrase that follows it ("of the answers"). The verb must agree with "neither," not "answers."</p>
+            <p>In this sentence, "neither" is treated as singular, so the verb is "is," regardless of the plural noun phrase that follows it ("of the answers") — the verb must agree with "neither," not "answers."</p>
             <p class="final">Answer: (b) "Neither of the answers is correct."</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Fill in the blank: "The committee ___ its decision yesterday." Choose between "announced" and "have announced".</summary>
           <div class="ans">
-            <p>"Committee" is a collective noun treated as singular when acting as one unit, and "yesterday" signals simple past tense, not present perfect.</p>
+            <p>"Announced" is required because "yesterday" signals simple past tense, not present perfect ("have announced" would need a present-perfect context, not a specific past time marker like "yesterday"). "Committee" is also being treated as a singular unit here — though collective nouns aren't universally singular across English varieties; British English commonly permits plural agreement when the group is being treated as individual members rather than one unit.</p>
             <p class="final">Answer: "announced"</p>
           </div>
         </details>
@@ -640,16 +640,22 @@ Next term = 30 + 12 = 42</div>
             <p class="final">Answer: The rotated figure is upside-down but not left-right reversed; the mirrored figure is left-right reversed</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> A standard cross-shaped net (one central square with four squares attached to its sides, plus one more square attached to one of those) folds into a cube. If the central square becomes the "front" face, which face becomes the "back" (opposite) face?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> The net below folds into a cube. If face C is the "front," which labeled face becomes the "back" (opposite) face?
+<pre style="margin-top:8px;font-family:monospace;line-height:1.3;">
+        B
+    A   C   D   E
+        F
+</pre>
+(A central square C has B, F, A, D attached to its top/bottom/left/right respectively; E is attached to the right of D, extending that arm into a straight run of four: A–C–D–E.)</summary>
           <div class="ans">
-            <p>In a straight line of four squares within the net, the first and last squares in that line fold to become opposite faces of the cube — so the face directly opposite "front" is the one at the far end of the four-square arm running through the central square.</p>
-            <p class="final">Answer: The square at the far end of the four-square straight line through the central square</p>
+            <p>The four squares A, C, D, E form a straight run that folds into a closed loop of side faces (front/right/back/left). With C as front, its immediate neighbors in the strip (A and D) become the left and right faces, and the face two steps away in the loop — E — wraps around to become the back, directly opposite C. (B and F, attached above/below C, become the top and bottom faces, opposite each other.)</p>
+            <p class="final">Answer: E is opposite C (back face); B and F are the other opposite pair (top/bottom)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> Four jigsaw pieces need to assemble into a perfect rectangle. Two pieces have a straight (unnotched) edge of length 4 cm, and two have a straight edge of length 3 cm. What's the fastest first check to narrow down which pieces are neighbours?</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> Two straight edges (from separate pieces of a larger geometric assembly) are required to coincide completely along the same boundary segment — i.e. fully overlap, not just meet end-to-end to jointly span a longer run. What necessary condition must their lengths satisfy?</summary>
           <div class="ans">
-            <p>Matching edge lengths is a necessary condition for two pieces to fit together — pair pieces by equal straight-edge length first, then verify notch/angle compatibility only within those matched pairs, rather than checking all combinations.</p>
-            <p class="final">Answer: Match pieces by equal edge length before checking notch shape</p>
+            <p>For two straight edges to coincide completely along the same boundary segment (fully overlapping, not just meeting end-to-end to jointly span a longer run), equal length is a necessary (not sufficient) condition — edges of different lengths simply cannot fully overlap. Note that if the edges were instead allowed to sit end-to-end (e.g. a 4 cm edge followed by a 3 cm edge forming a 7 cm run), equal length would not be required at all — that's a different geometric relationship. Equal length alone doesn't guarantee the edges actually coincide in a real assembly; it's necessary but not sufficient, since other geometric factors (position, orientation, profile) also have to match.</p>
+            <p class="final">Answer: The two edges must have equal length (necessary, not sufficient, condition)</p>
           </div>
         </details>
       </div>
