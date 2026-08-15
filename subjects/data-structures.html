@@ -454,7 +454,7 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Given a pointer to a node (not the tail) in a singly linked list, what is the time complexity to delete it?</summary>
           <div class="ans">
-            <p>Normally O(n) because you need the previous node. However, a common trick is to copy the data from the next node into the current node, then delete the next node, which takes O(1) time.</p>
+            <p>Normally O(n) because you need the previous node. However, if node identity is irrelevant and the node is not the tail, the standard data-copying trick can remove its value from the list in O(1): copy the next node's data into the current node, then delete the next node. Strictly speaking, the supplied node itself is not freed — its contents are replaced by those of its successor, and the successor's node is the one actually deallocated. This distinction matters if nodes have identity, external pointers reference the original node, the node holds metadata/resources, or the successor isn't semantically interchangeable.</p>
             <p class="final">Answer: O(1) (with the data-copying trick)</p>
           </div>
         </details>
@@ -470,10 +470,10 @@ Due to the call stack, even if the time complexity is O(n), the space complexity
             <p class="final">Answer: N-&gt;next = A-&gt;next; A-&gt;next = N;</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> In Floyd's cycle detection algorithm, if the list length is N and the cycle length is C, what is the maximum number of steps before the pointers meet?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> In Floyd's cycle detection algorithm, if the list length is N and the cycle length is C, what is the asymptotic time complexity (number of steps) before the pointers meet?</summary>
           <div class="ans">
-            <p>The slow pointer enters the cycle after at most N-C steps. Once both are in the cycle, the distance between them decreases by 1 each step. The maximum distance is C-1, so they meet in O(N) total steps.</p>
-            <p class="final">Answer: O(N) time</p>
+            <p>The slow pointer enters the cycle after at most N-C steps. Once both are in the cycle, the distance between them decreases by 1 each step. The maximum distance is C-1, so they meet after at most N-C + (C-1) = N-1 steps, i.e. O(N) total steps. At GATE level, O(N) is the expected answer since N ≥ C always. If you want the tighter, more precise bound used when analyzing Floyd's algorithm itself (rather than just bounding by list length), it's usually written O(μ + λ), where μ is the length of the non-cyclic "tail" before the cycle starts and λ is the cycle length — this is the same quantity as N-C and C-1 above, just named differently.</p>
+            <p class="final">Answer: O(N) time (equivalently O(μ + λ))</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> How many pointers need to be modified to delete a node in a doubly linked list (assuming it is not the head or tail)?</summary>
@@ -599,7 +599,7 @@ Dequeue: front = (front + 1) % n</div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> A circular queue of size n=5 has front=2, rear=4. If we enqueue one element, what are the new front and rear?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> A circular queue of size n=5 has front=2, rear=4 (assume <code>rear</code> points to the last occupied slot, not the next free slot — the convention used consistently across all circular-queue questions on this page). If we enqueue one element, what are the new front and rear?</summary>
           <div class="ans">
             <p>Enqueue changes rear: rear = (4 + 1) % 5 = 0. Front remains 2.</p>
             <p class="final">Answer: front=2, rear=0</p>
@@ -668,7 +668,11 @@ Number of NULL pointers in a binary tree with n nodes = n + 1</div>
       <p>Breadth-First Traversal: <strong>Level-order</strong> uses a queue to visit nodes level by level.</p>
 
       <h3 class="sub">Constructing Tree from Traversals</h3>
-      <p>To uniquely reconstruct a binary tree, you need the <strong>inorder</strong> traversal paired with either the <strong>preorder</strong> or <strong>postorder</strong> traversal. Preorder and postorder alone are not sufficient.</p>
+      <p>To uniquely reconstruct an <strong>arbitrary</strong> binary tree, you need the <strong>inorder</strong> traversal paired with either the <strong>preorder</strong> or <strong>postorder</strong> traversal. Preorder and postorder alone are not sufficient for arbitrary binary trees — without inorder, there isn't enough information to tell which side of a node a given subtree belongs on whenever a node has only one child.</p>
+      <div class="card pyq">
+        <span class="label">GATE trap — the full-binary-tree exception</span>
+        <p>The insufficiency above specifically comes from nodes with exactly one child: preorder+postorder can't tell you whether that one child is a left child or a right child. This ambiguity disappears entirely if the tree is a <strong>full (a.k.a. strict) binary tree</strong> — every node has either 0 or 2 children, never exactly 1. For a full binary tree with distinct node labels, <strong>preorder + postorder together ARE sufficient to uniquely reconstruct the tree</strong> — no inorder needed. Don't answer "preorder+postorder is never enough" as an unqualified blanket statement; GATE specifically likes testing whether you know this exception applies once the "full/strict" condition is stated.</p>
+      </div>
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
@@ -683,10 +687,10 @@ Number of NULL pointers in a binary tree with n nodes = n + 1</div>
             <p class="final">Answer: 16</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> Which two traversals are necessary and sufficient to uniquely reconstruct a binary tree?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> Which two traversals are necessary and sufficient to uniquely reconstruct an arbitrary binary tree — and is there an exception?</summary>
           <div class="ans">
-            <p>Inorder traversal must be paired with either Preorder or Postorder traversal. Preorder and Postorder together cannot uniquely determine a binary tree without Inorder.</p>
-            <p class="final">Answer: Inorder and (Preorder OR Postorder)</p>
+            <p>For an arbitrary binary tree, inorder traversal must be paired with either preorder or postorder traversal — preorder and postorder together cannot uniquely determine an arbitrary binary tree without inorder, because a node with exactly one child leaves the tree ambiguous as to which side that child is on. The exception: if the tree is known to be a <strong>full/strict binary tree</strong> (every node has 0 or 2 children, distinct labels), preorder + postorder alone ARE sufficient — the one-child ambiguity that inorder would normally resolve simply can't occur.</p>
+            <p class="final">Answer: Inorder and (Preorder OR Postorder) for arbitrary binary trees — but Preorder + Postorder alone suffice if the tree is guaranteed full/strict</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> What is the maximum number of nodes in a binary tree of height h (where a single node has height 0)?</summary>
@@ -744,9 +748,11 @@ Number of NULL pointers in a binary tree with n nodes = n + 1</div>
       </div>
 
       <h3 class="sub">AVL Trees</h3>
-      <p>Self-balancing BST. The balance factor (BF) of any node is:</p>
-      <div class="eq">Balance Factor = height(left subtree) − height(right subtree)
-Valid values: {−1, 0, 1}</div>
+      <div class="card formula">
+        <span class="label">Balance factor — definition, valid range, and rebalancing trigger</span>
+        <div class="eq">BF(v) = height(left subtree of v) − height(right subtree of v)</div>
+        <p>For a <strong>valid</strong> AVL tree, every node must satisfy <code>BF ∈ {−1, 0, +1}</code>. After an insertion or deletion, if any node ends up with <strong>|BF| &gt; 1</strong> (i.e. BF = +2 or BF = −2), that node is unbalanced and <strong>requires rebalancing</strong> via one of the four rotation cases below — which specific case depends on both the sign of the unbalanced node's own BF and the sign of its heavier child's BF.</p>
+      </div>
       <p>When an insertion or deletion violates the balance factor, rotations are applied:</p>
       <ul>
         <li><strong>LL (Left-Left):</strong> Requires right rotation.</li>
@@ -765,8 +771,8 @@ Valid values: {−1, 0, 1}</div>
         </table>
         <p>Mnemonic: the case name tells you which two rotations to chain — "LR" means Left first (on the child), then Right (on the parent); "RL" means Right first, then Left. The single-letter cases (LL, RR) need only the opposite single rotation.</p>
       </div>
-      <p>Height of an AVL tree with n nodes is O(log n), specifically bounded between log₂(n+1) and ≈1.44·log₂(n+2). The minimum nodes N(h) for an AVL tree of height h:</p>
-      <div class="eq">N(h) = N(h−1) + N(h−2) + 1  (Fibonacci-like sequence)</div>
+      <p>Height of an AVL tree with n nodes is O(log n), specifically bounded between log₂(n+1) and ≈1.44·log₂(n+2). The minimum nodes N(h) for an AVL tree of height h (using the convention that a single node has height 0, matching the rest of this page):</p>
+      <div class="eq">N(h) = N(h−1) + N(h−2) + 1  (Fibonacci-like sequence), with base cases N(0) = 1, N(1) = 2</div>
       
       <div class="card pyq">
         <span class="label">GATE trap</span>
@@ -787,10 +793,10 @@ Valid values: {−1, 0, 1}</div>
             <p class="final">Answer: O(n)</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> What is the minimum number of nodes in an AVL tree of height 4? (Assume height of single node is 1).</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> What is the minimum number of nodes in an AVL tree of height 4? (Using the convention that a single node has height 0, consistent with the rest of this page.)</summary>
           <div class="ans">
-            <p>N(1) = 1, N(2) = 2. N(3) = N(2) + N(1) + 1 = 4. N(4) = N(3) + N(2) + 1 = 4 + 2 + 1 = 7.</p>
-            <p class="final">Answer: 7</p>
+            <p>N(0) = 1, N(1) = 2. N(2) = N(1) + N(0) + 1 = 2 + 1 + 1 = 4. N(3) = N(2) + N(1) + 1 = 4 + 2 + 1 = 7. N(4) = N(3) + N(2) + 1 = 7 + 4 + 1 = 12.</p>
+            <p class="final">Answer: 12</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> When deleting a node with two children in a BST, which node can replace it?</summary>
@@ -923,14 +929,34 @@ Max edges in directed graph: V(V−1)</div>
       <h3 class="sub">Breadth-First Search (BFS)</h3>
       <p>Explores level-by-level using a <strong>queue</strong>. Time: O(V+E) for adjacency list, O(V²) for matrix.</p>
       <ul>
-        <li>Applications: shortest path in unweighted graph, connected components, bipartite check, level-order traversal.</li>
+        <li>Applications: shortest path in unweighted graph, connected components <strong>in an undirected graph</strong>, bipartite check, level-order traversal.</li>
       </ul>
 
       <h3 class="sub">Depth-First Search (DFS)</h3>
       <p>Explores deep first using a <strong>stack</strong> (or recursion). Time: O(V+E) for adjacency list, O(V²) for matrix.</p>
       <ul>
-        <li>Applications: cycle detection, topological sort (DAGs), connected components, strongly connected components (Kosaraju/Tarjan).</li>
+        <li>Applications: cycle detection, topological sort (DAGs), connected components <strong>in an undirected graph</strong>, reachability and strongly connected components <strong>in a directed graph</strong> (Kosaraju/Tarjan).</li>
       </ul>
+      <div class="card note">
+        <span class="label">"Connected components" isn't the same question once edges have direction</span>
+        <p>"Connected components" (via BFS or DFS) is inherently an <strong>undirected-graph</strong> notion — it asks which vertices can reach each other ignoring edge direction entirely. In a <strong>directed</strong> graph, the analogous questions split into two genuinely different concepts: <strong>reachability</strong> (can vertex u reach vertex v, respecting edge direction?) and <strong>strongly connected components</strong> (maximal sets of vertices that can ALL reach each other, respecting direction) — computed via Kosaraju's or Tarjan's algorithm, not a plain BFS/DFS component scan.</p>
+      </div>
+
+      <h3 class="sub">Cycle detection — the undirected/directed distinction</h3>
+      <div class="two-col">
+        <div class="card pyq">
+          <span class="label">Undirected graph</span>
+          <p>During DFS, a cycle exists if you encounter an already-visited neighbor that is <strong>NOT the immediate parent</strong> you just came from. (Simply seeing "a visited neighbor" isn't enough — the edge straight back to your own parent is normal in a tree/DFS traversal, not a cycle.)</p>
+        </div>
+        <div class="card pyq">
+          <span class="label">Directed graph</span>
+          <p>During DFS, a cycle exists if you encounter an edge to a node that is currently <strong>on the recursion stack</strong> (a "gray" node, still being processed) — this is a <strong>back edge</strong>. An edge to an already-fully-finished ("black") node is NOT a cycle; it's a cross or forward edge.</p>
+        </div>
+      </div>
+      <div class="card note">
+        <span class="label">Why the two rules differ</span>
+        <p>In an undirected graph, every edge is inherently bidirectional, so the edge you just traversed to reach the current node always "points back" at its parent — that back-pointer is expected and must be explicitly excluded, or every single tree edge would incorrectly register as a cycle. In a directed graph, edges only go one way, so there's no symmetric "parent edge" to exclude — instead, the three-color (white/gray/black) recursion-stack membership test is what correctly separates a genuine cycle (back edge, to a gray/in-progress node) from a harmless cross or forward edge (to a black/already-finished node).</p>
+      </div>
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
@@ -953,14 +979,15 @@ Max edges in directed graph: V(V−1)</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> What is the maximum number of edges in an undirected bipartite graph with V vertices?</summary>
           <div class="ans">
-            <p>Maximized when vertices are split evenly: (V/2) nodes in each partition. Max edges = (V/2) × (V/2) = V²/4.</p>
+            <p>Maximized when vertices are split as evenly as possible between the two partitions: ⌊V/2⌋ in one, ⌈V/2⌉ in the other (equal halves only when V is even; for odd V they differ by one). Max edges = ⌊V/2⌋ × ⌈V/2⌉ = ⌊V²/4⌋.</p>
             <p class="final">Answer: ⌊V²/4⌋</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> How can you detect a cycle in a directed graph?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> How can you detect a cycle in a directed graph, and how does that differ from cycle detection in an undirected graph?</summary>
           <div class="ans">
-            <p>Using DFS. If a back-edge is found (an edge to a node currently in the recursion stack), a cycle exists.</p>
-            <p class="final">Answer: DFS (looking for back-edges)</p>
+            <p>Directed: use DFS with a three-color / recursion-stack scheme — if you find an edge to a node currently on the recursion stack (a back edge to a "gray" node), a cycle exists.</p>
+            <p>Undirected: a different check is needed, because every edge is bidirectional and would otherwise falsely flag the edge straight back to your own parent as a cycle. Instead, during DFS, a cycle exists only if you reach an already-visited neighbor that is NOT the immediate parent you arrived from.</p>
+            <p class="final">Answer: Directed — DFS back edge to a node on the recursion stack. Undirected — DFS reaches a visited neighbor that isn't the parent.</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> What is the time complexity to check if an edge exists using an adjacency list?</summary>
@@ -991,11 +1018,11 @@ Max edges in directed graph: V(V−1)</div>
         </div>
         <div class="card formula">
           <span class="label">Stacks</span>
-          <p>LIFO structure. Useful for parsing, balanced parentheses. Catalan number for valid permutations = C(2n, n)/(n+1).</p>
+          <p>LIFO structure. Useful for parsing, balanced parentheses. Cₙ = C(2n,n)/(n+1) counts, among other things: BSTs on n distinct keys, valid parenthesis sequences of length 2n, and stack-sortable permutations of n elements.</p>
         </div>
         <div class="card formula">
           <span class="label">Queues</span>
-          <p>FIFO structure. Circular queue full condition: (rear + 1) % N == front. Empty condition: front == rear.</p>
+          <p>FIFO structure. Circular queue, one-empty-slot convention: full when (rear + 1) % N == front, empty when front == rear. (A size-counter implementation instead uses count == N / count == 0, and can hold all N slots.)</p>
         </div>
         <div class="card formula">
           <span class="label">Trees</span>
@@ -1007,11 +1034,11 @@ Max edges in directed graph: V(V−1)</div>
         </div>
         <div class="card formula">
           <span class="label">Binary Heaps</span>
-          <p>Bottom-up build-heap = O(n) — NOT n×O(log n) = O(n log n); that bound applies only to repeated single insertion. 0-indexed formulas: parent = ⌊(i−1)/2⌋, left = 2i+1, right = 2i+2. Heap sort O(n log n).</p>
+          <p>Min-heap → minimum at root; extract-min is O(log n) in a min-heap. Max-heap → maximum at root; extract-max is O(log n) in a max-heap — don't invert which extreme goes with which heap. Bottom-up build-heap = O(n) — NOT n×O(log n) = O(n log n); that bound applies only to repeated single insertion. 0-indexed formulas: parent = ⌊(i−1)/2⌋, left = 2i+1, right = 2i+2. Heap sort O(n log n).</p>
         </div>
         <div class="card formula">
           <span class="label">Graphs</span>
-          <p>Handshaking lemma: ∑ deg = 2|E|. BFS (Queue, shortest path in <em>unweighted</em> graph only), DFS (Stack, cycle detection). Weighted shortest path: Dijkstra (non-negative weights) / Bellman-Ford (negative weights allowed). Tree has V−1 edges.</p>
+          <p>Handshaking lemma: ∑ deg = 2|E|. BFS (Queue, shortest path in <em>unweighted</em> graph only; connected components in an undirected graph). DFS (Stack; cycle detection — undirected: visited neighbor ≠ parent, directed: back edge to a recursion-stack node). Weighted shortest path: Dijkstra (non-negative weights) / Bellman-Ford (negative weights allowed). Tree has V−1 edges.</p>
         </div>
         <div class="card formula">
           <span class="label">Complexities</span>
@@ -1062,10 +1089,10 @@ bottom-up build-heap    → O(n)</div>
             <p class="final">Answer: L = I + 1</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q4</span> A circular queue of size N=5 has front=2 and rear=1. Is the queue full or empty?</summary>
+        <details class="qcard"><summary><span class="qn">Q4</span> A circular queue of size N=5 (using the one-empty-slot convention) has front=2 and rear=1. Is the queue full or empty?</summary>
           <div class="ans">
-            <p>Condition for full is (rear + 1) % N == front. (1 + 1) % 5 = 2, which equals front. So the queue is full.</p>
-            <p class="final">Answer: Full</p>
+            <p>Under the one-empty-slot convention (no separate count variable, one slot deliberately left unused to disambiguate full from empty), the condition for full is (rear + 1) % N == front. (1 + 1) % 5 = 2, which equals front. So the queue is full. (This formula is specific to that convention — an implementation using a size counter instead would check <code>count == N</code>, with no such sacrificed slot.)</p>
+            <p class="final">Answer: Full (under the one-empty-slot convention)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> A min-heap of n elements is given, with no other information about how it was built. What is the worst-case time to find the median if we inspect all heap elements and use a linear-time selection algorithm (e.g. median-of-medians)?</summary>
