@@ -6,212 +6,8 @@
 <title>Digital Logic — Blueprint Notes for GATE CSE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0a1c2c;
-  --bg-deep:#071523;
-  --panel:#0f2438;
-  --panel-alt:#153351;
-  --line:#22516f;
-  --line-soft:#1a3c56;
-  --grid-line:rgba(90,209,230,0.06);
-  --cyan:#5ad1e6;
-  --cyan-dim:#3a8fa3;
-  --amber:#f2a65a;
-  --coral:#ff8272;
-  --text:#e7f1f5;
-  --text-dim:#8fadc0;
-  --text-faint:#5b7d92;
-  --mono:'IBM Plex Mono',monospace;
-  --sans:'IBM Plex Sans',sans-serif;
-  --disp:'Space Grotesk',sans-serif;
-}
-*{box-sizing:border-box; margin:0; padding:0;}
-html{scroll-behavior:smooth;}
-body{
-  background:
-    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/32px 32px,
-    var(--bg);
-  color:var(--text);
-  font-family:var(--sans);
-  line-height:1.6;
-  font-size:16px;
-}
-::selection{background:var(--cyan); color:var(--bg-deep);}
-a{color:var(--cyan); text-decoration:none;}
-h1,h2,h3,h4{font-family:var(--disp); font-weight:600; letter-spacing:-0.01em;}
-code, .mono{font-family:var(--mono);}
-
-/* ---------- Layout shell ---------- */
-.shell{display:flex; min-height:100vh;}
-
-/* ---------- Sidebar ---------- */
-.sidebar{
-  width:280px; flex-shrink:0;
-  background:var(--bg-deep);
-  border-right:1px solid var(--line-soft);
-  position:sticky; top:0; height:100vh; overflow-y:auto;
-  padding:28px 0 40px;
-}
-.sidebar::-webkit-scrollbar{width:6px;}
-.sidebar::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
-.brand{
-  padding:0 24px 22px; margin-bottom:10px;
-  border-bottom:1px solid var(--line-soft);
-}
-.brand .tag{
-  font-family:var(--mono); font-size:11px; color:var(--amber);
-  letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:6px;
-}
-.brand h1{font-size:22px; color:var(--text); line-height:1.25;}
-.brand .sub{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-top:8px;}
-
-.navlist{padding:14px 12px;}
-.navgroup{margin-bottom:4px;}
-.navlink{
-  display:flex; align-items:baseline; gap:10px;
-  padding:9px 12px; border-radius:6px;
-  color:var(--text-dim); font-size:13.5px;
-  border-left:2px solid transparent;
-  cursor:pointer; transition:background .15s, color .15s, border-color .15s;
-}
-.navlink .num{font-family:var(--mono); font-size:11px; color:var(--cyan-dim); flex-shrink:0;}
-.navlink:hover{background:var(--panel); color:var(--text);}
-.navlink.active{background:var(--panel-alt); color:var(--cyan); border-left-color:var(--cyan);}
-.navlink.active .num{color:var(--cyan);}
-
-/* ---------- Global site nav offset ---------- */
-.sidebar{top:48px !important; height:calc(100vh - 48px) !important;}
-
-/* ---------- Main ---------- */
-.main{flex:1; min-width:0;}
-
-/* ---------- Hero ---------- */
-.hero{
-  padding:90px 64px 70px; max-width:980px;
-  border-bottom:1px solid var(--line-soft);
-  position:relative; overflow:hidden;
-}
-.hero .eyebrow{
-  font-family:var(--mono); font-size:12px; color:var(--cyan);
-  letter-spacing:0.18em; text-transform:uppercase; margin-bottom:18px; display:block;
-}
-.hero h1{font-size:52px; line-height:1.08; max-width:820px; margin-bottom:22px;}
-.hero h1 em{font-style:normal; color:var(--cyan);}
-.hero p{font-size:17px; color:var(--text-dim); max-width:620px; margin-bottom:28px;}
-.hero .chips{display:flex; flex-wrap:wrap; gap:10px;}
-.chip{
-  font-family:var(--mono); font-size:11.5px; color:var(--text-dim);
-  border:1px solid var(--line); padding:6px 12px; border-radius:20px;
-  background:var(--panel);
-}
-.hero-diagram{position:absolute; right:-40px; top:40px; width:340px; opacity:.9; pointer-events:none;}
-
-/* ---------- Sections ---------- */
-section.topic{
-  padding:56px 64px 20px; max-width:980px;
-  border-bottom:1px solid var(--line-soft);
-}
-section.topic:last-of-type{border-bottom:none; padding-bottom:120px;}
-.topic-head{display:flex; align-items:baseline; gap:16px; margin-bottom:8px;}
-.topic-head .idx{font-family:var(--mono); font-size:15px; color:var(--cyan-dim);}
-.topic-head h2{font-size:32px; color:var(--text);}
-.topic-kicker{font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-bottom:32px; letter-spacing:.04em;}
-
-h3.sub{font-size:19px; color:var(--amber); margin:34px 0 12px; font-weight:600;}
-h4.subsub{font-size:15.5px; color:var(--text); margin:20px 0 8px; font-weight:600;}
-p{color:var(--text-dim); margin-bottom:13px; max-width:760px;}
-p strong, li strong{color:var(--text); font-weight:600;}
-ul, ol{color:var(--text-dim); margin:0 0 16px 20px;}
-li{margin-bottom:6px;}
-li::marker{color:var(--cyan-dim);}
-
-.card{
-  background:var(--panel); border:1px solid var(--line-soft); border-radius:10px;
-  padding:20px 22px; margin:16px 0;
-}
-.card.note{border-left:3px solid var(--amber);}
-.card.note .label{font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
-.card.pyq{border-left:3px solid var(--coral);}
-.card.pyq .label{font-family:var(--mono); font-size:11px; color:var(--coral); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
-.card.formula{border-left:3px solid var(--cyan);}
-.card.formula .label{font-family:var(--mono); font-size:11px; color:var(--cyan); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:8px;}
-.card p:last-child{margin-bottom:0;}
-
-.two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
-@media (max-width:760px){.two-col{grid-template-columns:1fr;}}
-
-table{border-collapse:collapse; margin:14px 0 22px; font-family:var(--mono); font-size:13.5px; width:auto;}
-th, td{border:1px solid var(--line); padding:7px 14px; text-align:center;}
-th{background:var(--panel-alt); color:var(--cyan); font-weight:500;}
-td{color:var(--text-dim); background:var(--panel);}
-tr:hover td{color:var(--text);}
-
-.kmap{display:inline-grid; gap:1px; background:var(--line); border:1px solid var(--line); margin:14px 0;}
-.kmap .cell{
-  background:var(--panel); font-family:var(--mono); font-size:14px; color:var(--text-dim);
-  width:52px; height:44px; display:flex; align-items:center; justify-content:center;
-}
-.kmap .cell.head{background:var(--panel-alt); color:var(--cyan); font-size:11px;}
-.kmap .cell.one{color:var(--amber); font-weight:600;}
-
-.eq{
-  font-family:var(--mono); background:var(--bg-deep); border:1px solid var(--line-soft);
-  border-radius:8px; padding:14px 18px; color:var(--cyan); font-size:14.5px; margin:12px 0;
-  overflow-x:auto; white-space:pre;
-}
-
-.diagram-wrap{margin:22px 0; text-align:center;}
-.diagram-wrap svg{max-width:100%; height:auto;}
-.diagram-cap{font-family:var(--mono); font-size:11.5px; color:var(--text-faint); margin-top:8px;}
-
-.gate-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:20px 0;}
-@media (max-width:760px){.gate-grid{grid-template-columns:repeat(2,1fr);}}
-.gate-card{background:var(--panel); border:1px solid var(--line-soft); border-radius:8px; padding:14px; text-align:center;}
-.gate-card svg{width:100%; height:60px;}
-.gate-card .gname{font-family:var(--mono); font-size:12px; color:var(--cyan); margin-top:6px; display:block;}
-.gate-card .gexpr{font-family:var(--mono); font-size:11px; color:var(--text-faint);}
-
-footer{
-  padding:40px 64px 60px; max-width:980px; color:var(--text-faint); font-family:var(--mono); font-size:12px;
-}
-
-/* ---------- PYQ practice blocks ---------- */
-.practice{margin-top:44px; padding-top:28px; border-top:1px dashed var(--line);}
-.practice-head{display:flex; align-items:baseline; gap:10px; margin-bottom:16px;}
-.practice-head h3{font-size:17px; color:var(--coral); font-weight:600;}
-.practice-head .pcount{font-family:var(--mono); font-size:11px; color:var(--text-faint);}
-.qcard{
-  background:var(--panel); border:1px solid var(--line-soft); border-radius:8px;
-  margin-bottom:10px; overflow:hidden;
-}
-.qcard summary{
-  list-style:none; cursor:pointer; padding:13px 18px; display:flex; gap:12px;
-  font-size:14px; color:var(--text); align-items:baseline;
-}
-.qcard summary::-webkit-details-marker{display:none;}
-.qcard summary .qn{font-family:var(--mono); color:var(--coral); flex-shrink:0; font-size:12.5px;}
-.qcard summary::after{content:'+'; margin-left:auto; color:var(--text-faint); font-family:var(--mono);}
-.qcard[open] summary::after{content:'–';}
-.qcard .ans{
-  padding:2px 18px 16px 48px; border-top:1px solid var(--line-soft);
-  color:var(--text-dim); font-size:13.5px;
-}
-.qcard .ans p{margin-bottom:8px;}
-.qcard .ans .final{color:var(--amber); font-weight:600;}
-
-
-/* scroll-margin so anchors land below any sticky elements */
-section.topic{scroll-margin-top:20px;}
-
-@media (max-width:900px){
-  .sidebar{display:none;}
-  .hero, section.topic, footer{padding-left:26px; padding-right:26px;}
-  .hero h1{font-size:36px;}
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
 </head>
 <body>
 <script>window.SITE_NAV_CONFIG={current:'digital-logic', base:'../'};</script>
@@ -255,24 +51,24 @@ section.topic{scroll-margin-top:20px;}
         <span class="chip">10 Revision</span>
       </div>
       <svg class="hero-diagram" viewBox="0 0 300 220" aria-hidden="true">
-        <g fill="none" stroke="#22516f" stroke-width="1.4">
+        <g fill="none" stroke="#2a2b33" stroke-width="1.4">
           <rect x="20" y="20" width="60" height="40" rx="3"/>
           <rect x="20" y="90" width="60" height="40" rx="3"/>
           <rect x="140" y="55" width="60" height="40" rx="3"/>
-          <rect x="220" y="55" width="55" height="40" rx="3" stroke="#5ad1e6"/>
+          <rect x="220" y="55" width="55" height="40" rx="3" stroke="#cba36b"/>
           <line x1="80" y1="40" x2="140" y2="65"/>
           <line x1="80" y1="110" x2="140" y2="85"/>
           <line x1="200" y1="75" x2="220" y2="75"/>
           <line x1="0" y1="40" x2="20" y2="40"/>
           <line x1="0" y1="110" x2="20" y2="110"/>
           <line x1="275" y1="75" x2="300" y2="75"/>
-          <circle cx="20" cy="40" r="2.5" fill="#5ad1e6" stroke="none"/>
-          <circle cx="20" cy="110" r="2.5" fill="#5ad1e6" stroke="none"/>
-          <circle cx="300" cy="75" r="2.5" fill="#f2a65a" stroke="none"/>
+          <circle cx="20" cy="40" r="2.5" fill="#cba36b" stroke="none"/>
+          <circle cx="20" cy="110" r="2.5" fill="#cba36b" stroke="none"/>
+          <circle cx="300" cy="75" r="2.5" fill="#d98a5f" stroke="none"/>
         </g>
-        <g font-family="IBM Plex Mono" font-size="10" fill="#5b7d92">
+        <g font-family="JetBrains Mono" font-size="10" fill="#6f6a60">
           <text x="50" y="45">A</text><text x="50" y="115">B</text>
-          <text x="167" y="80" fill="#8fadc0">Σ</text>
+          <text x="167" y="80" fill="#a8a196">Σ</text>
         </g>
       </svg>
     </section>
@@ -409,27 +205,27 @@ Gray → Binary:  b₀ = g₀;            bᵢ = bᵢ₋₁ ⊕ gᵢ   for i &gt
       <h3 class="sub">Logic gate symbols &amp; truth tables</h3>
       <div class="gate-grid">
         <div class="gate-card">
-          <svg viewBox="0 0 120 60"><g fill="none" stroke="#5ad1e6" stroke-width="2"><path d="M20 15 v30 h15 a20 20 0 0 0 0-30 z"/><line x1="5" y1="22" x2="20" y2="22"/><line x1="5" y1="38" x2="20" y2="38"/><line x1="55" y1="30" x2="70" y2="30"/></g></svg>
+          <svg viewBox="0 0 120 60"><g fill="none" stroke="#cba36b" stroke-width="2"><path d="M20 15 v30 h15 a20 20 0 0 0 0-30 z"/><line x1="5" y1="22" x2="20" y2="22"/><line x1="5" y1="38" x2="20" y2="38"/><line x1="55" y1="30" x2="70" y2="30"/></g></svg>
           <span class="gname">AND</span><span class="gexpr">Y = A·B</span>
         </div>
         <div class="gate-card">
-          <svg viewBox="0 0 120 60"><g fill="none" stroke="#5ad1e6" stroke-width="2"><path d="M18 15 q14 15 0 30 q22-2 34-15 q-12-13-34-15 z"/><line x1="4" y1="22" x2="15" y2="22"/><line x1="4" y1="38" x2="15" y2="38"/><line x1="52" y1="30" x2="70" y2="30"/></g></svg>
+          <svg viewBox="0 0 120 60"><g fill="none" stroke="#cba36b" stroke-width="2"><path d="M18 15 q14 15 0 30 q22-2 34-15 q-12-13-34-15 z"/><line x1="4" y1="22" x2="15" y2="22"/><line x1="4" y1="38" x2="15" y2="38"/><line x1="52" y1="30" x2="70" y2="30"/></g></svg>
           <span class="gname">OR</span><span class="gexpr">Y = A+B</span>
         </div>
         <div class="gate-card">
-          <svg viewBox="0 0 120 60"><g fill="none" stroke="#5ad1e6" stroke-width="2"><path d="M22 18 v24 l26-12 z"/><circle cx="52" cy="30" r="4"/><line x1="6" y1="30" x2="22" y2="30"/><line x1="56" y1="30" x2="70" y2="30"/></g></svg>
+          <svg viewBox="0 0 120 60"><g fill="none" stroke="#cba36b" stroke-width="2"><path d="M22 18 v24 l26-12 z"/><circle cx="52" cy="30" r="4"/><line x1="6" y1="30" x2="22" y2="30"/><line x1="56" y1="30" x2="70" y2="30"/></g></svg>
           <span class="gname">NOT</span><span class="gexpr">Y = A'</span>
         </div>
         <div class="gate-card">
-          <svg viewBox="0 0 120 60"><g fill="none" stroke="#5ad1e6" stroke-width="2"><path d="M20 15 v30 h15 a20 20 0 0 0 0-30 z"/><circle cx="39" cy="30" r="4"/><line x1="5" y1="22" x2="20" y2="22"/><line x1="5" y1="38" x2="20" y2="38"/><line x1="43" y1="30" x2="70" y2="30"/></g></svg>
+          <svg viewBox="0 0 120 60"><g fill="none" stroke="#cba36b" stroke-width="2"><path d="M20 15 v30 h15 a20 20 0 0 0 0-30 z"/><circle cx="39" cy="30" r="4"/><line x1="5" y1="22" x2="20" y2="22"/><line x1="5" y1="38" x2="20" y2="38"/><line x1="43" y1="30" x2="70" y2="30"/></g></svg>
           <span class="gname">NAND</span><span class="gexpr">Y = (AB)'</span>
         </div>
         <div class="gate-card">
-          <svg viewBox="0 0 120 60"><g fill="none" stroke="#5ad1e6" stroke-width="2"><path d="M18 15 q14 15 0 30 q22-2 34-15 q-12-13-34-15 z"/><circle cx="56" cy="30" r="4"/><line x1="4" y1="22" x2="15" y2="22"/><line x1="4" y1="38" x2="15" y2="38"/><line x1="60" y1="30" x2="70" y2="30"/></g></svg>
+          <svg viewBox="0 0 120 60"><g fill="none" stroke="#cba36b" stroke-width="2"><path d="M18 15 q14 15 0 30 q22-2 34-15 q-12-13-34-15 z"/><circle cx="56" cy="30" r="4"/><line x1="4" y1="22" x2="15" y2="22"/><line x1="4" y1="38" x2="15" y2="38"/><line x1="60" y1="30" x2="70" y2="30"/></g></svg>
           <span class="gname">NOR</span><span class="gexpr">Y = (A+B)'</span>
         </div>
         <div class="gate-card">
-          <svg viewBox="0 0 120 60"><g fill="none" stroke="#5ad1e6" stroke-width="2"><path d="M14 15 q14 15 0 30" /><path d="M18 15 q14 15 0 30 q22-2 34-15 q-12-13-34-15 z"/><line x1="0" y1="22" x2="11" y2="22"/><line x1="0" y1="38" x2="11" y2="38"/><line x1="52" y1="30" x2="70" y2="30"/></g></svg>
+          <svg viewBox="0 0 120 60"><g fill="none" stroke="#cba36b" stroke-width="2"><path d="M14 15 q14 15 0 30" /><path d="M18 15 q14 15 0 30 q22-2 34-15 q-12-13-34-15 z"/><line x1="0" y1="22" x2="11" y2="22"/><line x1="0" y1="38" x2="11" y2="38"/><line x1="52" y1="30" x2="70" y2="30"/></g></svg>
           <span class="gname">XOR</span><span class="gexpr">Y = A⊕B</span>
         </div>
       </div>
@@ -635,43 +431,43 @@ Cout = AB + Cin(A⊕B) = AB + BCin + ACin</div>
 
       <div class="diagram-wrap">
         <svg viewBox="0 0 560 130" width="560">
-          <g fill="none" stroke="#5ad1e6" stroke-width="1.6" font-family="IBM Plex Mono" font-size="11">
+          <g fill="none" stroke="#cba36b" stroke-width="1.6" font-family="JetBrains Mono" font-size="11">
             <rect x="0" y="0" width="560" height="130" fill="none" stroke="none"/>
             <!-- 4 full adder blocks -->
             <g transform="translate(20,20)">
               <rect x="0" y="0" width="90" height="70" rx="4"/>
-              <text x="45" y="40" fill="#e7f1f5" text-anchor="middle">FA₀</text>
-              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#8fadc0" text-anchor="middle">A₀</text>
-              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#8fadc0" text-anchor="middle">B₀</text>
-              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#f2a65a" text-anchor="middle">S₀</text>
+              <text x="45" y="40" fill="#f2ede4" text-anchor="middle">FA₀</text>
+              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#a8a196" text-anchor="middle">A₀</text>
+              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#a8a196" text-anchor="middle">B₀</text>
+              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#d98a5f" text-anchor="middle">S₀</text>
             </g>
             <g transform="translate(150,20)">
               <rect x="0" y="0" width="90" height="70" rx="4"/>
-              <text x="45" y="40" fill="#e7f1f5" text-anchor="middle">FA₁</text>
-              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#8fadc0" text-anchor="middle">A₁</text>
-              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#8fadc0" text-anchor="middle">B₁</text>
-              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#f2a65a" text-anchor="middle">S₁</text>
+              <text x="45" y="40" fill="#f2ede4" text-anchor="middle">FA₁</text>
+              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#a8a196" text-anchor="middle">A₁</text>
+              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#a8a196" text-anchor="middle">B₁</text>
+              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#d98a5f" text-anchor="middle">S₁</text>
             </g>
             <g transform="translate(280,20)">
               <rect x="0" y="0" width="90" height="70" rx="4"/>
-              <text x="45" y="40" fill="#e7f1f5" text-anchor="middle">FA₂</text>
-              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#8fadc0" text-anchor="middle">A₂</text>
-              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#8fadc0" text-anchor="middle">B₂</text>
-              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#f2a65a" text-anchor="middle">S₂</text>
+              <text x="45" y="40" fill="#f2ede4" text-anchor="middle">FA₂</text>
+              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#a8a196" text-anchor="middle">A₂</text>
+              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#a8a196" text-anchor="middle">B₂</text>
+              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#d98a5f" text-anchor="middle">S₂</text>
             </g>
             <g transform="translate(410,20)">
               <rect x="0" y="0" width="90" height="70" rx="4"/>
-              <text x="45" y="40" fill="#e7f1f5" text-anchor="middle">FA₃</text>
-              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#8fadc0" text-anchor="middle">A₃</text>
-              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#8fadc0" text-anchor="middle">B₃</text>
-              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#f2a65a" text-anchor="middle">S₃</text>
+              <text x="45" y="40" fill="#f2ede4" text-anchor="middle">FA₃</text>
+              <line x1="20" y1="-14" x2="20" y2="0"/><text x="20" y="-18" fill="#a8a196" text-anchor="middle">A₃</text>
+              <line x1="70" y1="-14" x2="70" y2="0"/><text x="70" y="-18" fill="#a8a196" text-anchor="middle">B₃</text>
+              <line x1="45" y1="70" x2="45" y2="84"/><text x="45" y="98" fill="#d98a5f" text-anchor="middle">S₃</text>
             </g>
             <!-- carry chain -->
-            <line x1="0" y1="55" x2="20" y2="55" stroke="#ff8272"/><text x="-4" y="51" fill="#ff8272" text-anchor="end">C₀</text>
-            <line x1="110" y1="55" x2="150" y2="55" stroke="#ff8272"/>
-            <line x1="240" y1="55" x2="280" y2="55" stroke="#ff8272"/>
-            <line x1="370" y1="55" x2="410" y2="55" stroke="#ff8272"/>
-            <line x1="500" y1="55" x2="524" y2="55" stroke="#ff8272"/><text x="528" y="51" fill="#ff8272">C₄ (Cout)</text>
+            <line x1="0" y1="55" x2="20" y2="55" stroke="#e0776c"/><text x="-4" y="51" fill="#e0776c" text-anchor="end">C₀</text>
+            <line x1="110" y1="55" x2="150" y2="55" stroke="#e0776c"/>
+            <line x1="240" y1="55" x2="280" y2="55" stroke="#e0776c"/>
+            <line x1="370" y1="55" x2="410" y2="55" stroke="#e0776c"/>
+            <line x1="500" y1="55" x2="524" y2="55" stroke="#e0776c"/><text x="528" y="51" fill="#e0776c">C₄ (Cout)</text>
           </g>
         </svg>
         <div class="diagram-cap">4-bit ripple carry adder — Cout of each stage feeds Cin of the next.</div>
@@ -840,7 +636,7 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
         <tr><td>0</td><td>0</td><td>Q</td><td>hold</td></tr>
         <tr><td>0</td><td>1</td><td>0</td><td>reset</td></tr>
         <tr><td>1</td><td>0</td><td>1</td><td>set</td></tr>
-        <tr><td>1</td><td>1</td><td>—</td><td><span style="color:#ff8272">invalid / forbidden</span></td></tr>
+        <tr><td>1</td><td>1</td><td>—</td><td><span style="color:#e0776c">invalid / forbidden</span></td></tr>
       </table>
       <p>S = R = 1 forces both Q and Q' toward 0, breaking the complementary-outputs guarantee — this state is avoided by design.</p>
 
@@ -895,17 +691,17 @@ For A &gt; B: scan from MSB — the first bit position where they differ decides
 
       <div class="diagram-wrap">
         <svg viewBox="0 0 480 130" width="480">
-          <g font-family="IBM Plex Mono" font-size="11">
-            <text x="0" y="14" fill="#8fadc0">CLK</text>
-            <path d="M40 20 h40 v20 h40 v-20 h40 v20 h40 v-20 h40 v20 h40" fill="none" stroke="#5ad1e6" stroke-width="1.8"/>
-            <text x="0" y="54" fill="#8fadc0">D</text>
-            <path d="M40 60 h80 v-20 h160 v20 h40" fill="none" stroke="#f2a65a" stroke-width="1.8"/>
-            <text x="0" y="94" fill="#8fadc0">Q</text>
-            <path d="M40 100 h120 v-20 h120 v20 h40" fill="none" stroke="#ff8272" stroke-width="1.8"/>
-            <line x1="80" y1="0" x2="80" y2="120" stroke="#22516f" stroke-dasharray="2 3"/>
-            <line x1="200" y1="0" x2="200" y2="120" stroke="#22516f" stroke-dasharray="2 3"/>
-            <text x="80" y="128" fill="#5b7d92" text-anchor="middle">rising edge</text>
-            <text x="200" y="128" fill="#5b7d92" text-anchor="middle">rising edge</text>
+          <g font-family="JetBrains Mono" font-size="11">
+            <text x="0" y="14" fill="#a8a196">CLK</text>
+            <path d="M40 20 h40 v20 h40 v-20 h40 v20 h40 v-20 h40 v20 h40" fill="none" stroke="#cba36b" stroke-width="1.8"/>
+            <text x="0" y="54" fill="#a8a196">D</text>
+            <path d="M40 60 h80 v-20 h160 v20 h40" fill="none" stroke="#d98a5f" stroke-width="1.8"/>
+            <text x="0" y="94" fill="#a8a196">Q</text>
+            <path d="M40 100 h120 v-20 h120 v20 h40" fill="none" stroke="#e0776c" stroke-width="1.8"/>
+            <line x1="80" y1="0" x2="80" y2="120" stroke="#2a2b33" stroke-dasharray="2 3"/>
+            <line x1="200" y1="0" x2="200" y2="120" stroke="#2a2b33" stroke-dasharray="2 3"/>
+            <text x="80" y="128" fill="#6f6a60" text-anchor="middle">rising edge</text>
+            <text x="200" y="128" fill="#6f6a60" text-anchor="middle">rising edge</text>
           </g>
         </svg>
         <div class="diagram-cap">Positive edge-triggered D flip-flop — Q updates to D's value only at the rising edge of CLK, then holds.</div>

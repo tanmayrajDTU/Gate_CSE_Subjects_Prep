@@ -7,51 +7,66 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* Retheme: mapped onto the site-wide blueprint palette (shared with Digital Logic notes) */
+  /* Premium editorial theme — shared palette with the rest of the site */
   :root {
-    --bg: #0a1c2c;
-    --surface: #0f2438;
-    --surface2: #153351;
-    --border: #1a3c56;
-    --accent: #5ad1e6;
-    --accent2: #f2a65a;
-    --accent3: #6fe6b8;
-    --accent4: #ff8272;
-    --accent5: #b892e8;
-    --text: #e7f1f5;
-    --muted: #8fadc0;
-    --header-font: 'Space Grotesk', sans-serif;
+    --bg: #0b0c0f;
+    --surface: rgba(255,255,255,0.028);
+    --surface2: #1a1b21;
+    --border: #212228;
+    --accent: #cba36b;
+    --accent-bright: #e6c58e;
+    --accent2: #d98a5f;
+    --accent3: #82b79a;
+    --accent4: #e0776c;
+    --accent5: #b09bd6;
+    --text: #f2ede4;
+    --muted: #a39d92;
+    --header-font: 'Fraunces', 'Georgia', serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background:
-      linear-gradient(rgba(90,209,230,0.06) 1px, transparent 1px) 0 0/32px 32px,
-      linear-gradient(90deg, rgba(90,209,230,0.06) 1px, transparent 1px) 0 0/32px 32px,
+      radial-gradient(ellipse 900px 500px at 85% -8%, rgba(203,163,107,0.08), transparent 60%),
+      linear-gradient(rgba(203,163,107,0.028) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, rgba(203,163,107,0.028) 1px, transparent 1px) 0 0/40px 40px,
       var(--bg);
-    color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; line-height: 1.6;
+    color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.65;
+    position: relative;
   }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+    opacity: 0.025; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  ::selection { background: var(--accent); color: #0a0a0c; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #060708; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; border: 2px solid #060708; }
+  ::-webkit-scrollbar-thumb:hover { background: #8a7048; }
 
   /* NAV */
-  nav { position: sticky; top: 48px; z-index: 100; background: rgba(7,21,35,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 4px; height: 52px; overflow-x: auto; }
-  nav .logo { font-family: var(--header-font); font-size: 13px; color: var(--accent); font-weight: 700; white-space: nowrap; margin-right: 16px; letter-spacing: 1px; }
-  nav button { background: none; border: none; color: var(--muted); cursor: pointer; padding: 6px 12px; border-radius: 4px; font-size: 12px; white-space: nowrap; transition: all .2s; }
-  nav button:hover, nav button.active { color: var(--accent); background: rgba(90,209,230,0.1); }
+  nav { position: sticky; top: 48px; z-index: 100; background: rgba(6,7,8,0.85); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); border-bottom: 1px solid rgba(203,163,107,0.14); padding: 0 24px; display: flex; align-items: center; gap: 3px; height: 52px; overflow-x: auto; box-shadow: 0 1px 24px rgba(0,0,0,0.35); }
+  nav .logo { font-family: var(--header-font); font-size: 13.5px; color: var(--accent); font-weight: 600; white-space: nowrap; margin-right: 18px; letter-spacing: .5px; }
+  nav button { background: none; border: none; color: var(--muted); cursor: pointer; padding: 7px 13px; border-radius: 7px; font-size: 12px; white-space: nowrap; transition: all .18s; font-family: 'Inter', sans-serif; }
+  nav button:hover { color: var(--text); background: rgba(255,255,255,0.045); }
+  nav button.active { color: var(--accent-bright); background: rgba(203,163,107,0.1); }
 
   /* LAYOUT */
-  .page { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .page { display: none; padding: 32px 24px; max-width: 1400px; margin: 0 auto; animation: fadeUp .5s ease both; }
   .page.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
   /* HERO */
-  .hero { border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin-bottom: 24px; background: linear-gradient(135deg, #111318 0%, #0d1117 100%); position: relative; overflow: hidden; }
-  .hero::before { content: 'GATE CSE'; position: absolute; right: -20px; top: -20px; font-size: 120px; font-family: var(--header-font); color: rgba(90,209,230,0.04); font-weight: 900; pointer-events: none; }
-  .hero h1 { font-family: var(--header-font); font-size: 22px; color: var(--accent); letter-spacing: 2px; margin-bottom: 8px; }
-  .hero p { color: var(--muted); font-size: 13px; max-width: 600px; }
-  .hero .stats-row { display: flex; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+  .hero { border: 1px solid var(--border); border-radius: 14px; padding: 38px; margin-bottom: 26px; background: linear-gradient(135deg, #131317 0%, #0a0a0c 100%); position: relative; overflow: hidden; box-shadow: 0 20px 50px -18px rgba(0,0,0,0.6); }
+  .hero::before { content: 'GATE CSE'; position: absolute; right: -20px; top: -20px; font-size: 130px; font-family: var(--header-font); font-style: italic; color: rgba(203,163,107,0.045); font-weight: 700; pointer-events: none; }
+  .hero h1 { font-family: var(--header-font); font-size: 24px; color: var(--accent-bright); letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+  .hero p { color: var(--muted); font-size: 13.5px; max-width: 600px; }
+  .hero .stats-row { display: flex; gap: 36px; margin-top: 26px; flex-wrap: wrap; }
   .hero .stat { }
-  .hero .stat .val { font-size: 28px; font-weight: 700; color: var(--text); font-family: var(--header-font); }
-  .hero .stat .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .hero .stat .val { font-size: 30px; font-weight: 600; color: var(--text); font-family: var(--header-font); }
+  .hero .stat .lbl { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; margin-top: 2px; display: block; }
 
   /* CARDS */
   .grid { display: grid; gap: 16px; }
@@ -60,79 +75,80 @@
   .grid-4 { grid-template-columns: repeat(4, 1fr); }
   @media(max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
-  .card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; font-family: var(--header-font); }
-  .card h2 { font-size: 15px; color: var(--text); margin-bottom: 12px; font-weight: 600; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; backdrop-filter: blur(6px); box-shadow: 0 2px 14px rgba(0,0,0,0.24); transition: border-color .18s; }
+  .card:hover { border-color: #2a2b33; }
+  .card h3 { font-size: 11.5px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 16px; font-family: var(--header-font); font-weight: 600; }
+  .card h2 { font-size: 15px; color: var(--text); margin-bottom: 12px; font-weight: 600; font-family: var(--header-font); }
 
   /* TABLES */
   .tbl-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  th { background: var(--surface2); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  td { padding: 8px 10px; border-bottom: 1px solid rgba(30,35,48,0.5); vertical-align: middle; }
-  tr:hover td { background: rgba(90,209,230,0.03); }
+  th { background: var(--surface2); color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 9px 12px; border-bottom: 1px solid rgba(35,36,42,0.6); vertical-align: middle; }
+  tr:hover td { background: rgba(203,163,107,0.035); }
   tr:last-child td { border-bottom: none; }
 
   /* BADGES */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-  .badge-high { background: rgba(111,230,184,0.15); color: #6fe6b8; }
-  .badge-med { background: rgba(242,166,90,0.15); color: #f2a65a; }
-  .badge-low { background: rgba(255,130,114,0.15); color: #ff8272; }
-  .badge-blue { background: rgba(90,209,230,0.15); color: #5ad1e6; }
-  .badge-purple { background: rgba(184,146,232,0.15); color: #b892e8; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; }
+  .badge-high { background: rgba(130,183,154,0.14); color: #82b79a; border: 1px solid rgba(130,183,154,0.3); }
+  .badge-med { background: rgba(217,138,95,0.14); color: #d98a5f; border: 1px solid rgba(217,138,95,0.3); }
+  .badge-low { background: rgba(224,119,108,0.14); color: #e0776c; border: 1px solid rgba(224,119,108,0.3); }
+  .badge-blue { background: rgba(203,163,107,0.14); color: #cba36b; border: 1px solid rgba(203,163,107,0.3); }
+  .badge-purple { background: rgba(176,155,214,0.14); color: #b09bd6; border: 1px solid rgba(176,155,214,0.3); }
 
   /* TREND ARROWS */
-  .up { color: #6fe6b8; }
-  .down { color: #ff8272; }
-  .stable { color: #f2a65a; }
+  .up { color: #82b79a; }
+  .down { color: #e0776c; }
+  .stable { color: #d98a5f; }
 
   /* BAR */
-  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
   .bar-label { width: 160px; font-size: 12px; color: var(--text); flex-shrink: 0; }
   .bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+  .bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
   .bar-val { width: 40px; text-align: right; font-size: 12px; color: var(--muted); font-family: var(--header-font); }
 
   /* HEATMAP */
   .heatmap { display: grid; gap: 3px; }
   .hm-row { display: flex; align-items: center; gap: 3px; }
   .hm-label { width: 120px; font-size: 11px; color: var(--muted); flex-shrink: 0; text-align: right; padding-right: 6px; }
-  .hm-cell { width: 32px; height: 22px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--header-font); color: rgba(255,255,255,0.7); cursor: default; transition: transform .15s; }
-  .hm-cell:hover { transform: scale(1.2); z-index: 5; position: relative; }
+  .hm-cell { width: 32px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--header-font); color: rgba(255,255,255,0.75); cursor: default; transition: transform .15s; }
+  .hm-cell:hover { transform: scale(1.2); z-index: 5; position: relative; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
   .hm-year-row { display: flex; gap: 3px; padding-left: 126px; }
   .hm-year { width: 32px; font-size: 9px; color: var(--muted); text-align: center; transform: rotate(-45deg); white-space: nowrap; }
 
   /* PREDICTION */
-  .pred-item { border-left: 3px solid var(--accent); padding: 10px 14px; margin-bottom: 8px; background: rgba(90,209,230,0.04); border-radius: 0 4px 4px 0; }
-  .pred-item .conf { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
-  .pred-item p { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  .pred-item { border-left: 3px solid var(--accent); padding: 11px 15px; margin-bottom: 9px; background: rgba(203,163,107,0.045); border-radius: 0 8px 8px 0; }
+  .pred-item .conf { font-size: 9.5px; text-transform: uppercase; letter-spacing: .6px; font-weight: 700; }
+  .pred-item p { font-size: 12.5px; color: var(--muted); margin-top: 5px; }
 
   /* SECTION TITLE */
-  .section-title { font-family: var(--header-font); font-size: 13px; color: var(--accent); letter-spacing: 1px; margin: 24px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .section-title { font-family: var(--header-font); font-size: 13.5px; color: var(--accent-bright); letter-spacing: .5px; margin: 26px 0 13px; padding-bottom: 9px; border-bottom: 1px solid var(--border); font-weight: 600; }
 
   /* ROI */
-  .roi-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(30,35,48,0.5); }
+  .roi-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(35,36,42,0.6); }
   .roi-item:last-child { border-bottom: none; }
   .roi-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; margin: 0 12px; overflow: hidden; }
   .roi-bar-fill { height: 100%; border-radius: 2px; }
   .roi-name { font-size: 12.5px; width: 160px; flex-shrink: 0; }
   .roi-score { font-size: 12px; font-family: var(--header-font); color: var(--accent2); width: 40px; text-align: right; flex-shrink: 0; }
 
-  .note { background: rgba(242,166,90,0.06); border: 1px solid rgba(242,166,90,0.2); border-radius: 6px; padding: 12px 16px; font-size: 12px; color: var(--accent2); margin-top: 16px; }
+  .note { background: rgba(217,138,95,0.06); border: 1px solid rgba(217,138,95,0.2); border-radius: 10px; padding: 13px 17px; font-size: 12px; color: var(--accent2); margin-top: 16px; }
 
   canvas { max-width: 100%; }
   .chart-container { position: relative; height: 260px; }
   .chart-container-sm { position: relative; height: 200px; }
   .chart-container-lg { position: relative; height: 340px; }
 
-  .tag { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; font-size: 10px; padding: 1px 6px; color: var(--muted); margin: 2px; }
+  .tag { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; font-size: 10px; padding: 2px 9px; color: var(--muted); margin: 2px; }
 
-  .insight-box { background: var(--surface2); border-radius: 6px; padding: 14px; margin-bottom: 10px; }
-  .insight-box .num { font-size: 22px; font-weight: 700; font-family: var(--header-font); }
-  .insight-box .desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .insight-box { background: var(--surface2); border-radius: 10px; padding: 15px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .insight-box .num { font-size: 23px; font-weight: 600; font-family: var(--header-font); color: var(--accent-bright); }
+  .insight-box .desc { font-size: 12px; color: var(--muted); margin-top: 5px; }
 
-  .pareto-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(30,35,48,0.4); }
+  .pareto-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid rgba(35,36,42,0.5); }
   .pareto-item:last-child { border-bottom: none; }
-  .pareto-rank { font-family: var(--header-font); font-size: 16px; font-weight: 700; color: var(--accent); width: 30px; flex-shrink: 0; }
+  .pareto-rank { font-family: var(--header-font); font-size: 16px; font-weight: 600; color: var(--accent); width: 30px; flex-shrink: 0; }
   .pareto-info { flex: 1; }
   .pareto-info strong { font-size: 13px; }
   .pareto-info p { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
@@ -235,67 +251,67 @@
   <div class="grid grid-2">
     <div class="card">
       <h3>DSA — Data Structures & Algorithms</h3>
-      <div class="bar-row"><span class="bar-label">Trees & BST</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#5ad1e6"></div></div><span class="bar-val">8.8</span></div>
-      <div class="bar-row"><span class="bar-label">Dynamic Programming</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#6fe6b8"></div></div><span class="bar-val">10.0</span></div>
-      <div class="bar-row"><span class="bar-label">Graphs</span><div class="bar-track"><div class="bar-fill" style="width:92%;background:#5ad1e6"></div></div><span class="bar-val">9.2</span></div>
-      <div class="bar-row"><span class="bar-label">Sorting & Searching</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#f2a65a"></div></div><span class="bar-val">8.0</span></div>
-      <div class="bar-row"><span class="bar-label">Hashing</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#ff8272"></div></div><span class="bar-val">6.5</span></div>
-      <div class="bar-row"><span class="bar-label">Linked List / Stack / Queue</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#b892e8"></div></div><span class="bar-val">7.0</span></div>
-      <div class="bar-row"><span class="bar-label">Heaps / Priority Queue</span><div class="bar-track"><div class="bar-fill" style="width:58%;background:#5ad1e6"></div></div><span class="bar-val">5.8</span></div>
-      <div class="bar-row"><span class="bar-label">Complexity Analysis</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#f2a65a"></div></div><span class="bar-val">7.5</span></div>
+      <div class="bar-row"><span class="bar-label">Trees & BST</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#cba36b"></div></div><span class="bar-val">8.8</span></div>
+      <div class="bar-row"><span class="bar-label">Dynamic Programming</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#82b79a"></div></div><span class="bar-val">10.0</span></div>
+      <div class="bar-row"><span class="bar-label">Graphs</span><div class="bar-track"><div class="bar-fill" style="width:92%;background:#cba36b"></div></div><span class="bar-val">9.2</span></div>
+      <div class="bar-row"><span class="bar-label">Sorting & Searching</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#d98a5f"></div></div><span class="bar-val">8.0</span></div>
+      <div class="bar-row"><span class="bar-label">Hashing</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#e0776c"></div></div><span class="bar-val">6.5</span></div>
+      <div class="bar-row"><span class="bar-label">Linked List / Stack / Queue</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#b09bd6"></div></div><span class="bar-val">7.0</span></div>
+      <div class="bar-row"><span class="bar-label">Heaps / Priority Queue</span><div class="bar-track"><div class="bar-fill" style="width:58%;background:#cba36b"></div></div><span class="bar-val">5.8</span></div>
+      <div class="bar-row"><span class="bar-label">Complexity Analysis</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#d98a5f"></div></div><span class="bar-val">7.5</span></div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Bar = frequency score (0–10) across 20 years</p>
     </div>
     <div class="card">
       <h3>Theory of Computation</h3>
-      <div class="bar-row"><span class="bar-label">Regular Lang / DFA/NFA</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#6fe6b8"></div></div><span class="bar-val">10.0</span></div>
-      <div class="bar-row"><span class="bar-label">CFG / PDA</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#5ad1e6"></div></div><span class="bar-val">9.0</span></div>
-      <div class="bar-row"><span class="bar-label">Pumping Lemma</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#f2a65a"></div></div><span class="bar-val">7.0</span></div>
-      <div class="bar-row"><span class="bar-label">Turing Machines</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#5ad1e6"></div></div><span class="bar-val">8.5</span></div>
-      <div class="bar-row"><span class="bar-label">Decidability</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#ff8272"></div></div><span class="bar-val">8.0</span></div>
-      <div class="bar-row"><span class="bar-label">Complexity Classes P/NP</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#b892e8"></div></div><span class="bar-val">7.2</span></div>
-      <div class="bar-row"><span class="bar-label">Closure Properties</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#f2a65a"></div></div><span class="bar-val">6.5</span></div>
+      <div class="bar-row"><span class="bar-label">Regular Lang / DFA/NFA</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#82b79a"></div></div><span class="bar-val">10.0</span></div>
+      <div class="bar-row"><span class="bar-label">CFG / PDA</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#cba36b"></div></div><span class="bar-val">9.0</span></div>
+      <div class="bar-row"><span class="bar-label">Pumping Lemma</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#d98a5f"></div></div><span class="bar-val">7.0</span></div>
+      <div class="bar-row"><span class="bar-label">Turing Machines</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#cba36b"></div></div><span class="bar-val">8.5</span></div>
+      <div class="bar-row"><span class="bar-label">Decidability</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#e0776c"></div></div><span class="bar-val">8.0</span></div>
+      <div class="bar-row"><span class="bar-label">Complexity Classes P/NP</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#b09bd6"></div></div><span class="bar-val">7.2</span></div>
+      <div class="bar-row"><span class="bar-label">Closure Properties</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#d98a5f"></div></div><span class="bar-val">6.5</span></div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Bar = frequency score (0–10) across 20 years</p>
     </div>
     <div class="card">
       <h3>Computer Networks</h3>
-      <div class="bar-row"><span class="bar-label">TCP/IP & Protocols</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#6fe6b8"></div></div><span class="bar-val">9.5</span></div>
-      <div class="bar-row"><span class="bar-label">Routing Algorithms</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#5ad1e6"></div></div><span class="bar-val">8.8</span></div>
-      <div class="bar-row"><span class="bar-label">Data Link Layer</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:#f2a65a"></div></div><span class="bar-val">8.2</span></div>
-      <div class="bar-row"><span class="bar-label">IP Addressing / Subnetting</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#6fe6b8"></div></div><span class="bar-val">9.0</span></div>
-      <div class="bar-row"><span class="bar-label">Congestion Control</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#b892e8"></div></div><span class="bar-val">7.5</span></div>
-      <div class="bar-row"><span class="bar-label">Application Layer (DNS/HTTP)</span><div class="bar-track"><div class="bar-fill" style="width:68%;background:#ff8272"></div></div><span class="bar-val">6.8</span></div>
-      <div class="bar-row"><span class="bar-label">Error Detection/Correction</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#5ad1e6"></div></div><span class="bar-val">7.2</span></div>
+      <div class="bar-row"><span class="bar-label">TCP/IP & Protocols</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#82b79a"></div></div><span class="bar-val">9.5</span></div>
+      <div class="bar-row"><span class="bar-label">Routing Algorithms</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#cba36b"></div></div><span class="bar-val">8.8</span></div>
+      <div class="bar-row"><span class="bar-label">Data Link Layer</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:#d98a5f"></div></div><span class="bar-val">8.2</span></div>
+      <div class="bar-row"><span class="bar-label">IP Addressing / Subnetting</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#82b79a"></div></div><span class="bar-val">9.0</span></div>
+      <div class="bar-row"><span class="bar-label">Congestion Control</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#b09bd6"></div></div><span class="bar-val">7.5</span></div>
+      <div class="bar-row"><span class="bar-label">Application Layer (DNS/HTTP)</span><div class="bar-track"><div class="bar-fill" style="width:68%;background:#e0776c"></div></div><span class="bar-val">6.8</span></div>
+      <div class="bar-row"><span class="bar-label">Error Detection/Correction</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#cba36b"></div></div><span class="bar-val">7.2</span></div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Bar = frequency score (0–10) across 20 years</p>
     </div>
     <div class="card">
       <h3>Operating Systems</h3>
-      <div class="bar-row"><span class="bar-label">Process Scheduling</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#6fe6b8"></div></div><span class="bar-val">9.5</span></div>
-      <div class="bar-row"><span class="bar-label">Memory Management</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#5ad1e6"></div></div><span class="bar-val">9.0</span></div>
-      <div class="bar-row"><span class="bar-label">Deadlock</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#f2a65a"></div></div><span class="bar-val">8.5</span></div>
-      <div class="bar-row"><span class="bar-label">Page Replacement</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#5ad1e6"></div></div><span class="bar-val">8.8</span></div>
-      <div class="bar-row"><span class="bar-label">Semaphores / Sync</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#b892e8"></div></div><span class="bar-val">8.0</span></div>
-      <div class="bar-row"><span class="bar-label">File Systems</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#ff8272"></div></div><span class="bar-val">6.5</span></div>
-      <div class="bar-row"><span class="bar-label">Disk Scheduling</span><div class="bar-track"><div class="bar-fill" style="width:60%;background:#f2a65a"></div></div><span class="bar-val">6.0</span></div>
+      <div class="bar-row"><span class="bar-label">Process Scheduling</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#82b79a"></div></div><span class="bar-val">9.5</span></div>
+      <div class="bar-row"><span class="bar-label">Memory Management</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#cba36b"></div></div><span class="bar-val">9.0</span></div>
+      <div class="bar-row"><span class="bar-label">Deadlock</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#d98a5f"></div></div><span class="bar-val">8.5</span></div>
+      <div class="bar-row"><span class="bar-label">Page Replacement</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#cba36b"></div></div><span class="bar-val">8.8</span></div>
+      <div class="bar-row"><span class="bar-label">Semaphores / Sync</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#b09bd6"></div></div><span class="bar-val">8.0</span></div>
+      <div class="bar-row"><span class="bar-label">File Systems</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#e0776c"></div></div><span class="bar-val">6.5</span></div>
+      <div class="bar-row"><span class="bar-label">Disk Scheduling</span><div class="bar-track"><div class="bar-fill" style="width:60%;background:#d98a5f"></div></div><span class="bar-val">6.0</span></div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Bar = frequency score (0–10) across 20 years</p>
     </div>
     <div class="card">
       <h3>DBMS</h3>
-      <div class="bar-row"><span class="bar-label">SQL Queries</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#6fe6b8"></div></div><span class="bar-val">10.0</span></div>
-      <div class="bar-row"><span class="bar-label">Normalization (1NF–BCNF)</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#5ad1e6"></div></div><span class="bar-val">9.5</span></div>
-      <div class="bar-row"><span class="bar-label">Relational Algebra</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#f2a65a"></div></div><span class="bar-val">8.8</span></div>
-      <div class="bar-row"><span class="bar-label">Transactions / Concurrency</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#b892e8"></div></div><span class="bar-val">8.0</span></div>
-      <div class="bar-row"><span class="bar-label">ER Diagrams</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#ff8272"></div></div><span class="bar-val">7.0</span></div>
-      <div class="bar-row"><span class="bar-label">Indexing / B+ Trees</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#5ad1e6"></div></div><span class="bar-val">7.5</span></div>
+      <div class="bar-row"><span class="bar-label">SQL Queries</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#82b79a"></div></div><span class="bar-val">10.0</span></div>
+      <div class="bar-row"><span class="bar-label">Normalization (1NF–BCNF)</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#cba36b"></div></div><span class="bar-val">9.5</span></div>
+      <div class="bar-row"><span class="bar-label">Relational Algebra</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#d98a5f"></div></div><span class="bar-val">8.8</span></div>
+      <div class="bar-row"><span class="bar-label">Transactions / Concurrency</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#b09bd6"></div></div><span class="bar-val">8.0</span></div>
+      <div class="bar-row"><span class="bar-label">ER Diagrams</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#e0776c"></div></div><span class="bar-val">7.0</span></div>
+      <div class="bar-row"><span class="bar-label">Indexing / B+ Trees</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#cba36b"></div></div><span class="bar-val">7.5</span></div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Bar = frequency score (0–10) across 20 years</p>
     </div>
     <div class="card">
       <h3>Engineering Mathematics</h3>
-      <div class="bar-row"><span class="bar-label">Linear Algebra</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#6fe6b8"></div></div><span class="bar-val">9.5</span></div>
-      <div class="bar-row"><span class="bar-label">Probability & Stats</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#5ad1e6"></div></div><span class="bar-val">9.0</span></div>
-      <div class="bar-row"><span class="bar-label">Calculus & Limits</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#f2a65a"></div></div><span class="bar-val">8.0</span></div>
-      <div class="bar-row"><span class="bar-label">Graph Theory (Discrete)</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#b892e8"></div></div><span class="bar-val">8.5</span></div>
-      <div class="bar-row"><span class="bar-label">Set Theory / Relations</span><div class="bar-track"><div class="bar-fill" style="width:78%;background:#5ad1e6"></div></div><span class="bar-val">7.8</span></div>
-      <div class="bar-row"><span class="bar-label">Combinatorics</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#ff8272"></div></div><span class="bar-val">7.2</span></div>
+      <div class="bar-row"><span class="bar-label">Linear Algebra</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#82b79a"></div></div><span class="bar-val">9.5</span></div>
+      <div class="bar-row"><span class="bar-label">Probability & Stats</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#cba36b"></div></div><span class="bar-val">9.0</span></div>
+      <div class="bar-row"><span class="bar-label">Calculus & Limits</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#d98a5f"></div></div><span class="bar-val">8.0</span></div>
+      <div class="bar-row"><span class="bar-label">Graph Theory (Discrete)</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#b09bd6"></div></div><span class="bar-val">8.5</span></div>
+      <div class="bar-row"><span class="bar-label">Set Theory / Relations</span><div class="bar-track"><div class="bar-fill" style="width:78%;background:#cba36b"></div></div><span class="bar-val">7.8</span></div>
+      <div class="bar-row"><span class="bar-label">Combinatorics</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#e0776c"></div></div><span class="bar-val">7.2</span></div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Bar = frequency score (0–10) across 20 years</p>
     </div>
   </div>
@@ -400,12 +416,12 @@
     <div style="display:flex;gap:8px;margin-top:16px;align-items:center;font-size:11px;color:var(--muted)">
       <span>Low</span>
       <div style="display:flex;gap:2px">
-        <div style="width:20px;height:14px;background:rgba(90,209,230,0.1);border-radius:2px"></div>
-        <div style="width:20px;height:14px;background:rgba(90,209,230,0.25);border-radius:2px"></div>
-        <div style="width:20px;height:14px;background:rgba(90,209,230,0.4);border-radius:2px"></div>
-        <div style="width:20px;height:14px;background:rgba(90,209,230,0.6);border-radius:2px"></div>
-        <div style="width:20px;height:14px;background:rgba(90,209,230,0.8);border-radius:2px"></div>
-        <div style="width:20px;height:14px;background:rgba(90,209,230,1.0);border-radius:2px"></div>
+        <div style="width:20px;height:14px;background:rgba(203,163,107,0.1);border-radius:2px"></div>
+        <div style="width:20px;height:14px;background:rgba(203,163,107,0.25);border-radius:2px"></div>
+        <div style="width:20px;height:14px;background:rgba(203,163,107,0.4);border-radius:2px"></div>
+        <div style="width:20px;height:14px;background:rgba(203,163,107,0.6);border-radius:2px"></div>
+        <div style="width:20px;height:14px;background:rgba(203,163,107,0.8);border-radius:2px"></div>
+        <div style="width:20px;height:14px;background:rgba(203,163,107,1.0);border-radius:2px"></div>
       </div>
       <span>High</span>
       <span style="margin-left:12px">Hover cell for exact marks</span>
@@ -513,19 +529,19 @@
     </div>
     <div class="card">
       <h3>📉 DECLINING Subjects</h3>
-      <div class="pred-item" style="border-left-color:#ff8272">
+      <div class="pred-item" style="border-left-color:#e0776c">
         <div class="conf down">↓ Software Engineering — −60% since 2015</div>
         <p>SDLC models, testing, UML mostly absent. Dropped from 5–6 marks to 0–2 marks. Near elimination.</p>
       </div>
-      <div class="pred-item" style="border-left-color:#ff8272">
+      <div class="pred-item" style="border-left-color:#e0776c">
         <div class="conf down">↓ Digital Logic — −30% since 2016</div>
         <p>Boolean simplification and K-maps less frequent. Circuit design rare post-2019.</p>
       </div>
-      <div class="pred-item" style="border-left-color:#ff8272">
+      <div class="pred-item" style="border-left-color:#e0776c">
         <div class="conf down">↓ Computer Organization — −20% since 2017</div>
         <p>Pipeline hazards still appear but less numerically intensive. Memory hierarchy reduced.</p>
       </div>
-      <div class="pred-item" style="border-left-color:#f2a65a">
+      <div class="pred-item" style="border-left-color:#d98a5f">
         <div class="conf stable">→ Programming Languages / Compilers — Stable but shifting</div>
         <p>Parsing and CFG moved to TOC overlap. Runtime environments and type systems dropped.</p>
       </div>
@@ -562,55 +578,55 @@
   <div class="grid grid-2" style="margin-top:16px">
     <div class="card">
       <h3>TOP 10 ROI — DSA</h3>
-      <div class="roi-item"><span class="roi-name">1. Complexity Analysis</span><div class="roi-bar"><div class="roi-bar-fill" style="width:95%;background:#6fe6b8"></div></div><span class="roi-score">9.5</span></div>
-      <div class="roi-item"><span class="roi-name">2. Sorting (Properties)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:90%;background:#6fe6b8"></div></div><span class="roi-score">9.0</span></div>
-      <div class="roi-item"><span class="roi-name">3. BST Operations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:87%;background:#5ad1e6"></div></div><span class="roi-score">8.7</span></div>
-      <div class="roi-item"><span class="roi-name">4. BFS/DFS Applications</span><div class="roi-bar"><div class="roi-bar-fill" style="width:84%;background:#5ad1e6"></div></div><span class="roi-score">8.4</span></div>
-      <div class="roi-item"><span class="roi-name">5. Hashing Techniques</span><div class="roi-bar"><div class="roi-bar-fill" style="width:82%;background:#f2a65a"></div></div><span class="roi-score">8.2</span></div>
-      <div class="roi-item"><span class="roi-name">6. Heap Operations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:78%;background:#f2a65a"></div></div><span class="roi-score">7.8</span></div>
-      <div class="roi-item"><span class="roi-name">7. Recurrence Relations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:75%;background:#f2a65a"></div></div><span class="roi-score">7.5</span></div>
-      <div class="roi-item"><span class="roi-name">8. Dynamic Programming</span><div class="roi-bar"><div class="roi-bar-fill" style="width:72%;background:#b892e8"></div></div><span class="roi-score">7.2</span></div>
-      <div class="roi-item"><span class="roi-name">9. MST (Kruskal/Prim)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:68%;background:#b892e8"></div></div><span class="roi-score">6.8</span></div>
-      <div class="roi-item"><span class="roi-name">10. Stack/Queue Apps</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#ff8272"></div></div><span class="roi-score">6.5</span></div>
+      <div class="roi-item"><span class="roi-name">1. Complexity Analysis</span><div class="roi-bar"><div class="roi-bar-fill" style="width:95%;background:#82b79a"></div></div><span class="roi-score">9.5</span></div>
+      <div class="roi-item"><span class="roi-name">2. Sorting (Properties)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:90%;background:#82b79a"></div></div><span class="roi-score">9.0</span></div>
+      <div class="roi-item"><span class="roi-name">3. BST Operations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:87%;background:#cba36b"></div></div><span class="roi-score">8.7</span></div>
+      <div class="roi-item"><span class="roi-name">4. BFS/DFS Applications</span><div class="roi-bar"><div class="roi-bar-fill" style="width:84%;background:#cba36b"></div></div><span class="roi-score">8.4</span></div>
+      <div class="roi-item"><span class="roi-name">5. Hashing Techniques</span><div class="roi-bar"><div class="roi-bar-fill" style="width:82%;background:#d98a5f"></div></div><span class="roi-score">8.2</span></div>
+      <div class="roi-item"><span class="roi-name">6. Heap Operations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:78%;background:#d98a5f"></div></div><span class="roi-score">7.8</span></div>
+      <div class="roi-item"><span class="roi-name">7. Recurrence Relations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:75%;background:#d98a5f"></div></div><span class="roi-score">7.5</span></div>
+      <div class="roi-item"><span class="roi-name">8. Dynamic Programming</span><div class="roi-bar"><div class="roi-bar-fill" style="width:72%;background:#b09bd6"></div></div><span class="roi-score">7.2</span></div>
+      <div class="roi-item"><span class="roi-name">9. MST (Kruskal/Prim)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:68%;background:#b09bd6"></div></div><span class="roi-score">6.8</span></div>
+      <div class="roi-item"><span class="roi-name">10. Stack/Queue Apps</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#e0776c"></div></div><span class="roi-score">6.5</span></div>
     </div>
     <div class="card">
       <h3>TOP 10 ROI — TOC</h3>
-      <div class="roi-item"><span class="roi-name">1. DFA Minimization</span><div class="roi-bar"><div class="roi-bar-fill" style="width:95%;background:#6fe6b8"></div></div><span class="roi-score">9.5</span></div>
-      <div class="roi-item"><span class="roi-name">2. Closure Properties</span><div class="roi-bar"><div class="roi-bar-fill" style="width:92%;background:#6fe6b8"></div></div><span class="roi-score">9.2</span></div>
-      <div class="roi-item"><span class="roi-name">3. Regular → DFA/NFA</span><div class="roi-bar"><div class="roi-bar-fill" style="width:88%;background:#5ad1e6"></div></div><span class="roi-score">8.8</span></div>
-      <div class="roi-item"><span class="roi-name">4. CFG Simplification</span><div class="roi-bar"><div class="roi-bar-fill" style="width:82%;background:#5ad1e6"></div></div><span class="roi-score">8.2</span></div>
-      <div class="roi-item"><span class="roi-name">5. CFL Properties</span><div class="roi-bar"><div class="roi-bar-fill" style="width:78%;background:#f2a65a"></div></div><span class="roi-score">7.8</span></div>
-      <div class="roi-item"><span class="roi-name">6. Language Recognition</span><div class="roi-bar"><div class="roi-bar-fill" style="width:75%;background:#f2a65a"></div></div><span class="roi-score">7.5</span></div>
-      <div class="roi-item"><span class="roi-name">7. Decidable Problems</span><div class="roi-bar"><div class="roi-bar-fill" style="width:68%;background:#b892e8"></div></div><span class="roi-score">6.8</span></div>
-      <div class="roi-item"><span class="roi-name">8. Pumping Lemma (RL)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#b892e8"></div></div><span class="roi-score">6.5</span></div>
-      <div class="roi-item"><span class="roi-name">9. TM Variants</span><div class="roi-bar"><div class="roi-bar-fill" style="width:60%;background:#ff8272"></div></div><span class="roi-score">6.0</span></div>
-      <div class="roi-item"><span class="roi-name">10. Rice's Theorem</span><div class="roi-bar"><div class="roi-bar-fill" style="width:55%;background:#ff8272"></div></div><span class="roi-score">5.5</span></div>
+      <div class="roi-item"><span class="roi-name">1. DFA Minimization</span><div class="roi-bar"><div class="roi-bar-fill" style="width:95%;background:#82b79a"></div></div><span class="roi-score">9.5</span></div>
+      <div class="roi-item"><span class="roi-name">2. Closure Properties</span><div class="roi-bar"><div class="roi-bar-fill" style="width:92%;background:#82b79a"></div></div><span class="roi-score">9.2</span></div>
+      <div class="roi-item"><span class="roi-name">3. Regular → DFA/NFA</span><div class="roi-bar"><div class="roi-bar-fill" style="width:88%;background:#cba36b"></div></div><span class="roi-score">8.8</span></div>
+      <div class="roi-item"><span class="roi-name">4. CFG Simplification</span><div class="roi-bar"><div class="roi-bar-fill" style="width:82%;background:#cba36b"></div></div><span class="roi-score">8.2</span></div>
+      <div class="roi-item"><span class="roi-name">5. CFL Properties</span><div class="roi-bar"><div class="roi-bar-fill" style="width:78%;background:#d98a5f"></div></div><span class="roi-score">7.8</span></div>
+      <div class="roi-item"><span class="roi-name">6. Language Recognition</span><div class="roi-bar"><div class="roi-bar-fill" style="width:75%;background:#d98a5f"></div></div><span class="roi-score">7.5</span></div>
+      <div class="roi-item"><span class="roi-name">7. Decidable Problems</span><div class="roi-bar"><div class="roi-bar-fill" style="width:68%;background:#b09bd6"></div></div><span class="roi-score">6.8</span></div>
+      <div class="roi-item"><span class="roi-name">8. Pumping Lemma (RL)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#b09bd6"></div></div><span class="roi-score">6.5</span></div>
+      <div class="roi-item"><span class="roi-name">9. TM Variants</span><div class="roi-bar"><div class="roi-bar-fill" style="width:60%;background:#e0776c"></div></div><span class="roi-score">6.0</span></div>
+      <div class="roi-item"><span class="roi-name">10. Rice's Theorem</span><div class="roi-bar"><div class="roi-bar-fill" style="width:55%;background:#e0776c"></div></div><span class="roi-score">5.5</span></div>
     </div>
     <div class="card">
       <h3>TOP 10 ROI — OS</h3>
-      <div class="roi-item"><span class="roi-name">1. CPU Scheduling Algos</span><div class="roi-bar"><div class="roi-bar-fill" style="width:96%;background:#6fe6b8"></div></div><span class="roi-score">9.6</span></div>
-      <div class="roi-item"><span class="roi-name">2. Page Replacement (LRU/FIFO)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:93%;background:#6fe6b8"></div></div><span class="roi-score">9.3</span></div>
-      <div class="roi-item"><span class="roi-name">3. Deadlock Detection/Avoidance</span><div class="roi-bar"><div class="roi-bar-fill" style="width:88%;background:#5ad1e6"></div></div><span class="roi-score">8.8</span></div>
-      <div class="roi-item"><span class="roi-name">4. Banker's Algorithm</span><div class="roi-bar"><div class="roi-bar-fill" style="width:85%;background:#5ad1e6"></div></div><span class="roi-score">8.5</span></div>
-      <div class="roi-item"><span class="roi-name">5. Semaphore Problems</span><div class="roi-bar"><div class="roi-bar-fill" style="width:80%;background:#f2a65a"></div></div><span class="roi-score">8.0</span></div>
-      <div class="roi-item"><span class="roi-name">6. Virtual Memory / TLB</span><div class="roi-bar"><div class="roi-bar-fill" style="width:76%;background:#f2a65a"></div></div><span class="roi-score">7.6</span></div>
-      <div class="roi-item"><span class="roi-name">7. Segmentation + Paging</span><div class="roi-bar"><div class="roi-bar-fill" style="width:70%;background:#b892e8"></div></div><span class="roi-score">7.0</span></div>
-      <div class="roi-item"><span class="roi-name">8. Disk Scheduling (SSTF)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#b892e8"></div></div><span class="roi-score">6.5</span></div>
-      <div class="roi-item"><span class="roi-name">9. Critical Section</span><div class="roi-bar"><div class="roi-bar-fill" style="width:60%;background:#ff8272"></div></div><span class="roi-score">6.0</span></div>
-      <div class="roi-item"><span class="roi-name">10. File System Inodes</span><div class="roi-bar"><div class="roi-bar-fill" style="width:55%;background:#ff8272"></div></div><span class="roi-score">5.5</span></div>
+      <div class="roi-item"><span class="roi-name">1. CPU Scheduling Algos</span><div class="roi-bar"><div class="roi-bar-fill" style="width:96%;background:#82b79a"></div></div><span class="roi-score">9.6</span></div>
+      <div class="roi-item"><span class="roi-name">2. Page Replacement (LRU/FIFO)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:93%;background:#82b79a"></div></div><span class="roi-score">9.3</span></div>
+      <div class="roi-item"><span class="roi-name">3. Deadlock Detection/Avoidance</span><div class="roi-bar"><div class="roi-bar-fill" style="width:88%;background:#cba36b"></div></div><span class="roi-score">8.8</span></div>
+      <div class="roi-item"><span class="roi-name">4. Banker's Algorithm</span><div class="roi-bar"><div class="roi-bar-fill" style="width:85%;background:#cba36b"></div></div><span class="roi-score">8.5</span></div>
+      <div class="roi-item"><span class="roi-name">5. Semaphore Problems</span><div class="roi-bar"><div class="roi-bar-fill" style="width:80%;background:#d98a5f"></div></div><span class="roi-score">8.0</span></div>
+      <div class="roi-item"><span class="roi-name">6. Virtual Memory / TLB</span><div class="roi-bar"><div class="roi-bar-fill" style="width:76%;background:#d98a5f"></div></div><span class="roi-score">7.6</span></div>
+      <div class="roi-item"><span class="roi-name">7. Segmentation + Paging</span><div class="roi-bar"><div class="roi-bar-fill" style="width:70%;background:#b09bd6"></div></div><span class="roi-score">7.0</span></div>
+      <div class="roi-item"><span class="roi-name">8. Disk Scheduling (SSTF)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#b09bd6"></div></div><span class="roi-score">6.5</span></div>
+      <div class="roi-item"><span class="roi-name">9. Critical Section</span><div class="roi-bar"><div class="roi-bar-fill" style="width:60%;background:#e0776c"></div></div><span class="roi-score">6.0</span></div>
+      <div class="roi-item"><span class="roi-name">10. File System Inodes</span><div class="roi-bar"><div class="roi-bar-fill" style="width:55%;background:#e0776c"></div></div><span class="roi-score">5.5</span></div>
     </div>
     <div class="card">
       <h3>TOP 10 ROI — DBMS</h3>
-      <div class="roi-item"><span class="roi-name">1. SQL (Joins/Nested)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:97%;background:#6fe6b8"></div></div><span class="roi-score">9.7</span></div>
-      <div class="roi-item"><span class="roi-name">2. BCNF Decomposition</span><div class="roi-bar"><div class="roi-bar-fill" style="width:93%;background:#6fe6b8"></div></div><span class="roi-score">9.3</span></div>
-      <div class="roi-item"><span class="roi-name">3. Functional Dependencies</span><div class="roi-bar"><div class="roi-bar-fill" style="width:90%;background:#5ad1e6"></div></div><span class="roi-score">9.0</span></div>
-      <div class="roi-item"><span class="roi-name">4. Relational Algebra</span><div class="roi-bar"><div class="roi-bar-fill" style="width:85%;background:#5ad1e6"></div></div><span class="roi-score">8.5</span></div>
-      <div class="roi-item"><span class="roi-name">5. Transaction Isolation</span><div class="roi-bar"><div class="roi-bar-fill" style="width:78%;background:#f2a65a"></div></div><span class="roi-score">7.8</span></div>
-      <div class="roi-item"><span class="roi-name">6. Closure of Attributes</span><div class="roi-bar"><div class="roi-bar-fill" style="width:75%;background:#f2a65a"></div></div><span class="roi-score">7.5</span></div>
-      <div class="roi-item"><span class="roi-name">7. B+ Tree Operations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:70%;background:#b892e8"></div></div><span class="roi-score">7.0</span></div>
-      <div class="roi-item"><span class="roi-name">8. ER to Relational</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#b892e8"></div></div><span class="roi-score">6.5</span></div>
-      <div class="roi-item"><span class="roi-name">9. Locking (2PL)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:60%;background:#ff8272"></div></div><span class="roi-score">6.0</span></div>
-      <div class="roi-item"><span class="roi-name">10. Serializability</span><div class="roi-bar"><div class="roi-bar-fill" style="width:55%;background:#ff8272"></div></div><span class="roi-score">5.5</span></div>
+      <div class="roi-item"><span class="roi-name">1. SQL (Joins/Nested)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:97%;background:#82b79a"></div></div><span class="roi-score">9.7</span></div>
+      <div class="roi-item"><span class="roi-name">2. BCNF Decomposition</span><div class="roi-bar"><div class="roi-bar-fill" style="width:93%;background:#82b79a"></div></div><span class="roi-score">9.3</span></div>
+      <div class="roi-item"><span class="roi-name">3. Functional Dependencies</span><div class="roi-bar"><div class="roi-bar-fill" style="width:90%;background:#cba36b"></div></div><span class="roi-score">9.0</span></div>
+      <div class="roi-item"><span class="roi-name">4. Relational Algebra</span><div class="roi-bar"><div class="roi-bar-fill" style="width:85%;background:#cba36b"></div></div><span class="roi-score">8.5</span></div>
+      <div class="roi-item"><span class="roi-name">5. Transaction Isolation</span><div class="roi-bar"><div class="roi-bar-fill" style="width:78%;background:#d98a5f"></div></div><span class="roi-score">7.8</span></div>
+      <div class="roi-item"><span class="roi-name">6. Closure of Attributes</span><div class="roi-bar"><div class="roi-bar-fill" style="width:75%;background:#d98a5f"></div></div><span class="roi-score">7.5</span></div>
+      <div class="roi-item"><span class="roi-name">7. B+ Tree Operations</span><div class="roi-bar"><div class="roi-bar-fill" style="width:70%;background:#b09bd6"></div></div><span class="roi-score">7.0</span></div>
+      <div class="roi-item"><span class="roi-name">8. ER to Relational</span><div class="roi-bar"><div class="roi-bar-fill" style="width:65%;background:#b09bd6"></div></div><span class="roi-score">6.5</span></div>
+      <div class="roi-item"><span class="roi-name">9. Locking (2PL)</span><div class="roi-bar"><div class="roi-bar-fill" style="width:60%;background:#e0776c"></div></div><span class="roi-score">6.0</span></div>
+      <div class="roi-item"><span class="roi-name">10. Serializability</span><div class="roi-bar"><div class="roi-bar-fill" style="width:55%;background:#e0776c"></div></div><span class="roi-score">5.5</span></div>
     </div>
   </div>
 
@@ -728,54 +744,54 @@
     <div class="card">
       <h3>📊 Topics with Highest Historical Frequency</h3>
       <div class="pred-item">
-        <div class="conf up" style="color:#6fe6b8">HIGH CONFIDENCE</div>
+        <div class="conf up" style="color:#82b79a">HIGH CONFIDENCE</div>
         <p>Dynamic Programming (LCS / Matrix Chain / Knapsack) — 20/20 streak, will appear</p>
       </div>
       <div class="pred-item">
-        <div class="conf up" style="color:#6fe6b8">HIGH CONFIDENCE</div>
+        <div class="conf up" style="color:#82b79a">HIGH CONFIDENCE</div>
         <p>DFA/NFA construction + minimization — 20/20, must-appear</p>
       </div>
       <div class="pred-item">
-        <div class="conf up" style="color:#6fe6b8">HIGH CONFIDENCE</div>
+        <div class="conf up" style="color:#82b79a">HIGH CONFIDENCE</div>
         <p>SQL nested queries / Normalization — 20/20, certain</p>
       </div>
       <div class="pred-item">
-        <div class="conf up" style="color:#6fe6b8">HIGH CONFIDENCE</div>
+        <div class="conf up" style="color:#82b79a">HIGH CONFIDENCE</div>
         <p>CPU Scheduling with numerical computation — 20/20</p>
       </div>
       <div class="pred-item">
-        <div class="conf" style="color:#f2a65a">MEDIUM CONFIDENCE</div>
+        <div class="conf" style="color:#d98a5f">MEDIUM CONFIDENCE</div>
         <p>Advanced Graph Problems (Strongly Connected Components or Network Flow) — rising 4-year trend</p>
       </div>
       <div class="pred-item">
-        <div class="conf" style="color:#f2a65a">MEDIUM CONFIDENCE</div>
+        <div class="conf" style="color:#d98a5f">MEDIUM CONFIDENCE</div>
         <p>Eigenvalue/eigenvector computation — appeared in 19/20 papers, high historical frequency</p>
       </div>
       <div class="pred-item">
-        <div class="conf" style="color:#f2a65a">MEDIUM CONFIDENCE</div>
+        <div class="conf" style="color:#d98a5f">MEDIUM CONFIDENCE</div>
         <p>P/NP reductions — strong 5-year rising trend in TOC</p>
       </div>
     </div>
     <div class="card">
       <h3>🔄 Topics Recently Absent but Historically Recurring</h3>
-      <div class="pred-item" style="border-left-color:#b892e8">
-        <div class="conf" style="color:#b892e8">MEDIUM CONFIDENCE</div>
+      <div class="pred-item" style="border-left-color:#b09bd6">
+        <div class="conf" style="color:#b09bd6">MEDIUM CONFIDENCE</div>
         <p>Network Security basics (SSL/TLS, Firewall concepts) — absent since 2020, ~7-year cycle suggests return</p>
       </div>
-      <div class="pred-item" style="border-left-color:#b892e8">
-        <div class="conf" style="color:#b892e8">MEDIUM CONFIDENCE</div>
+      <div class="pred-item" style="border-left-color:#b09bd6">
+        <div class="conf" style="color:#b09bd6">MEDIUM CONFIDENCE</div>
         <p>Disk Scheduling (SCAN/SSTF) — absent in 2025–2026, historically appears every 2–3 years</p>
       </div>
-      <div class="pred-item" style="border-left-color:#b892e8">
-        <div class="conf" style="color:#b892e8">LOW CONFIDENCE</div>
+      <div class="pred-item" style="border-left-color:#b09bd6">
+        <div class="conf" style="color:#b09bd6">LOW CONFIDENCE</div>
         <p>Compiler Optimization (Code generation, Register allocation) — 3-year absence, may return</p>
       </div>
-      <div class="pred-item" style="border-left-color:#b892e8">
-        <div class="conf" style="color:#b892e8">LOW CONFIDENCE</div>
+      <div class="pred-item" style="border-left-color:#b09bd6">
+        <div class="conf" style="color:#b09bd6">LOW CONFIDENCE</div>
         <p>RAID levels (Storage systems) — asked in 2021, may reappear by 2027</p>
       </div>
-      <div class="pred-item" style="border-left-color:#b892e8">
-        <div class="conf" style="color:#b892e8">LOW CONFIDENCE</div>
+      <div class="pred-item" style="border-left-color:#b09bd6">
+        <div class="conf" style="color:#b09bd6">LOW CONFIDENCE</div>
         <p>Recurrence Tree Method — last prominent in 2019–2020, historically recurring topic</p>
       </div>
     </div>
@@ -964,8 +980,9 @@ const subjectData = {
   SE:        [5,5,4,4,4,4,5,3,3,4,3,2,2,2,2,2,2,1,2,2],
 };
 
-Chart.defaults.color = '#64748b';
-Chart.defaults.borderColor = '#1e2330';
+Chart.defaults.color = '#a39d92';
+Chart.defaults.borderColor = '#26252c';
+Chart.defaults.font.family = "'Inter', sans-serif";
 
 // YEARWISE CHART
 new Chart(document.getElementById('yearwiseChart'), {
@@ -973,13 +990,13 @@ new Chart(document.getElementById('yearwiseChart'), {
   data: {
     labels: YEARS_FULL,
     datasets: [
-      { label: 'DSA', data: subjectData.DSA, backgroundColor: 'rgba(90,209,230,0.7)', stack: 'a' },
-      { label: 'TOC', data: subjectData.TOC, backgroundColor: 'rgba(111,230,184,0.7)', stack: 'a' },
-      { label: 'CN', data: subjectData.CN, backgroundColor: 'rgba(242,166,90,0.7)', stack: 'a' },
-      { label: 'OS', data: subjectData.OS, backgroundColor: 'rgba(255,130,114,0.7)', stack: 'a' },
-      { label: 'DBMS', data: subjectData.DBMS, backgroundColor: 'rgba(184,146,232,0.7)', stack: 'a' },
-      { label: 'EngMath', data: subjectData.EngMath, backgroundColor: 'rgba(255,160,80,0.7)', stack: 'a' },
-      { label: 'DL+COA+SE', data: subjectData.DL.map((v,i)=>v+subjectData.COA[i]+subjectData.SE[i]), backgroundColor: 'rgba(100,116,139,0.5)', stack: 'a' },
+      { label: 'DSA', data: subjectData.DSA, backgroundColor: 'rgba(203,163,107,0.7)', stack: 'a' },
+      { label: 'TOC', data: subjectData.TOC, backgroundColor: 'rgba(130,183,154,0.7)', stack: 'a' },
+      { label: 'CN', data: subjectData.CN, backgroundColor: 'rgba(217,138,95,0.7)', stack: 'a' },
+      { label: 'OS', data: subjectData.OS, backgroundColor: 'rgba(224,119,108,0.7)', stack: 'a' },
+      { label: 'DBMS', data: subjectData.DBMS, backgroundColor: 'rgba(176,155,214,0.7)', stack: 'a' },
+      { label: 'EngMath', data: subjectData.EngMath, backgroundColor: 'rgba(224,168,110,0.7)', stack: 'a' },
+      { label: 'DL+COA+SE', data: subjectData.DL.map((v,i)=>v+subjectData.COA[i]+subjectData.SE[i]), backgroundColor: 'rgba(120,109,92,0.5)', stack: 'a' },
     ]
   },
   options: {
@@ -1001,19 +1018,19 @@ new Chart(document.getElementById('diffChart'), {
     datasets: [{
       label: 'Difficulty (1=Easy,10=Hard)',
       data: diffScores,
-      borderColor: '#ff8272',
-      backgroundColor: 'rgba(255,130,114,0.1)',
+      borderColor: '#e0776c',
+      backgroundColor: 'rgba(224,119,108,0.1)',
       fill: true,
       tension: 0.3,
       pointRadius: 5,
-      pointBackgroundColor: '#ff8272'
+      pointBackgroundColor: '#e0776c'
     }]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      y: { min: 1, max: 10, grid: { color: 'rgba(30,35,48,0.8)' } },
+      y: { min: 1, max: 10, grid: { color: 'rgba(35,36,42,0.8)' } },
       x: { grid: { display: false } }
     }
   }
@@ -1025,9 +1042,9 @@ new Chart(document.getElementById('trendChart'), {
   data: {
     labels: ['DSA','TOC','OS','DBMS','CN','EngMath','DL','COA','SE','Compilers'],
     datasets: [
-      { label: 'Early (2007–13)', data: [11.9,10.9,9.7,9.1,10.2,10,8.5,8.2,4.6,7.2], backgroundColor: 'rgba(100,116,139,0.6)' },
-      { label: 'Period 2 (2014–20)', data: [13.7,11.3,9.9,9.2,10.3,10.2,7.9,7.8,2.7,6.5], backgroundColor: 'rgba(90,209,230,0.6)' },
-      { label: 'Recent (2021–26)', data: [15.8,11.5,9.7,9.1,10.4,10.5,7.2,7.3,1.8,5.8], backgroundColor: 'rgba(111,230,184,0.6)' },
+      { label: 'Early (2007–13)', data: [11.9,10.9,9.7,9.1,10.2,10,8.5,8.2,4.6,7.2], backgroundColor: 'rgba(120,109,92,0.6)' },
+      { label: 'Period 2 (2014–20)', data: [13.7,11.3,9.9,9.2,10.3,10.2,7.9,7.8,2.7,6.5], backgroundColor: 'rgba(203,163,107,0.6)' },
+      { label: 'Recent (2021–26)', data: [15.8,11.5,9.7,9.1,10.4,10.5,7.2,7.3,1.8,5.8], backgroundColor: 'rgba(130,183,154,0.6)' },
     ]
   },
   options: {
@@ -1046,9 +1063,9 @@ new Chart(document.getElementById('subjectBoxChart'), {
   data: {
     labels: ['DSA','TOC','CN','OS','DBMS','EngMath','DL','COA','SE'],
     datasets: [
-      { label: 'Min', data: [10,8,7,6,6,8,5,5,0], backgroundColor: 'rgba(255,130,114,0.5)' },
-      { label: 'Avg', data: [14.1,11.3,10.4,9.8,9.2,10.5,8.1,7.9,2.4], backgroundColor: 'rgba(90,209,230,0.7)' },
-      { label: 'Max', data: [18,16,14,14,14,14,12,12,6], backgroundColor: 'rgba(111,230,184,0.5)' },
+      { label: 'Min', data: [10,8,7,6,6,8,5,5,0], backgroundColor: 'rgba(224,119,108,0.5)' },
+      { label: 'Avg', data: [14.1,11.3,10.4,9.8,9.2,10.5,8.1,7.9,2.4], backgroundColor: 'rgba(203,163,107,0.7)' },
+      { label: 'Max', data: [18,16,14,14,14,14,12,12,6], backgroundColor: 'rgba(130,183,154,0.5)' },
     ]
   },
   options: {
@@ -1068,9 +1085,9 @@ new Chart(document.getElementById('taxonomyChart'), {
     labels: ['Numerical','Conceptual','Formula-based','Multi-concept','Logical Reasoning','Direct Memory','Trick/Trap'],
     datasets: [{
       data: [32,25,18,12,8,3,2],
-      backgroundColor: ['#5ad1e6','#6fe6b8','#f2a65a','#b892e8','#ff8272','#64748b','#ff8040'],
+      backgroundColor: ['#cba36b','#82b79a','#d98a5f','#b09bd6','#e0776c','#786d5c','#e0a86e'],
       borderWidth: 1,
-      borderColor: '#111318'
+      borderColor: '#131317'
     }]
   },
   options: {
@@ -1087,8 +1104,8 @@ new Chart(document.getElementById('taxonomyShiftChart'), {
   data: {
     labels: ['Numerical','Conceptual','Formula','Multi-concept','Logical','Memory','Trick'],
     datasets: [
-      { label: 'Pre-2014', data: [22,35,22,10,7,3,1], backgroundColor: 'rgba(100,116,139,0.6)' },
-      { label: 'Post-2014', data: [38,18,15,18,6,3,2], backgroundColor: 'rgba(90,209,230,0.7)' },
+      { label: 'Pre-2014', data: [22,35,22,10,7,3,1], backgroundColor: 'rgba(120,109,92,0.6)' },
+      { label: 'Post-2014', data: [38,18,15,18,6,3,2], backgroundColor: 'rgba(203,163,107,0.7)' },
     ]
   },
   options: {
@@ -1131,7 +1148,7 @@ function buildHeatmap() {
       const alpha = 0.08 + norm * 0.92;
       const cell = document.createElement('div');
       cell.className = 'hm-cell';
-      cell.style.background = `rgba(90,209,230,${alpha.toFixed(2)})`;
+      cell.style.background = `rgba(203,163,107,${alpha.toFixed(2)})`;
       cell.textContent = val;
       cell.title = `${subj} ${YEARS_FULL[i]}: ${val} marks`;
       row.appendChild(cell);
@@ -1174,7 +1191,7 @@ function buildHeatmap() {
     present.forEach((p, i) => {
       const cell = document.createElement('div');
       cell.className = 'hm-cell';
-      cell.style.background = p ? 'rgba(111,230,184,0.75)' : 'rgba(30,35,48,0.5)';
+      cell.style.background = p ? 'rgba(130,183,154,0.75)' : 'rgba(35,36,42,0.5)';
       cell.textContent = p ? '✓' : '';
       cell.title = `${topic} ${YEARS_FULL[i]}: ${p?'Present':'Absent'}`;
       row.appendChild(cell);

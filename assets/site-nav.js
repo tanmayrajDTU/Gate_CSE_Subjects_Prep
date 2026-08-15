@@ -26,18 +26,19 @@
   var style = document.createElement('style');
   style.textContent = [
     '.gnav{position:sticky;top:0;z-index:9999;height:48px;display:flex;align-items:center;',
-    'gap:4px;padding:0 16px;background:rgba(7,21,35,0.92);backdrop-filter:blur(8px);',
-    'border-bottom:1px solid #1a3c56;font-family:"IBM Plex Sans",sans-serif;overflow-x:auto;',
-    'white-space:nowrap;}',
+    'gap:3px;padding:0 18px;background:rgba(6,7,8,0.85);backdrop-filter:blur(14px) saturate(140%);',
+    '-webkit-backdrop-filter:blur(14px) saturate(140%);',
+    'border-bottom:1px solid rgba(203,163,107,0.14);font-family:"Inter",sans-serif;overflow-x:auto;',
+    'white-space:nowrap;box-shadow:0 1px 24px rgba(0,0,0,0.35);}',
     '.gnav::-webkit-scrollbar{height:0px;}',
-    '.gnav a{color:#8fadc0;text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:5px;',
-    'transition:background .15s,color .15s;flex-shrink:0;}',
-    '.gnav a:hover{background:#153351;color:#e7f1f5;}',
-    '.gnav a.gnav-active{color:#5ad1e6;background:#153351;}',
-    '.gnav a.gnav-soon{opacity:.4;pointer-events:none;}',
-    '.gnav .gnav-brand{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;',
-    'color:#f2a65a;letter-spacing:.02em;margin-right:10px;flex-shrink:0;text-decoration:none;}',
-    '.gnav .gnav-sep{width:1px;height:20px;background:#22516f;margin:0 6px;flex-shrink:0;}'
+    '.gnav a{color:#a39d92;text-decoration:none;font-size:12.5px;padding:7px 12px;border-radius:7px;',
+    'transition:background .18s,color .18s;flex-shrink:0;letter-spacing:.01em;}',
+    '.gnav a:hover{background:rgba(255,255,255,0.045);color:#f2ede4;}',
+    '.gnav a.gnav-active{color:#e6c58e;background:rgba(203,163,107,0.1);}',
+    '.gnav a.gnav-soon{opacity:.35;pointer-events:none;}',
+    '.gnav .gnav-brand{font-family:"Fraunces",serif;font-weight:600;font-size:13.5px;',
+    'color:#cba36b;letter-spacing:.01em;margin-right:12px;flex-shrink:0;text-decoration:none;}',
+    '.gnav .gnav-sep{width:1px;height:20px;background:#26272e;margin:0 8px;flex-shrink:0;}'
   ].join('');
   document.head.appendChild(style);
 
