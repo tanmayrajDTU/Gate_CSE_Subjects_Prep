@@ -307,7 +307,7 @@ section.topic{scroll-margin-top:56px;}
 
       <div class="card pyq">
         <span class="label">GATE trap</span>
-        <p>A router operates only up through the Network layer (it reads IP headers to route, but doesn't touch transport/application data) — a switch operates only up through the Data Link layer (it reads MAC addresses) — a hub operates only at the Physical layer (it doesn't even read addresses, just repeats bits). GATE regularly asks "at which layer does device X operate," and the answer hinges on exactly how much of the header stack that device needs to inspect to do its job.</p>
+        <p>In the standard OSI abstraction used by GATE: a router operates primarily up through the Network layer (it reads IP headers to route, but doesn't need to touch transport/application data) — a switch operates primarily up through the Data Link layer (it reads MAC addresses) — a hub operates primarily at the Physical layer (it doesn't even read addresses, just repeats bits). GATE regularly asks "at which layer does device X operate," and the answer hinges on exactly how much of the header stack that device needs to inspect to do its job. (Real-world devices can blur this — e.g. Layer 3 switches or firewalls that inspect higher-layer information — but for GATE, use the textbook layer assignment above.)</p>
       </div>
 
       <div class="practice">
@@ -426,7 +426,12 @@ Receiver divides the received frame by G — a zero remainder means no detected 
       </div>
 
       <h3 class="sub">ARQ protocols — how reliable delivery actually works<span class="pri-tag pri-legacy">🟡 supporting</span></h3>
-      <p>Automatic Repeat reQuest (ARQ) is the general family of retransmission-based reliability protocols: the sender keeps a timer per outstanding frame, and if no acknowledgment (ACK) arrives before the timer expires (or an explicit negative acknowledgment / NAK is received), the sender retransmits. The Stop-and-Wait utilization formula above is the simplest, least efficient member of this family — the other two let the sender keep multiple frames "in flight" at once to fill the pipe while waiting for ACKs.</p>
+      <p>Automatic Repeat reQuest (ARQ) is the general family of retransmission-based reliability protocols: if no acknowledgment (ACK) arrives before a timer expires (or an explicit negative acknowledgment / NAK is received), the sender retransmits. The Stop-and-Wait utilization formula above is the simplest, least efficient member of this family — the other two let the sender keep multiple frames "in flight" at once to fill the pipe while waiting for ACKs. <strong>The timer model itself is protocol-specific — don't assume one universal rule:</strong></p>
+      <ul>
+        <li><strong>Stop-and-Wait:</strong> only one frame is ever outstanding at a time, so a <strong>single timer</strong> is enough — it's simply restarted for the one frame currently awaiting ACK.</li>
+        <li><strong>Go-Back-N:</strong> in the standard simplified model, the sender keeps <strong>one timer, for the oldest outstanding (unacknowledged) frame</strong> — not one per frame. If that timer expires, the cumulative-ACK/discard-out-of-order design means resending the oldest frame onward automatically covers everything after it too, so a single timer is sufficient.</li>
+        <li><strong>Selective Repeat:</strong> because the receiver buffers out-of-order frames individually and each is acknowledged and potentially retransmitted independently, the sender genuinely needs a <strong>timer per individual outstanding frame</strong> — this is the one case where "timer per outstanding frame" is actually accurate.</li>
+      </ul>
 
       <table>
         <tr><th></th><th>Stop-and-Wait</th><th>Go-Back-N</th><th>Selective Repeat</th></tr>
@@ -460,10 +465,10 @@ Receiver divides the received frame by G — a zero remainder means no detected 
             <p class="final">Answer: Circuit switching</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> In virtual-circuit switching, do all packets of one connection necessarily follow the same physical path?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> In virtual-circuit switching, do all packets of one connection necessarily follow the same logical route?</summary>
           <div class="ans">
-            <p>Yes — that's the defining feature: a logical path (virtual circuit) is set up once, and all subsequent packets of that connection follow that same fixed path in order, unlike pure datagram/packet switching where each packet is routed independently.</p>
-            <p class="final">Answer: Yes</p>
+            <p>Yes, in the logical sense — that's the defining feature: a virtual circuit is a logical path/connection identifier set up once, and all subsequent packets of that connection follow that same VC in order, unlike pure datagram/packet switching where each packet is routed independently. This guarantee is about the logical VC and ordered-delivery semantics, not necessarily an unchanging physical path — depending on the underlying technology and control plane, the physical forwarding path can in principle change (rerouting/reconfiguration) while the VC's logical identity and ordering are preserved.</p>
+            <p class="final">Answer: Yes — same established logical route/path for that connection</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Data bits: 011111101. Apply bit stuffing (insert a 0 after every 5 consecutive 1's).</summary>
@@ -776,7 +781,7 @@ Client → Server: ACK (ack=y+1)
       </div>
 
       <h3 class="sub">Sockets and the Socket API<span class="pri-tag pri-core">🔥 core</span></h3>
-      <p>A <strong>socket</strong> is the programming-level endpoint of a network connection, identified by the tuple <strong>(protocol, local IP, local port, remote IP, remote port)</strong> for a TCP connection — this full 5-tuple, not just the port number alone, is what uniquely identifies each individual connection, which is exactly how a server can serve many simultaneous clients on the very same listening port.</p>
+      <p>A <strong>socket</strong> is the programming-level endpoint of a network connection. A TCP connection is uniquely identified by the <strong>4-tuple (local IP, local port, remote IP, remote port)</strong> — not just the port number alone — which is exactly how a server can serve many simultaneous clients on the very same listening port. (Adding the protocol field gives a 5-tuple, which is used more generally for flow identification when distinguishing traffic across protocols, e.g. TCP vs UDP on the same port — but for identifying TCP connections specifically, the 4-tuple already suffices since the protocol is fixed.)</p>
 
       <div class="card formula">
         <span class="label">Socket API — TCP client-server flow</span>
@@ -798,14 +803,14 @@ Client → Server: ACK (ack=y+1)
 
       <div class="card pyq">
         <span class="label">GATE trap — socket identity</span>
-        <p>⚠️ A server listening on port 80 can handle thousands of simultaneous TCP connections because each connection is identified by the <strong>full 5-tuple</strong>, not just the server port. The server's <code>accept()</code> call creates a <em>new</em> socket for each client, all sharing the same local port 80 but with different remote IP:port pairs.</p>
+        <p>⚠️ A server listening on port 80 can handle thousands of simultaneous TCP connections because each connection is identified by the <strong>4-tuple</strong> (local IP, local port, remote IP, remote port), not just the server port. The server's <code>accept()</code> call creates a <em>new</em> socket for each client, all sharing the same local port 80 but with different remote IP:port pairs.</p>
       </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> Which transport protocol would you choose for a live video call, and why?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> Between TCP and UDP, which is generally preferred as the transport protocol for latency-sensitive real-time media such as a live video call, and why?</summary>
           <div class="ans">
-            <p>UDP — for real-time media, a late/retransmitted packet is often worse than a lost one (it arrives too late to be useful), and UDP's lack of retransmission/ordering overhead keeps latency lower, which matters more than perfect reliability here.</p>
+            <p>UDP — for real-time media, a late/retransmitted packet is often worse than a lost one (it arrives too late to be useful), and UDP's lack of retransmission/ordering overhead keeps latency lower, which matters more than perfect reliability here. (In practice, real-time systems often run higher-level protocols such as RTP on top of UDP rather than using bare UDP, but between the two core transport protocols, UDP is the preferred base.)</p>
             <p class="final">Answer: UDP (low latency matters more than guaranteed delivery)</p>
           </div>
         </details>
@@ -829,8 +834,8 @@ Client → Server: ACK (ack=y+1)
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> Two different clients connect to the same web server on port 80 at the same time. How does the server distinguish between their two TCP connections?</summary>
           <div class="ans">
-            <p>Each TCP connection is uniquely identified by the full 5-tuple (protocol, server IP, server port, client IP, client port) — since the two clients have different client IPs (or at least different client ports), their connections remain distinct even though the server-side IP and port are identical.</p>
-            <p class="final">Answer: By the full 5-tuple, which differs in client IP/port even though the server IP/port match</p>
+            <p>Each TCP connection is uniquely identified by the 4-tuple (server IP, server port, client IP, client port) — since the two clients have different client IPs (or at least different client ports), their connections remain distinct even though the server-side IP and port are identical.</p>
+            <p class="final">Answer: By the 4-tuple, which differs in client IP/port even though the server IP/port match</p>
           </div>
         </details>
       </div>
@@ -842,7 +847,7 @@ Client → Server: ACK (ack=y+1)
 
       <h3 class="sub">DNS — the Domain Name System<span class="pri-tag pri-core">🔥 core</span></h3>
       <p>Translates human-readable domain names into IP addresses, organized as a distributed, hierarchical database. A resolution typically walks from a root server → top-level-domain (TLD) server → authoritative server for the specific domain, and results are cached at each step (with a TTL) to avoid repeating the full walk for every lookup.</p>
-      <p>DNS primarily runs over <strong>UDP</strong> (port 53) for ordinary queries — fast, low-overhead, and queries are small enough to fit in one packet — but falls back to <strong>TCP</strong> for zone transfers between DNS servers or when a response is too large to fit in a single UDP packet.</p>
+      <p>For conventional DNS over port 53, DNS primarily runs over <strong>UDP</strong> for ordinary queries — fast, low-overhead, and queries are small enough to fit in one packet — but falls back to <strong>TCP</strong> (still port 53) for zone transfers between DNS servers or when a response is too large to fit in a single UDP packet. This UDP-by-default/TCP-fallback pattern is what GATE tests; modern deployments can also carry DNS over other transports (DNS-over-TLS, DNS-over-HTTPS) for privacy, which is outside the classic port-53 scope.</p>
 
       <h3 class="sub">HTTP — HyperText Transfer Protocol<span class="pri-tag pri-core">🔥 core</span></h3>
       <table>
@@ -853,7 +858,7 @@ Client → Server: ACK (ack=y+1)
       <p>HTTP is stateless by design — the server retains no memory of previous requests from the same client between connections, which is exactly why cookies exist: to let applications layer state on top of an inherently stateless protocol.</p>
 
       <h3 class="sub">SMTP &amp; Email<span class="pri-tag pri-legacy">🟡 supporting</span></h3>
-      <p>SMTP (Simple Mail Transfer Protocol) is used specifically for <strong>sending</strong> mail — from a client to its mail server, and between mail servers relaying a message toward its destination. It is a <em>push</em> protocol only; it was never designed for a client to retrieve/download mail from a mailbox.</p>
+      <p>SMTP (Simple Mail Transfer Protocol) is used for mail <strong>submission and server-to-server transfer</strong> — from a client to its mail server, and between mail servers relaying a message toward its destination. Mailbox retrieval (a client pulling messages down from where they're stored) is normally handled by POP3 or IMAP instead, not SMTP.</p>
       <table>
         <tr><th>Protocol</th><th>Direction</th><th>Key behaviour</th></tr>
         <tr><td>SMTP</td><td>Push (sending)</td><td>Client → server, or server → server relaying</td></tr>
@@ -878,8 +883,8 @@ Client → Server: ACK (ack=y+1)
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Which transport protocol does an ordinary DNS query typically use, and why?</summary>
           <div class="ans">
-            <p>UDP — DNS queries and responses are usually small enough to fit in a single packet, and UDP's lack of connection-setup overhead makes lookups faster, which matters since DNS resolution sits on the critical path of nearly every network request.</p>
-            <p class="final">Answer: UDP (port 53)</p>
+            <p>For conventional DNS over port 53, ordinary queries typically use UDP — queries and responses are usually small enough to fit in a single packet, and UDP's lack of connection-setup overhead makes lookups faster, which matters since DNS resolution sits on the critical path of nearly every network request. TCP is also used in specified cases such as zone transfers and large/truncated responses that don't fit in a single UDP packet.</p>
+            <p class="final">Answer: UDP (port 53) for ordinary queries; TCP for zone transfers and oversized/truncated responses</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> A user wants to download and permanently sync their email across a phone and a laptop, keeping messages on the server. Which retrieval protocol suits this better — POP3 or IMAP?</summary>
@@ -888,21 +893,21 @@ Client → Server: ACK (ack=y+1)
             <p class="final">Answer: IMAP</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> Why does HTTP need cookies at all, given that the protocol carries a session concept?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> Why are cookies useful for maintaining application-level state, given that HTTP itself is stateless?</summary>
           <div class="ans">
-            <p>HTTP itself is stateless — the server doesn't inherently remember anything about a client between separate requests. Cookies are a mechanism built on top of HTTP specifically to reintroduce state (e.g. login sessions, shopping carts) that the base protocol doesn't provide.</p>
+            <p>HTTP itself is stateless — the server doesn't inherently remember anything about a client between separate requests. Cookies are a mechanism built on top of HTTP specifically to introduce state (e.g. login sessions, shopping carts) that the base protocol doesn't provide.</p>
             <p class="final">Answer: Because HTTP itself is stateless; cookies add state on top of it</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> FTP uses how many TCP connections during a typical file-transfer session, and what is each one for?</summary>
           <div class="ans">
-            <p>Two: a persistent control connection (port 21) for commands throughout the session, and a separate data connection opened specifically for each file transfer.</p>
-            <p class="final">Answer: Two — one control connection (port 21), one data connection (per transfer)</p>
+            <p>Two: one persistent control connection (port 21) for commands throughout the session, and one data connection opened specifically for each file transfer. The direction in which the data connection is established depends on active/passive mode: in active mode the server initiates the data connection back to the client, while in passive mode the client initiates the data connection to the server.</p>
+            <p class="final">Answer: Two — one persistent control connection (port 21) + one data connection per transfer; who initiates the data connection depends on active vs. passive mode</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> Can SMTP be used by an email client to download new messages from a mail server?</summary>
           <div class="ans">
-            <p>No — SMTP is a push-only protocol for sending/relaying mail. Retrieving/downloading mail requires POP3 or IMAP instead.</p>
+            <p>No — SMTP is used for mail submission and server-to-server mail transfer, not for retrieving mail from a mailbox. Retrieving/downloading mail requires POP3 or IMAP instead.</p>
             <p class="final">Answer: No — SMTP only sends/relays mail; use POP3 or IMAP to retrieve it</p>
           </div>
         </details>
@@ -948,7 +953,7 @@ Client → Server: ACK (ack=y+1)
         </div>
         <div class="card formula">
           <span class="label">IP fragment offset units</span>
-          <p>Offset field is in units of 8 bytes — multiply by 8 for the actual byte offset.</p>
+          <p>Offset field is in units of 8 bytes — multiply by 8 for the actual byte offset. Every fragment except the last must normally carry a payload length divisible by 8 bytes.</p>
         </div>
         <div class="card formula">
           <span class="label">ARP / DHCP / ICMP / NAT</span>
@@ -964,10 +969,10 @@ Client → Server: ACK (ack=y+1)
         </div>
         <div class="card formula">
           <span class="label">TCP connection identity</span>
-          <p>A connection is the full 5-tuple (protocol, local IP/port, remote IP/port) — not just the port number alone.</p>
+          <p>A TCP connection is the 4-tuple (local IP/port, remote IP/port) — not just the port number alone. Adding protocol gives a 5-tuple, used for general flow ID across protocols.</p>
         </div>
         <div class="card formula">
-          <span class="label">SMTP is push-only</span>
+          <span class="label">SMTP: submission/relay, not retrieval</span>
           <p>Sending/relaying only. Retrieval needs POP3 (download+delete) or IMAP (server-synced).</p>
         </div>
         <div class="card formula">
