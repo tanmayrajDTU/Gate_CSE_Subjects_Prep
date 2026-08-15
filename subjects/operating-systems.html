@@ -280,7 +280,7 @@ Running → Waiting: I/O or event wait          Waiting → Ready: I/O or event 
       </div>
 
       <h3 class="sub">Process Control Block (PCB) &amp; context switch</h3>
-      <p>The PCB stores everything needed to pause and later resume a process exactly where it left off: process state, program counter, CPU registers, memory-management info, scheduling info, and open file list. A <strong>context switch</strong> is the act of saving the current process's PCB and loading another's — it's scheduling/management overhead relative to the user workload, since no application instructions from either process execute during the switch itself (though the kernel bookkeeping it performs is still necessary work, not meaningless).</p>
+      <p>The PCB stores everything needed to pause and later resume a process exactly where it left off: process state, program counter, CPU registers, memory-management info, scheduling info, and open file list (the exact field set is OS/architecture dependent). A <strong>context switch</strong> is the act of saving the current process's PCB and loading another's — it's scheduling/management overhead relative to the user workload, since no application instructions from either process execute during the switch itself (though the kernel bookkeeping it performs is still necessary work, not meaningless).</p>
 
       <h3 class="sub">Process vs Thread</h3>
       <table>
@@ -299,12 +299,19 @@ Running → Waiting: I/O or event wait          Waiting → Ready: I/O or event 
         <p>fork() in Unix-like systems returns TWICE — once in the parent (with the child's PID) and once in the child (with return value 0). GATE frequently asks "how many processes are created" or "how many times is X printed" after a sequence of fork() calls — always trace both branches carefully; n fork() calls in sequence create 2ⁿ total processes.</p>
       </div>
 
+      <div class="card pyq">
+        <span class="label">Copy-on-write (COW) — how modern fork() avoids copying all of memory upfront</span>
+        <p>Naively, fork() sounds like it should duplicate the entire address space of the parent immediately — but that's expensive and often wasteful (many programs immediately call exec() after fork(), discarding the copy entirely). Modern Unix-style implementations instead use <strong>copy-on-write</strong>: right after fork(), the parent and child share the SAME physical pages, with both processes' page tables pointing to those pages and marked <strong>read-only</strong> (even for pages that were writable before the fork). No actual data is copied at fork() time.</p>
+        <p>The moment either process (parent or child) attempts to <strong>write</strong> to one of these shared pages, the read-only marking triggers a <strong>page fault</strong>. The kernel's fault handler recognizes this as a COW fault (not an illegal access), allocates a fresh physical page, copies the original page's content into it, updates the writing process's page table entry to point to the new page (now marked writable), and only then lets the write proceed. The other process's page table entry is untouched and still points to the original shared page.</p>
+        <p>This ties together three OS ideas in one mechanism: <strong>process creation</strong> (fork() itself), <strong>virtual memory</strong> (page tables mapping virtual pages to shared physical frames, with permission bits), and <strong>page faults</strong> (repurposed here not as "page missing from memory" but as "page present but access not yet permitted," triggering the actual copy). GATE can ask what happens on a write immediately after fork() — the answer involves a page fault even though the page was never absent from memory.</p>
+      </div>
+
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> A program calls fork() twice in sequence (not nested inside a conditional). How many total processes exist after both calls?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> A program calls fork() twice in sequence (not nested inside a conditional). Assuming both fork() calls succeed, how many total processes exist after both calls?</summary>
           <div class="ans">
-            <p>Each fork() doubles the number of processes executing the subsequent code. Starting from 1 process: after 1st fork → 2 processes; after 2nd fork (each of those 2 calls it) → 4 processes.</p>
-            <p class="final">Answer: 4 processes (2² )</p>
+            <p>Each fork() doubles the number of processes executing the subsequent code. Starting from 1 process: after 1st fork → 2 processes; after 2nd fork (each of those 2 calls it) → 4 processes. (In reality fork() can fail — returning -1 with no child created — in which case fewer processes would exist; GATE questions of this style always intend the successful case unless stated otherwise.)</p>
+            <p class="final">Answer: 4 processes (2² ), assuming both fork() calls succeed</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Can a process move directly from the Waiting state to the Running state?</summary>
@@ -315,7 +322,7 @@ Running → Waiting: I/O or event wait          Waiting → Ready: I/O or event 
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> What information is saved in a PCB during a context switch, and why is a context switch considered scheduling overhead?</summary>
           <div class="ans">
-            <p>The PCB saves process state, program counter, CPU register values, memory-management info, and scheduling info. It's overhead relative to the application workload because no user-process instructions from either process execute during the switch itself — the CPU is busy bookkeeping, not running application computation. That bookkeeping is still necessary kernel work, though, not meaningless work — "overhead" here means "not the workload," not "worthless."</p>
+            <p>A PCB typically saves process state, program counter, CPU register values, scheduling/accounting information, and references to memory-management information (e.g. page tables) and open files — the exact field list is OS/architecture dependent, not a fixed universal standard. It's overhead relative to the application workload because no user-process instructions from either process execute during the switch itself — the CPU is busy bookkeeping, not running application computation. That bookkeeping is still necessary kernel work, though, not meaningless work — "overhead" here means "not the workload," not "worthless."</p>
             <p class="final">Answer: State/PC/registers/memory-info/scheduling-info; it's overhead relative to user computation, since no application instructions run during the switch itself (the kernel bookkeeping is still necessary work)</p>
           </div>
         </details>
@@ -353,13 +360,18 @@ Response Time = Time of first CPU allocation − Arrival Time</div>
         <tr><td>FCFS (First-Come-First-Served)</td><td>No</td><td>Arrival order</td><td>Convoy effect (short jobs stuck behind long ones)</td></tr>
         <tr><td>SJF (Shortest Job First)</td><td>No</td><td>Smallest burst time</td><td>Starvation of long jobs; needs burst time known in advance</td></tr>
         <tr><td>SRTF (Shortest Remaining Time First)</td><td>Yes</td><td>Smallest remaining burst time</td><td>Same starvation risk, plus frequent context switches</td></tr>
-        <tr><td>Priority Scheduling</td><td>Either</td><td>Highest priority</td><td>Starvation of low-priority processes (fixed via aging)</td></tr>
+        <tr><td>Priority Scheduling</td><td>Either</td><td>Highest priority</td><td>Starvation of low-priority processes (aging can reduce/prevent this — see note below)</td></tr>
         <tr><td>Round Robin</td><td>Yes</td><td>Fixed time quantum, cyclic order</td><td>Too-small quantum ⟹ excessive context-switch overhead</td></tr>
       </table>
 
       <div class="card formula">
         <span class="label">Provably optimal (average waiting time) — with assumptions</span>
         <p>Non-preemptive SJF minimizes average waiting time — but only under the standard scheduling-theory assumptions GATE questions implicitly rely on: (1) it's the <strong>non-preemptive</strong> variant being compared (SRTF is the preemptive analogue and optimal in its own preemptive class); (2) burst times are <strong>known in advance</strong> exactly — real schedulers only estimate them; (3) the objective is specifically <strong>minimizing average waiting time</strong> — SJF is not optimal for other objectives like maximum waiting time or fairness; (4) the comparison is over the <strong>full, fixed set of jobs</strong> considered together (all present/arriving as modeled), under the standard single-CPU scheduling model. Drop any of these and the optimality claim can break.</p>
+      </div>
+
+      <div class="card note">
+        <span class="label">Aging — a mitigation, not a magic fix</span>
+        <p>Don't state it as "aging fixes starvation" — the more accurate claim is: <strong>aging can prevent or reduce indefinite starvation by gradually increasing the priority of processes the longer they wait</strong>, so a long-waiting low-priority process eventually becomes high-priority enough to run. It doesn't guarantee every possible starvation scenario is eliminated — the exact behaviour depends on the aging rate, how quickly new high-priority work keeps arriving, and the specific scheduling policy layered on top of it. Treat aging as a well-known mitigation technique, not an absolute guarantee.</p>
       </div>
 
       <h3 class="sub">Worked example — FCFS</h3>
@@ -395,8 +407,8 @@ Average WT = (0+4+6)/3 = 3.33</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Two processes P1(BT=10) and P2(BT=2) both arrive at t=0. Round Robin with quantum=4. Trace the schedule and find P2's waiting time.</summary>
           <div class="ans">
-            <p>t=0-4: P1 runs (6 remaining). t=4-6: P2 runs to completion (BT=2, finishes at t=6). P2 never waited before its only run — it started immediately at t=4, after waiting 4 units (P1's first quantum).</p>
-            <p class="final">Answer: WT(P2) = 4</p>
+            <p>t=0-4: P1 runs first (ready queue order: P1, P2), consuming its full quantum with 6 units remaining. t=4-6: P2 finally gets to run and completes (BT=2, finishes at t=6). P2 arrived at t=0 but had to wait while P1 occupied the CPU for its first quantum — so P2 sits idle in the ready queue from t=0 to t=4 (4 units of waiting) before starting its only run at t=4.</p>
+            <p class="final">Answer: WT(P2) = 4 (P2 waits from t=0 to t=4, then runs to completion with no further waiting)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Why does SJF risk starvation, and what does Round Robin guarantee that SJF does not?</summary>
@@ -575,26 +587,26 @@ Counting semaphore: S can take any integer — controls access to a pool of k re
 
       <div class="card formula">
         <span class="label">One-line IPC comparison to memorize</span>
-        <p>Shared memory = fast, needs your own synchronization. Message passing (pipes, named pipes, sockets) = slower, synchronization built in. Signals = not really "data transfer," just async notification.</p>
+        <p>Shared memory = fast, needs your own synchronization. Message passing (pipes, named pipes, sockets) = slower, kernel-mediated with synchronization semantics provided by the communication primitives themselves (e.g. blocking reads/writes). Signals = not really "data transfer," just async notification.</p>
       </div>
 
       <div class="practice">
         <div class="practice-head"><h3>Practice — IPC (original)</h3><span class="pcount">4 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Two unrelated processes (no parent-child relationship) need to communicate via a byte stream. Can a plain (unnamed) pipe be used? What should be used instead?</summary>
           <div class="ans">
-            <p>No — a plain pipe only exists as an inherited file descriptor, so only a process and its descendants (who received the descriptor via fork()) can access it. Unrelated processes need a named pipe (FIFO), which has a filesystem path either process can open independently.</p>
-            <p class="final">Answer: No; use a named pipe (FIFO) instead</p>
+            <p>Normally no — a plain pipe only exists as an inherited file descriptor, so it's typically shared only between a process and its descendants (who received the descriptor via fork()). Unrelated processes generally need a named pipe (FIFO), which has a filesystem path either process can open independently — or another IPC mechanism. (Note: an unrelated process could still gain access to an unnamed pipe's descriptor if it were explicitly passed to it, e.g. via a Unix domain socket using SCM_RIGHTS — the "only descendants" rule is the normal case, not an absolute limitation of pipes themselves.)</p>
+            <p class="final">Answer: Not by default; use a named pipe (FIFO) or another IPC mechanism instead</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Why does shared memory IPC need explicit synchronization but message passing typically doesn't need the processes to add their own?</summary>
           <div class="ans">
-            <p>In shared memory, both processes can read/write the same bytes at any time with no built-in ordering — a race condition unless the processes coordinate via semaphores or similar. In message passing, the kernel mediates each send/receive as an atomic operation, so the act of sending/receiving a message is itself inherently ordered.</p>
-            <p class="final">Answer: Shared memory has no inherent access ordering; message passing gets ordering from the kernel-mediated send/receive itself</p>
+            <p>Shared memory requires explicit synchronization because multiple processes directly access the same memory and can race. Message-passing systems provide synchronization semantics through operations such as send/receive, but the exact ordering and blocking guarantees depend on the IPC mechanism — whether it is blocking or non-blocking, synchronous or asynchronous, buffered or unbuffered. So message passing doesn't universally eliminate ordering concerns; it just supplies ordering through its communication primitives rather than requiring the processes to bolt on their own.</p>
+            <p class="final">Answer: Shared memory requires explicit synchronization; message passing provides synchronization through its communication primitives, with exact ordering depending on the mechanism.</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> A process receives SIGCHLD. What does this signal typically indicate, and does it carry the child's exit data directly?</summary>
           <div class="ans">
-            <p>SIGCHLD typically indicates a child process has terminated or stopped. It doesn't carry the exit data itself — it's just a notification; the parent must separately call wait()/waitpid() to actually retrieve the child's exit status.</p>
+            <p>SIGCHLD typically indicates a child process has terminated or stopped. As a notification, it should not be treated as the mechanism for reaping the child — the parent normally calls wait()/waitpid() to obtain and reap the child's exit status. (On POSIX systems using the SA_SIGINFO handler flag, the signal's siginfo_t can carry some information such as the child's PID and status, but wait()/waitpid() is still what actually reaps the child and retrieves the full wait status.)</p>
             <p class="final">Answer: Notifies that a child changed state; exit data must be separately fetched via wait()</p>
           </div>
         </details>
@@ -637,12 +649,24 @@ A request from process i is granted only if it can be satisfied AND the resultin
         <p>An "unsafe" state is NOT automatically a deadlocked state — it simply means the system cannot GUARANTEE avoiding deadlock; deadlock might still not actually occur depending on future requests. Don't conflate "unsafe" with "deadlocked" — Banker's algorithm is deliberately conservative.</p>
       </div>
 
+      <h3 class="sub">Deadlock vs Starvation — don't conflate the two</h3>
+      <table>
+        <tr><th></th><th>Deadlock</th><th>Starvation</th></tr>
+        <tr><td>What happens to processes</td><td>Wait indefinitely due to a cyclic resource dependency</td><td>A process may repeatedly lose access to the CPU/resource, without any cycle involved</td></tr>
+        <tr><td>Progress of the system</td><td>The specific set of mutually-blocked processes makes zero progress — they're permanently stuck</td><td>Other processes continue making progress just fine; only the unlucky (typically low-priority) process is denied service</td></tr>
+        <tr><td>Typical fix</td><td>Break one of the four Coffman conditions (prevention), or run detection/avoidance (Banker's algorithm)</td><td>Aging, or a fair scheduling policy (e.g. Round Robin) that guarantees every process eventually gets a turn</td></tr>
+      </table>
+      <div class="card note">
+        <span class="label">The core distinction, in one line</span>
+        <p>Deadlock is a <strong>mutual, cyclic</strong> block — a specific group of processes is stuck waiting on each other, and no external event resolves it without intervention. Starvation is a <strong>one-sided, ongoing disadvantage</strong> — one process (or a few) keeps losing out to others under a scheduling/allocation policy that's individually reasonable each time, but collectively unfair over the long run; the system as a whole keeps making progress, just never for that unlucky process. A deadlocked process is, in a sense, always starving (it's waiting forever) — but a starving process is not necessarily deadlocked (the resource it wants is repeatedly available, it's just repeatedly given to someone else first).</p>
+      </div>
+
       <div class="practice">
         <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
-        <details class="qcard"><summary><span class="qn">Q1</span> A system has resources that can be preempted from a process without harm. Can deadlock occur?</summary>
+        <details class="qcard"><summary><span class="qn">Q1</span> If all resources involved in the system can be safely preempted from a process without harm, can deadlock occur?</summary>
           <div class="ans">
-            <p>No — if preemption is possible, the "No Preemption" necessary condition is broken, and deadlock cannot occur regardless of the other three conditions.</p>
-            <p class="final">Answer: No, deadlock cannot occur (No Preemption condition is violated)</p>
+            <p>No — if every resource that could be part of a hold-and-wait cycle can be preempted, the "No Preemption" necessary condition is broken for the whole system, and deadlock cannot occur regardless of the other three conditions. (Note: if only *some* resources are preemptable while others involved in a potential cycle are not, deadlock can still occur via the non-preemptable resources — the guarantee only holds when preemption is possible for all relevant resources.)</p>
+            <p class="final">Answer: No, deadlock cannot occur (No Preemption condition is violated for all resources)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> A RAG with single-instance resources has no cycle. Is deadlock possible right now?</summary>
@@ -690,6 +714,20 @@ Number of bits for offset = log₂(page size)</div>
       <h3 class="sub">Segmentation — variable-size, logical division</h3>
       <p>Divides memory by logical units (code segment, stack segment, heap segment) rather than fixed size. Suffers from external fragmentation (variable-sized holes) but maps more naturally onto how programs are actually structured.</p>
 
+      <h3 class="sub">Contiguous allocation strategies — finding a hole for a new process</h3>
+      <p>Before a process can run in a contiguous (non-paged) memory model, the OS must pick WHICH free hole to give it when several are large enough. Four classic strategies:</p>
+      <table>
+        <tr><th>Strategy</th><th>Basic idea</th></tr>
+        <tr><td>First Fit</td><td>First sufficiently large hole</td></tr>
+        <tr><td>Best Fit</td><td>Smallest sufficiently large hole</td></tr>
+        <tr><td>Worst Fit</td><td>Largest hole</td></tr>
+        <tr><td>Next Fit</td><td>Continue search from previous position</td></tr>
+      </table>
+      <div class="card pyq">
+        <span class="label">GATE trap — Best Fit is not actually "best" in practice</span>
+        <p>Despite the name, <strong>Best Fit is NOT generally the best-performing strategy</strong> — choosing the tightest possible hole leaves behind slivers of memory too small to be useful for future allocations, causing rapid external fragmentation. Empirically, <strong>First Fit and Best Fit tend to perform similarly and generally better than Worst Fit</strong> in both speed and memory utilization — don't assume Best Fit wins on both fragmentation and speed just because of its name. Next Fit avoids First Fit's tendency to leave many small fragments clustered near the start of memory, by resuming the scan from where it last stopped rather than always restarting from address 0.</p>
+      </div>
+
       <h3 class="sub">Virtual vs physical address, and the page table</h3>
       <p>A process only ever sees <strong>virtual (logical) addresses</strong> — the address space it believes it owns, starting at 0. The MMU (memory management unit) translates each virtual address to a <strong>physical address</strong> — the actual location in RAM — using the process's <strong>page table</strong>, which the OS maintains per-process. Virtual memory decouples "how much address space a program can use" from "how much physical RAM actually exists," letting the OS run processes whose total virtual footprint exceeds physical memory.</p>
       <div class="eq">Address translation (single-level):
@@ -714,7 +752,7 @@ Cost: 2 memory accesses just for translation (before the actual data access) if 
       </div>
 
       <h3 class="sub">Page faults &amp; demand paging</h3>
-      <p>A <strong>page fault</strong> occurs when a process accesses a page whose valid bit is 0 in the page table — i.e. that page isn't currently in physical memory. The OS traps this, finds/loads the page from disk (secondary storage) into a free frame, updates the page table, and resumes the instruction. <strong>Demand paging</strong> is the strategy of loading pages into memory only when first referenced (lazily), rather than loading a process's entire address space upfront — it's what makes virtual memory practical, since most programs never touch every page they could.</p>
+      <p>A <strong>page fault</strong> is the trap that occurs when a process accesses a page whose valid bit is 0 in the page table — but a valid bit of 0 itself covers two different situations, and the OS has to tell them apart when handling the trap. If the reference is to a legitimate part of the process's address space that simply isn't currently resident (e.g. it's been paged out, or never yet loaded under demand paging), the OS obtains/constructs the needed page — commonly by loading it from disk (secondary storage) into a free frame, though depending on the case it could also be a zero-filled page, a copy-on-write copy, or another backing mechanism — updates the page table, and resumes the instruction — this is the common "page not resident" case. But if the reference is to an address the process has no business touching at all (outside its allocated address space, or violating protection bits), there's no page to fetch from disk — the OS instead treats it as an illegal/invalid memory reference, typically delivering a segmentation-fault-style signal that can terminate the process. Both cases start as the same trap (valid bit = 0), but they diverge sharply in how the OS resolves them. <strong>Demand paging</strong> is the strategy of loading legitimately-resident-but-not-yet-loaded pages into memory only when first referenced (lazily), rather than loading a process's entire address space upfront — it's what makes virtual memory practical, since most programs never touch every page they could.</p>
       <div class="card pyq">
         <span class="label">GATE trap — page fault vs TLB miss, don't conflate them</span>
         <p>A TLB miss just means the translation isn't cached — the page table (in memory) is still consulted and usually succeeds, costing one extra memory access. A page fault means the page genuinely isn't in physical memory at all — it requires a disk access (orders of magnitude slower) and possibly evicting another page. Every page fault implies the TLB also missed, but a TLB miss does NOT imply a page fault.</p>
@@ -734,15 +772,15 @@ Page fault service time typically includes: trap overhead + disk I/O time to fet
             <p class="final">Answer: 4 MB per process</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> A process accesses a page with valid bit = 0. What happens, and how is this different from a TLB miss on a page with valid bit = 1?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> A process accesses a page with valid bit = 0, and the reference is to a legitimate (in-bounds) part of the address space that simply isn't resident right now. What happens, and how is this different from a TLB miss on a page with valid bit = 1?</summary>
           <div class="ans">
-            <p>Valid bit = 0 triggers a page fault: the OS traps, fetches the page from disk into a free frame, updates the page table, and restarts the instruction — a disk-speed operation. A TLB miss on a page with valid bit = 1 just means the cached translation wasn't found; the page table (already in memory) is consulted directly — a memory-speed operation, no disk I/O.</p>
-            <p class="final">Answer: Page fault = disk-speed fetch and restart; TLB miss (valid page) = one extra memory access only</p>
+            <p>Valid bit = 0 triggers a page fault. Here, since the reference itself is legitimate, the OS traps, obtains/constructs the needed page — commonly by reading it from disk (swap or a file-backed mapping), but it could also be a zero-filled page, a copy-on-write copy, or another backing mechanism depending on the system — updates the page table, and restarts the instruction. When disk I/O is involved this is a disk-speed operation, though not every legitimate page fault requires it. (If the access had instead been to an out-of-bounds or protection-violating address, the same valid-bit-0 trap fires, but the OS has nothing to fetch or construct — it instead treats it as an illegal reference, which can terminate the process, e.g. a segmentation fault.) A TLB miss on a page with valid bit = 1 is a much cheaper case: it just means the cached translation wasn't found; the page table (already in memory) is consulted directly — a memory-speed operation, no disk I/O.</p>
+            <p class="final">Answer: Page fault on a legitimate but non-resident page → OS handles the fault and obtains/constructs the page (commonly via disk I/O, but not always); the same trap on an illegal reference instead raises an access violation; TLB miss on a resident valid page = one extra memory access only</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> Memory access = 100ns, page fault service time = 8ms, page fault rate p = 0.001. Find the EAT.</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> Memory access = 100ns, page fault service time = 8ms, page fault rate p = 0.001. Assume the given page-fault service time already covers the full fault handling (trap + disk I/O + restart) and does NOT separately include the eventual memory access that follows the fault — so that access isn't double-counted. Find the EAT.</summary>
           <div class="ans">
-            <p>EAT = (1−p)(memory time) + p(page fault service time) = 0.999(100ns) + 0.001(8,000,000ns) = 99.9ns + 8000ns ≈ 8099.9ns.</p>
+            <p>EAT = (1−p)(memory time) + p(page fault service time) = 0.999(100ns) + 0.001(8,000,000ns) = 99.9ns + 8000ns ≈ 8099.9ns. (If a question instead states that the page-fault service time excludes the final memory access, you'd add one more p×(memory time) term — the numerical difference here is negligible since 100ns is tiny next to 8ms, but for smaller service times relative to access time it matters, so always check which model the question intends.)</p>
             <p class="final">Answer: EAT ≈ 8100 ns (≈8.1 µs) — note how even p=0.001 makes the fault term dominate completely</p>
           </div>
         </details>
@@ -780,6 +818,17 @@ where h = TLB hit ratio</div>
         <span class="label">GATE trap — the general theory behind Belady's Anomaly</span>
         <p>Belady's Anomaly (more page frames causing MORE page faults) is a signature property specifically of FIFO — it does NOT occur with LRU or Optimal (OPT/MIN) replacement. GATE frequently asks you to trace a reference string under FIFO with two different frame counts specifically to demonstrate this anomaly.</p>
         <p>The deeper, more testable reason: a replacement algorithm is called a <strong>stack algorithm</strong> if, for any reference string, the set of pages resident with k frames is always a <em>subset</em> of the set resident with k+1 frames, at every point in time. This subset property mathematically guarantees page faults can only stay the same or decrease as frames increase — never increase — so <strong>stack algorithms never suffer Belady's Anomaly, by construction</strong> (it's not just an empirical observation). <strong>LRU and Optimal (OPT/MIN) are both stack algorithms</strong> — LRU because the k most-recently-used pages are always a subset of the k+1 most-recently-used pages; Optimal because the k pages needed soonest are always a subset of the k+1 pages needed soonest. <strong>FIFO is NOT a stack algorithm</strong> — the "oldest loaded" page depends on load order, not recency of use, so no such subset relationship holds in general, which is exactly why it's vulnerable to the anomaly.</p>
+      </div>
+
+      <h3 class="sub">Thrashing and the working-set model</h3>
+      <p>The classic causal chain: <strong>too many processes running concurrently → each gets too few frames → excessive page faults per process → the CPU spends most of its time servicing page faults (paging) instead of executing → CPU utilization collapses → thrashing.</strong> Counter-intuitively, the OS's usual fix for low CPU utilization (admit more processes, i.e. increase the degree of multiprogramming) is exactly what CAUSES thrashing in the first place — it shrinks each process's frame allocation further, triggering even more faults, in a vicious cycle.</p>
+      <div class="card formula">
+        <span class="label">Working set</span>
+        <p>The <strong>working set</strong> of a process at a given time is the set of pages it has actively referenced during a recent window of Δ references (the working-set window) — an approximation of the pages that process actually needs resident in memory right now to run without excessive faulting.</p>
+      </div>
+      <div class="card note">
+        <span class="label">Working-set model as thrashing prevention</span>
+        <p>If the sum of all processes' working-set sizes exceeds the total number of available frames, thrashing can occur — there simply isn't enough physical memory to hold what everyone actively needs at once. The OS can use this as an admission-control rule: only start a new process (or bring a suspended one back in) if doing so wouldn't push total working-set demand over the available frame count — trading a lower degree of multiprogramming for actually-productive CPU time, instead of chasing utilization by over-committing frames.</p>
       </div>
 
       <div class="practice">
@@ -978,6 +1027,10 @@ where h = TLB hit ratio</div>
           <p>Mutual Exclusion, Hold-and-Wait, No Preemption, Circular Wait. All four required; breaking any one prevents deadlock — see the dedicated box below.</p>
         </div>
         <div class="card formula">
+          <span class="label">Deadlock vs Starvation</span>
+          <p>Deadlock: cyclic wait, the blocked set makes zero progress, fixed by breaking a Coffman condition or avoidance. Starvation: no cycle, a process is repeatedly denied while others progress fine, fixed by aging/fair scheduling. Deadlocked ⟹ starving, but not the reverse.</p>
+        </div>
+        <div class="card formula">
           <span class="label">Banker's algorithm</span>
           <p>Need = Max − Allocation. "Unsafe" ≠ "deadlocked" — unsafe only means safety can't be guaranteed.</p>
         </div>
@@ -986,8 +1039,12 @@ where h = TLB hit ratio</div>
           <p>Paging: fixed-size, no external fragmentation (internal possible). Segmentation: variable/logical-size, external fragmentation possible.</p>
         </div>
         <div class="card formula">
+          <span class="label">Contiguous allocation strategies</span>
+          <p>First Fit: first hole big enough. Best Fit: smallest hole big enough. Worst Fit: largest hole. Next Fit: resume from last position. Best Fit isn't actually best in practice — First Fit performs comparably or better.</p>
+        </div>
+        <div class="card formula">
           <span class="label">Page faults &amp; demand paging</span>
-          <p>Page fault = valid bit 0, page not in memory, disk-speed fetch. TLB miss ≠ page fault (page table lookup is memory-speed). EAT with faults = (1−p)(mem time) + p(fault service time).</p>
+          <p>Page fault = trap caused by an invalid/non-resident page-table state; handling may require disk I/O (common case), but not every page fault necessarily does (zero-fill, copy-on-write, other backing mechanisms). TLB miss ≠ page fault (page table lookup is memory-speed). EAT with faults = (1−p)(mem time) + p(fault service time).</p>
         </div>
         <div class="card formula">
           <span class="label">TLB &amp; EAT</span>
@@ -996,6 +1053,10 @@ where h = TLB hit ratio</div>
         <div class="card formula">
           <span class="label">Page replacement</span>
           <p>FIFO can suffer Belady's Anomaly. LRU (stack algorithm) never does. Optimal (OPT/MIN): replaces the page whose next use is farthest in the future — theoretically best, but not implementable online since future references are unknown.</p>
+        </div>
+        <div class="card formula">
+          <span class="label">Thrashing &amp; working set</span>
+          <p>Too many processes → too few frames each → excessive faults → CPU spends most time paging → thrashing. Working set = pages actively referenced in a recent window Δ. If total working-set demand &gt; available frames, thrashing can occur.</p>
         </div>
         <div class="card formula">
           <span class="label">IPC — shared memory vs message passing</span>
@@ -1072,7 +1133,7 @@ where h = TLB hit ratio</div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> A binary semaphore is used for mutual exclusion around a critical section. If initialized to 0 instead of 1, what happens on the first wait() call?</summary>
           <div class="ans">
-            <p>wait(S) blocks while S≤0. Starting at 0, the very first process calling wait() immediately blocks forever (since nothing has signaled yet) — this is a classic off-by-initialization bug that deadlocks the very first entrant.</p>
+            <p>wait(S) blocks while S≤0, and remains blocked until some thread/process performs signal(S) to release a permit. Starting at S=0, the very first process calling wait() blocks immediately since no permit is available yet. In this specific mutual-exclusion setup, that block turns out to be permanent: signal(S) is only ever called after a process has entered and is leaving the critical section, which requires its wait() to have succeeded first — so with no process able to get past wait(), no signal() can ever occur either, and the first entrant deadlocks forever. This is a classic off-by-initialization bug.</p>
             <p class="final">Answer: The first process blocks indefinitely — wrong initial value causes immediate deadlock</p>
           </div>
         </details>
