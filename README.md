@@ -8,10 +8,10 @@ subjects/digital-logic.html    → live
 subjects/linear-algebra.html   → live
 subjects/calculus.html         → live
 subjects/aptitude.html         → live
-subjects/analysis.html         → live (20-year PYQ trend analysis)
+subjects/analysis.html         → live (indicatve 20-year PYQ trend analysis)
 subjects/c-programming.html    → live
-subjects/data-structures.html  → coming soon placeholder
-subjects/algorithms.html       → coming soon placeholder
+subjects/data-structures.html  → live
+subjects/algorithms.html       → live
 subjects/computer-organization.html → live
 ```
 
