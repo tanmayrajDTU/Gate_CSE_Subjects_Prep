@@ -607,7 +607,7 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
       </div>
 
       <div class="practice">
-        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">5 questions</span></div>
+        <div class="practice-head"><h3>Practice — GATE style (original)</h3><span class="pcount">6 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> A = [1 1; 0 1]. Is A diagonalizable? Justify using multiplicities.</summary>
           <div class="ans">
             <p>Characteristic equation: (1−λ)² = 0 ⇒ λ = 1 (algebraic multiplicity 2). Solving (A−I)v=0 gives [0 1; 0 0]v = 0 ⇒ only one independent eigenvector (geometric multiplicity 1). Since 1 &lt; 2, it fails the diagonalizability condition.</p>
@@ -632,10 +632,16 @@ det(A − λI) = det([4−λ  1; 2  3−λ]) = (4−λ)(3−λ) − 2 = λ² −
             <p class="final">Answer: Yes, guaranteed diagonalizable</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q5</span> For A = [2 1; 1 2] with eigenvalues 1 and 3, find A⁵ using diagonalization reasoning (eigenvalues only, no need to find P).</summary>
+        <details class="qcard"><summary><span class="qn">Q5</span> For A = [2 1; 1 2] with eigenvalues 1 and 3, find the eigenvalues of A⁵ using diagonalization reasoning (no need to find P).</summary>
           <div class="ans">
-            <p>Since A = PDP⁻¹, Aⁿ = PDⁿP⁻¹ — the eigenvalues of Aⁿ are simply λⁿ for each eigenvalue λ of A. So A⁵ has eigenvalues 1⁵=1 and 3⁵=243 (trace of A⁵ = 244, det of A⁵ = 243).</p>
+            <p>Since A = PDP⁻¹, Aⁿ = PDⁿP⁻¹ — the eigenvalues of Aⁿ are simply λⁿ for each eigenvalue λ of A. So A⁵ has eigenvalues 1⁵=1 and 3⁵=243 (trace of A⁵ = 244, determinant of A⁵ = 243). Note this only gives the eigenvalues of A⁵, not the full matrix — computing the actual matrix A⁵ additionally requires the eigenvectors (to build P) or direct matrix exponentiation.</p>
             <p class="final">Answer: Eigenvalues of A⁵ are 1 and 243</p>
+          </div>
+        </details>
+        <details class="qcard"><summary><span class="qn">Q5b</span> Bonus — actually compute the full matrix A⁵ for the same A, and verify it against Q5's trace/determinant.</summary>
+          <div class="ans">
+            <p>Write A = I + B where B = [1 1; 1 1]. Since B² = 2B, B is "idempotent up to a scalar," so Bᵏ = 2^(k−1)B for k ≥ 1. Then Aⁿ = (I+B)ⁿ = I + [(1+2)ⁿ − 1]/2 · B by binomial expansion (using Bᵏ = 2^(k-1)B for every k≥1 term). For n=5: (3⁵−1)/2 = (243−1)/2 = 121, so A⁵ = I + 121·B.</p>
+            <p class="final">Answer: A⁵ = [122 121; 121 122] — trace = 122+122 = 244 ✓ and determinant = 122² − 121² = (122−121)(122+121) = 243 ✓, both matching Q5's eigenvalue-based prediction exactly</p>
           </div>
         </details>
       </div>
