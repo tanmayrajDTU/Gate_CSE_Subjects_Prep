@@ -315,6 +315,19 @@ section.topic{scroll-margin-top:56px;}
 
       <h3 class="sub">Regular expressions ↔ finite automata</h3>
       <p>Kleene's theorem: a language is regular <strong>if and only if</strong> some finite automaton accepts it <strong>if and only if</strong> some regular expression describes it. All three views are interchangeable, and GATE tests conversions in every direction.</p>
+
+      <div class="card pyq">
+        <span class="label">GATE trap — four related-but-different representations, don't conflate the terms</span>
+        <table>
+          <tr><th>Representation</th><th>What it is</th><th>Allows ε-transitions?</th></tr>
+          <tr><td>Regular expression</td><td>A symbolic pattern built from union, concatenation, and Kleene star over the alphabet</td><td>N/A — not an automaton at all</td></tr>
+          <tr><td>ε-NFA</td><td>A nondeterministic finite automaton whose transition function may include moves on ε (consuming no input) in addition to alphabet symbols</td><td>✅ Yes — this is exactly what distinguishes it from a plain NFA</td></tr>
+          <tr><td>NFA</td><td>A nondeterministic finite automaton with zero, one, or multiple transitions per (state, symbol) pair, but conventionally no ε-moves unless explicitly called an "ε-NFA"</td><td>❌ Not by the strict definition — though many textbooks and problems use "NFA" loosely to mean "NFA, possibly with ε-transitions"; watch the question's exact wording</td></tr>
+          <tr><td>DFA</td><td>Exactly one transition per (state, symbol) pair for every state and every symbol — no nondeterminism, no ε-moves</td><td>❌ Never — a DFA's transition function is total and single-valued by definition</td></tr>
+        </table>
+        <p>The standard construction path is: regular expression → ε-NFA (Thompson's construction, the natural way to build an NFA from regex operators like union and concatenation, since splicing two machines together is cleanest via ε-links) → NFA (eliminate ε-transitions via ε-closure, if a strict ε-free NFA is needed as an intermediate step) → DFA (subset construction). All four represent the exact same class of languages (regular languages) — the differences are purely about how nondeterminism and empty moves are permitted in the machine, not about expressive power. When a GATE question mixes "NFA" and "ε-NFA" terminology loosely, check whether ε-transitions are actually present in the diagram/definition given — that determines which construction step applies, regardless of which label the question uses.</p>
+      </div>
+
       <table>
         <tr><th>Regex operator</th><th>Meaning</th></tr>
         <tr><td>∪ (or +)</td><td>Union / alternation</td></tr>
@@ -337,10 +350,10 @@ section.topic{scroll-margin-top:56px;}
             <p class="final">Answer: 3 states</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q2</span> An NFA has 4 states. What is the maximum possible number of states in the equivalent minimal DFA via subset construction?</summary>
+        <details class="qcard"><summary><span class="qn">Q2</span> An NFA has 4 states. What is the maximum number of states in the DFA produced by subset construction, before minimization?</summary>
           <div class="ans">
-            <p>Subset construction can produce up to 2ⁿ states for an n-state NFA in the worst case (one DFA state per possible subset of NFA states, including the empty "dead" subset).</p>
-            <p class="final">Answer: 2⁴ = 16 states (worst case)</p>
+            <p>Subset construction can produce up to 2ⁿ states for an n-state NFA in the worst case (one DFA state per possible subset of NFA states, including the empty "dead" subset). This bound is on the DFA subset construction directly outputs — it is not a bound on the minimal DFA equivalent to the NFA, which can (and typically does) have fewer states after minimization.</p>
+            <p class="final">Answer: 2⁴ = 16 states (worst case, before minimization)</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Is the regular expression (a∪b)* equal to the regular expression a*b*(a∪b)*? Justify briefly.</summary>
@@ -369,7 +382,7 @@ section.topic{scroll-margin-top:56px;}
       <div class="topic-kicker">CLOSURE PROPERTIES · PUMPING LEMMA (REGULAR) · DECISION PROPERTIES</div>
 
       <h3 class="sub">Closure properties of regular languages</h3>
-      <p>Regular languages are closed under: union, intersection, concatenation, Kleene star, complementation, and reversal — meaning applying any of these operations to regular language(s) always produces another regular language. This closure is exactly why you can build a DFA for a complex condition by combining simpler DFAs (product construction for intersection/union, swap accept/non-accept states for complement).</p>
+      <p>Regular languages are closed under: union, intersection, concatenation, Kleene star, complementation, and reversal — meaning applying any of these operations to regular language(s) always produces another regular language. This closure is exactly why you can build a DFA for a complex condition by combining simpler DFAs (product construction for intersection/union; for complement, first make the DFA complete by adding a sink state for any missing transitions, then swap accept/non-accept states — swapping alone only works if the DFA was already complete).</p>
 
       <div class="card formula">
         <span class="label">Product construction (for intersection or union)</span>
@@ -415,8 +428,8 @@ This string is NOT in L, contradicting the pumping lemma.
         </details>
         <details class="qcard"><summary><span class="qn">Q2</span> Is L = {ww : w ∈ {a,b}*} (strings that are some string repeated twice) regular?</summary>
           <div class="ans">
-            <p>No. Using the pumping lemma with w = a^p b a^p b, any valid split's y (within the first p characters, all a's) pumped up or down breaks the requirement that the second half exactly mirror the first half's length and content — no finite-state machine can "remember" an unbounded first half to compare against the second.</p>
-            <p class="final">Answer: No, not regular</p>
+            <p>Assume L is regular and let p be its pumping length. Choose s = a^p b a^p b, which belongs to L because s = (a^p b)(a^p b). For any decomposition s = xyz with |xy| ≤ p and |y| > 0, y consists only of a's from the first block, say y = a^k where k ≥ 1. Pumping changes only the first block of a's. For an appropriate pumping value (i = 0 or i = 2), the resulting string no longer consists of two identical halves, contradicting the pumping lemma. Therefore L is not regular.</p>
+            <p class="final">Answer: No, L is not regular.</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q3</span> Regular languages L1 and L2 are given. Is L1 ∩ L2 guaranteed to be regular?</summary>
@@ -427,8 +440,8 @@ This string is NOT in L, contradicting the pumping lemma.
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Is the complement of a regular language always regular?</summary>
           <div class="ans">
-            <p>Yes — given a DFA for L, simply swap accepting and non-accepting states to get a DFA for the complement of L. (Note: this trick specifically requires a DFA, not an NFA, since NFAs don't complement this simply.)</p>
-            <p class="final">Answer: Yes, always regular</p>
+            <p>Yes — but the standard construction needs one careful step first. Given a DFA for L, you can only get a DFA for the complement by swapping accepting and non-accepting states IF the DFA is <strong>complete</strong> (has a defined transition for every symbol from every state). If the DFA is partial (some state is missing a transition for some input symbol), you must first make it complete — add one new "sink"/"dead" state, and redirect every missing transition to it (with the sink looping to itself on all symbols) — before swapping accept/non-accept. Skipping this step on a partial DFA gives a wrong construction: strings that would have been "rejected" by falling off an undefined transition need to become accepting in the complement, but there's no state for them to land on and accept from until the sink state is added. (Note: this trick specifically requires a DFA, not an NFA, since NFAs don't complement this simply.)</p>
+            <p class="final">Answer: Yes, always regular — construction: first make the DFA complete (add a sink state for any missing transitions), THEN swap accepting/non-accepting states</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q5</span> Can the pumping lemma be used to PROVE that a language is regular?</summary>
@@ -474,7 +487,7 @@ This string is NOT in L, contradicting the pumping lemma.
 
       <div class="card note">
         <span class="label">CNF derivation length shortcut</span>
-        <p>For a CNF grammar (no ε-productions), deriving a string of length n takes exactly <strong>2n−1</strong> derivation steps — n−1 steps to build the binary parse tree structure (each A→BC step adds one non-terminal, net) plus n steps to replace each of the n leaves with a terminal.</p>
+        <p>For a CNF grammar (no ε-productions), a parse tree deriving a string of length n uses exactly <strong>2n−1 production applications</strong> — n−1 applications of A→BC rules to build the binary tree structure (each one adds one non-terminal, net) plus n applications of A→a rules to replace each of the n leaves with a terminal. Be precise about what's being counted here: "derivation steps" is ambiguous by itself — it could mean production applications (what this 2n−1 count refers to), sentential-form transitions in a specific derivation order (same number, since each production application corresponds to exactly one sentential-form transition in a leftmost or rightmost derivation), or informally "parse-tree expansion operations" (also the same count, for a CNF tree). The formula 2n−1 is correct under all of these readings for CNF specifically, but state which one you mean when the question is ambiguous.</p>
       </div>
 
       <div class="practice">
@@ -501,10 +514,10 @@ This string is NOT in L, contradicting the pumping lemma.
             <p class="final">Answer: Yes, ambiguous — "aaa" has (at least) these two distinct parse trees</p>
           </div>
         </details>
-        <details class="qcard"><summary><span class="qn">Q3</span> A CNF grammar derives a string of length 6. How many total derivation steps does this take?</summary>
+        <details class="qcard"><summary><span class="qn">Q3</span> How many production applications are used in a CNF parse tree deriving a string of length 6?</summary>
           <div class="ans">
             <p>Using the CNF derivation-length formula 2n−1 with n=6: 2×6−1 = 11.</p>
-            <p class="final">Answer: 11 steps</p>
+            <p class="final">Answer: 11 production applications</p>
           </div>
         </details>
         <details class="qcard"><summary><span class="qn">Q4</span> Which of these are NOT in Chomsky Normal Form (select all that apply): (a) A → BC (b) A → a (c) A → aB (d) A → BCD?</summary>
@@ -858,7 +871,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
         </div>
         <div class="card formula">
           <span class="label">CNF derivation length</span>
-          <p>A CNF grammar derives a length-n string in exactly 2n−1 steps.</p>
+          <p>A CNF parse tree derives a length-n string using exactly 2n−1 production applications.</p>
         </div>
         <div class="card formula">
           <span class="label">Recursive vs RE</span>
@@ -891,7 +904,7 @@ Accept if, at that point, no unmarked 'b' or 'c' remains either (all counts matc
         <div class="practice-head"><h3>Practice — rapid-fire mix (original)</h3><span class="pcount">5 questions</span></div>
         <details class="qcard"><summary><span class="qn">Q1</span> Is L = {a^n : n is a perfect square} regular?</summary>
           <div class="ans">
-            <p>No — using the pumping lemma, for w=a^p (p a perfect square with p≥pumping length), pumping y=a^k changes the length by multiples of k, but perfect squares grow with increasing gaps between them, so some pumped length is guaranteed to land between consecutive squares and land outside L.</p>
+            <p>No — using the pumping lemma with pumping length p, choose w = a^(p²) (this is valid regardless of whether p itself is a perfect square, since p² always is). For any decomposition satisfying |xy| ≤ p and |y| > 0, y = a^k with 1 ≤ k ≤ p. Pumping down once (i = 0) gives length p² − k. Since (p−1)² = p² − 2p + 1 and 1 ≤ k ≤ p, we get p² − 2p + 1 < p² − k < p², so p² − k lies strictly between the consecutive perfect squares (p−1)² and p², and is therefore not itself a perfect square — contradicting the pumping lemma.</p>
             <p class="final">Answer: No, not regular</p>
           </div>
         </details>
