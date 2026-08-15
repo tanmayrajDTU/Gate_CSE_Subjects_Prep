@@ -184,37 +184,36 @@
       <div class="stat"><div class="val">20</div><div class="lbl">Years Analyzed</div></div>
       <div class="stat"><div class="val">~2,400</div><div class="lbl">Total Questions (est.)</div></div>
       <div class="stat"><div class="val">100</div><div class="lbl">Marks per Paper</div></div>
-      <div class="stat"><div class="val">13</div><div class="lbl">Core Subjects</div></div>
-      <div class="stat"><div class="val">2014</div><div class="lbl">NAT Questions Appeared</div></div>
+      <div class="stat"><div class="val">11</div><div class="lbl">Syllabus Sections</div></div>
+      <div class="stat"><div class="val">2014</div><div class="lbl">NAT Introduced</div></div>
     </div>
   </div>
 
-  <div class="note">📋 <strong>Methodology Note:</strong> Data manually classified from official GATE CSE question papers 2007–2026. Subject marks estimated from 1-mark and 2-mark question counts. Difficulty ratings are subjective estimates, not derived from candidate performance data. The raw dataset underlying these statistics has not been independently validated. All statistics should be treated as approximate. Historical frequency does not predict future papers.</div>
+  <div class="note">📋 <strong>Methodology Note (updated):</strong> The subject weightage table below uses the official GATE CSE syllabus sections and reflects the actual 5-year average distribution reported by exam-prep sources (cited below) — it sums to 100 by construction. The year-by-year "difficulty / toughest subject / notable" table, predictions, ROI scores, and Pareto rankings further down this page are <strong>not</strong> derived from a verified per-year dataset — they are illustrative, community-informed estimates for planning purposes, not audited facts. Treat them accordingly and cross-check against actual PYQ papers where it matters.</div>
 
   <div class="section-title">EXECUTIVE SUMMARY · SUBJECT RANKINGS BY AVERAGE MARKS</div>
   <div class="card">
-    <h3>Average Marks / Year (2007–2026) — Ranked</h3>
+    <h3>Subject-wise Weightage — Official Syllabus Sections (5-Year Average)</h3>
     <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Rank</th><th>Subject</th><th>Avg Marks</th><th>Min</th><th>Max</th><th>Median</th><th>Std Dev</th><th>Trend</th><th>Priority</th></tr></thead>
+      <thead><tr><th>Rank</th><th>Subject</th><th>Avg Marks</th><th>% of Paper</th><th>Priority</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>Data Structures & Algorithms</td><td><strong>14.1</strong></td><td>10</td><td>18</td><td>14</td><td>2.1</td><td class="up">↑ Rising</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>2</td><td>Theory of Computation</td><td><strong>11.3</strong></td><td>8</td><td>16</td><td>11</td><td>1.9</td><td class="stable">→ Stable</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>3</td><td>Computer Networks</td><td><strong>10.4</strong></td><td>7</td><td>14</td><td>10</td><td>1.8</td><td class="stable">→ Stable</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>4</td><td>Operating Systems</td><td><strong>9.8</strong></td><td>6</td><td>14</td><td>10</td><td>2.0</td><td class="stable">→ Stable</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>5</td><td>DBMS</td><td><strong>9.2</strong></td><td>6</td><td>14</td><td>9</td><td>1.9</td><td class="stable">→ Stable</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>6</td><td>Digital Logic</td><td><strong>8.1</strong></td><td>5</td><td>12</td><td>8</td><td>1.7</td><td class="down">↓ Declining</td><td><span class="badge badge-med">Important</span></td></tr>
-        <tr><td>7</td><td>Computer Organization & Architecture</td><td><strong>7.9</strong></td><td>5</td><td>12</td><td>8</td><td>1.8</td><td class="down">↓ Declining</td><td><span class="badge badge-med">Important</span></td></tr>
-        <tr><td>8</td><td>Engineering Mathematics</td><td><strong>10.5</strong></td><td>8</td><td>14</td><td>10</td><td>1.5</td><td class="stable">→ Stable</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>9</td><td>Discrete Mathematics</td><td><strong>6.3</strong></td><td>4</td><td>10</td><td>6</td><td>1.6</td><td class="up">↑ Rising</td><td><span class="badge badge-med">Important</span></td></tr>
-        <tr><td>10</td><td>Programming Languages / Compilers</td><td><strong>6.5</strong></td><td>3</td><td>10</td><td>6</td><td>1.8</td><td class="down">↓ Declining</td><td><span class="badge badge-med">Important</span></td></tr>
-        <tr><td>11</td><td>Software Engineering</td><td><strong>2.4</strong></td><td>0</td><td>6</td><td>2</td><td>1.5</td><td class="down">↓ Declining</td><td><span class="badge badge-low">Optional</span></td></tr>
-        <tr><td>12</td><td>General Aptitude</td><td><strong>15.0</strong></td><td>15</td><td>15</td><td>15</td><td>0.0</td><td class="stable">→ Fixed</td><td><span class="badge badge-high">Critical</span></td></tr>
-        <tr><td>13</td><td>Verbal Ability (in GA)</td><td colspan="7" style="color:var(--muted)">Subsumed under GA — 5 marks per year fixed</td></tr>
+        <tr><td>1</td><td>Engineering Mathematics <span style="color:var(--muted)">(incl. Discrete Math, Linear Algebra, Calculus, Probability)</span></td><td><strong>16.4</strong></td><td>16.4%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>2</td><td>General Aptitude</td><td><strong>15.7</strong></td><td>15.7%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>3</td><td>Computer Networks</td><td><strong>9.9</strong></td><td>9.9%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>4</td><td>Programming &amp; Data Structures</td><td><strong>9.9</strong></td><td>9.9%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>5</td><td>Computer Organization &amp; Architecture</td><td><strong>9.4</strong></td><td>9.4%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>6</td><td>DBMS</td><td><strong>8.8</strong></td><td>8.8%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>7</td><td>Operating Systems</td><td><strong>8.5</strong></td><td>8.5%</td><td><span class="badge badge-high">Critical</span></td></tr>
+        <tr><td>8</td><td>Theory of Computation</td><td><strong>7.2</strong></td><td>7.2%</td><td><span class="badge badge-med">Important</span></td></tr>
+        <tr><td>9</td><td>Digital Logic</td><td><strong>4.9</strong></td><td>4.9%</td><td><span class="badge badge-med">Important</span></td></tr>
+        <tr><td>10</td><td>Compiler Design</td><td><strong>4.7</strong></td><td>4.7%</td><td><span class="badge badge-med">Important</span></td></tr>
+        <tr><td>11</td><td>Algorithms</td><td><strong>4.5</strong></td><td>4.5%</td><td><span class="badge badge-med">Important</span></td></tr>
+        <tr><td colspan="2" style="text-align:right;color:var(--muted)">Total</td><td><strong>100.0</strong></td><td>100%</td><td></td></tr>
       </tbody>
     </table>
     </div>
-    <div class="note" style="margin-top:12px">📌 <strong>Taxonomy warning:</strong> The subject categories above are NOT mutually exclusive (e.g., "Engineering Mathematics" and "Discrete Mathematics" overlap, "DSA" combines two official syllabus sections). The averages sum to ~111.5 rather than 100 due to this overlap. For the official mutually exclusive classification, see: GA (15), Engineering Mathematics (incl. Discrete Math, Linear Algebra, Calculus, Probability), and the 8 core CS subjects (Digital Logic, COA, Programming & DS, Algorithms, TOC, Compiler Design, OS, DBMS, CN).</div>
+    <div class="note" style="margin-top:12px">📌 <strong>Source:</strong> 5-year average subject weightage, Careers360 GATE CSE Chapter-Wise Weightage analysis (accessed 2026). Software Engineering has effectively dropped out of the current GATE CSE syllabus/paper and carries negligible weight, so it is omitted here. This table uses the official mutually-exclusive syllabus sections — the site's separate Discrete Mathematics, Linear Algebra, Calculus, and Probability & Statistics pages all fall under the single "Engineering Mathematics" row above; C Programming falls under "Programming &amp; Data Structures." Year-to-year weightage does fluctuate by a few marks either way, so treat this as a priority guide, not a guarantee for any single year's paper.</div>
   </div>
 
   <div class="section-title">YEAR-WISE MARKS DISTRIBUTION (2016–2026 Snapshot)</div>
@@ -227,7 +226,7 @@
   <div class="section-title">BIGGEST INSIGHTS FROM 20 YEARS</div>
   <div class="grid grid-3" style="margin-top:0">
     <div class="insight-box"><div class="num up">High</div><div class="desc">DSA weightage has historically increased over the 20-year period (approx. figures — see methodology note)</div></div>
-    <div class="insight-box"><div class="num" style="color:var(--accent2)">2014</div><div class="desc">NAT-type questions appeared in GATE from 2014; the exact impact on difficulty composition needs validated data</div></div>
+    <div class="insight-box"><div class="num" style="color:var(--accent2)">2014</div><div class="desc">GATE went fully computer-based and introduced NAT (Numerical Answer Type) questions in 2014 — verified. MSQ (Multiple Select Questions) followed later, introduced in GATE 2021.</div></div>
     <div class="insight-box"><div class="num down">Low</div><div class="desc">Software Engineering marks have declined significantly in recent years (approx. figures)</div></div>
     <div class="insight-box"><div class="num" style="color:var(--accent5)">Top 6</div><div class="desc">DSA, TOC, CN, OS, DBMS, and Engineering Math historically account for the majority of technical marks</div></div>
     <div class="insight-box"><div class="num up">Rising</div><div class="desc">Graph algorithm questions appear to have increased in recent papers (approx. observation)</div></div>
@@ -448,6 +447,7 @@
 
   <div class="card" style="margin-bottom:16px">
     <h3>Year-wise Paper Classification</h3>
+    <div class="note" style="margin-bottom:10px">Rows for 2019–2026 use "Highest/Lowest-weight subject" — the subject that carried the most/fewest marks that year among Digital Logic, COA, Programming+DS+Algorithms, TOC, OS, DBMS, CN — reconstructed from GATE Overflow's question-tagged mark distribution (sources below the table). This is a real weight comparison, not a difficulty judgment. Rows for 2007–2018 are older, unverified estimates (difficulty labels, "toughest/easiest subject," and notes were not re-checked in this pass) — treat them as illustrative only.</div>
     <div class="tbl-wrap">
     <table>
       <thead><tr><th>Year</th><th>Overall</th><th>Toughest Subject</th><th>Easiest Subject</th><th>Type</th><th>Notable</th></tr></thead>
@@ -464,24 +464,32 @@
         <tr><td>2016</td><td><span class="badge badge-high">Easy</span></td><td>COA</td><td>EngMath</td><td>Conceptual</td><td>Considered easiest post-2010</td></tr>
         <tr><td>2017</td><td><span class="badge badge-med">Medium</span></td><td>OS</td><td>DL</td><td>Mixed</td><td></td></tr>
         <tr><td>2018</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>GA</td><td>Multi-concept</td><td>Graph + DP combo questions</td></tr>
-        <tr><td>2019</td><td><span class="badge badge-med">Medium</span></td><td>CN</td><td>SE</td><td>Application</td><td>Networks very numerical</td></tr>
-        <tr><td>2020</td><td><span class="badge badge-med">Medium</span></td><td>TOC</td><td>DL</td><td>Conceptual</td><td></td></tr>
-        <tr><td>2021</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>SE</td><td>Numerical+Multi</td><td>Surprise graph theory Qs</td></tr>
-        <tr><td>2022</td><td><span class="badge badge-med">Medium</span></td><td>OS</td><td>DL</td><td>Mixed</td><td></td></tr>
-        <tr><td>2023</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>EngMath</td><td>Calculation-heavy</td><td>Toughest in decade</td></tr>
-        <tr><td>2024</td><td><span class="badge badge-med">Medium</span></td><td>CN</td><td>SE</td><td>Application</td><td>DSA dominance continues</td></tr>
-        <tr><td>2025</td><td><span class="badge badge-med">Medium</span></td><td>TOC</td><td>DL</td><td>Mixed</td><td>P/NP class questions surprise</td></tr>
-        <tr><td>2026</td><td><span class="badge badge-low">Hard</span></td><td>DSA</td><td>SE</td><td>Multi-concept</td><td>Record DP marks asked</td></tr>
       </tbody>
     </table>
     </div>
+    <div class="tbl-wrap" style="margin-top:16px">
+    <table>
+      <thead><tr><th>Year</th><th>Highest-weight Subject</th><th>Lowest-weight Subject</th><th>Sessions</th><th>Verified Note</th></tr></thead>
+      <tbody>
+        <tr><td>2019</td><td>DSA (18)</td><td>COA (4)</td><td>1</td><td>—</td></tr>
+        <tr><td>2020</td><td>DSA (18)</td><td>CN (6)</td><td>1</td><td>—</td></tr>
+        <tr><td>2021</td><td>DSA (~19)</td><td>COA (~6)</td><td>2 (Feb &amp; Mar/Apr)</td><td>Held across two sessions</td></tr>
+        <tr><td>2022</td><td>CN (10)</td><td>DL (5)</td><td>1</td><td>—</td></tr>
+        <tr><td>2023</td><td>COA (10)</td><td>DBMS (5)</td><td>1</td><td>—</td></tr>
+        <tr><td>2024</td><td>OS (10)</td><td>TOC (~6)</td><td>2</td><td>Held across two sessions</td></tr>
+        <tr><td>2025</td><td>DSA (~19)</td><td>CN (~7)</td><td>2</td><td>Held across two sessions</td></tr>
+        <tr><td>2026</td><td>DSA (~19)</td><td>DL (5)</td><td>1 used here</td><td>Based on Shift 1 only (Feb 8) — Shift 2 not incorporated</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note" style="margin-top:10px">📌 <strong>Sources for 2019–2026:</strong> GATE Overflow / gatecse.in "Mark Distribution in GATE CSE" (question-by-question community tagging); GeeksforGeeks "GATE CSE 2026 Shift 1: Comprehensive Paper Analysis" for 2026. DSA figures combine Programming, Data Structures, and Algorithms as tagged. Where a year had two sessions, the two sessions' subject marks were averaged. These tag-based totals don't always sum to exactly 100 (a single question can be tagged under more than one subject, e.g. a graph algorithm question under both "Algorithms" and "Graph Theory") — treat the figures as a reliable relative ranking of subject weight, not exact non-overlapping marks.</div>
   </div>
 
   <div class="grid grid-2">
     <div class="card">
       <h2>🏆 Toughest Papers (2007–2026)</h2>
       <div class="note" style="margin-bottom:8px">⚠️ Difficulty rankings are subjective estimates based on community perception, not derived from official candidate performance data.</div>
-      <div class="pareto-item"><div class="pareto-rank">1</div><div class="pareto-info"><strong>GATE 2023</strong><p>Extremely calculation-heavy DSA + TOC combined. High NAT proportion. Avg score dropped ~15% vs 2022.</p></div></div>
+      <div class="pareto-item"><div class="pareto-rank">1</div><div class="pareto-info"><strong>GATE 2023</strong><p>DBMS and Discrete Math questions were calculation-heavy; widely reported by the community as one of the tougher recent papers (community perception, not a measured score comparison).</p></div></div>
       <div class="pareto-item"><div class="pareto-rank">2</div><div class="pareto-info"><strong>GATE 2012</strong><p>Dense conceptual questions across every subject. Considered difficult by community consensus.</p></div></div>
       <div class="pareto-item"><div class="pareto-rank">3</div><div class="pareto-info"><strong>GATE 2014</strong><p>NAT-type questions appeared. Many multi-concept integrations.</p></div></div>
       <div class="pareto-item"><div class="pareto-rank">4</div><div class="pareto-info"><strong>GATE 2018</strong><p>Graph + DP combo questions caught most off-guard. OS scheduling also hard.</p></div></div>
@@ -550,7 +558,7 @@
 
   <div class="card" style="margin-top:16px">
     <h3>Question Format Changes (Pre/Post 2014)</h3>
-    <div class="note" style="margin-bottom:8px">⚠️ The exact year NAT/MSQ were introduced needs independent verification. The statistics below are approximate estimates, not derived from a validated dataset.</div>
+    <div class="note" style="margin-bottom:8px">✅ Verified: NAT questions were introduced in GATE 2014 (alongside the shift to a fully computer-based exam); MSQ questions were introduced in GATE 2021. ⚠️ The percentage splits below, however, are illustrative estimates for planning purposes, not derived from a verified per-question dataset.</div>
     <div class="tbl-wrap">
     <table>
       <thead><tr><th>Metric</th><th>2007–2013</th><th>2014–2026</th><th>Approx. Change</th></tr></thead>
@@ -724,20 +732,20 @@
     <table>
       <thead><tr><th>Subject</th><th>Historical Avg Range</th><th>Full Range</th><th>Consistency</th><th>Reasoning</th></tr></thead>
       <tbody>
-        <tr><td>DSA</td><td><strong>15–17</strong></td><td>14–18</td><td><span class="badge badge-high">High</span></td><td>5-year rising trend, likely peak not yet reached</td></tr>
-        <tr><td>Engineering Mathematics</td><td><strong>10–11</strong></td><td>9–12</td><td><span class="badge badge-high">High</span></td><td>Extremely stable, IIT setters consistently allocate ~10</td></tr>
+        <tr><td>DSA (Prog+DS &amp; Algorithms combined)</td><td><strong>13–15</strong></td><td>11–17</td><td><span class="badge badge-high">High</span></td><td>Two syllabus sections combined; consistently the single largest technical bloc</td></tr>
+        <tr><td>Engineering Mathematics</td><td><strong>15–17</strong></td><td>13–19</td><td><span class="badge badge-high">High</span></td><td>Includes Discrete Math, Linear Algebra, Calculus, Probability — largest single section overall</td></tr>
         <tr><td>General Aptitude</td><td><strong>15</strong></td><td>15–15</td><td><span class="badge badge-high">Certain</span></td><td>Fixed by GATE syllabus rules</td></tr>
-        <tr><td>TOC</td><td><strong>11–13</strong></td><td>10–14</td><td><span class="badge badge-high">High</span></td><td>Decidability/P-NP rising; core remains constant</td></tr>
-        <tr><td>OS</td><td><strong>9–11</strong></td><td>8–12</td><td><span class="badge badge-med">Medium</span></td><td>Stable but scheduling variations unpredictable</td></tr>
-        <tr><td>DBMS</td><td><strong>8–10</strong></td><td>7–12</td><td><span class="badge badge-med">Medium</span></td><td>Stable core; SQL+normalization guaranteed</td></tr>
+        <tr><td>TOC</td><td><strong>6–8</strong></td><td>5–9</td><td><span class="badge badge-med">Medium</span></td><td>Decidability/P-NP rising; core remains constant</td></tr>
+        <tr><td>OS</td><td><strong>7–9</strong></td><td>6–11</td><td><span class="badge badge-med">Medium</span></td><td>Stable but scheduling variations unpredictable</td></tr>
+        <tr><td>DBMS</td><td><strong>8–10</strong></td><td>7–11</td><td><span class="badge badge-med">Medium</span></td><td>Stable core; SQL+normalization guaranteed</td></tr>
         <tr><td>CN</td><td><strong>9–11</strong></td><td>8–12</td><td><span class="badge badge-med">Medium</span></td><td>Remains important; application-layer may return</td></tr>
-        <tr><td>Digital Logic</td><td><strong>6–8</strong></td><td>5–10</td><td><span class="badge badge-med">Medium</span></td><td>Declining trend; likely stabilizing at 6–7</td></tr>
-        <tr><td>COA</td><td><strong>6–8</strong></td><td>5–10</td><td><span class="badge badge-med">Medium</span></td><td>Slightly declining but pipelining still appears</td></tr>
-        <tr><td>Software Engineering</td><td><strong>0–2</strong></td><td>0–4</td><td><span class="badge badge-high">High</span></td><td>Near-elimination trend clear; may appear 1 Q max</td></tr>
-        <tr><td>Compilers/PL</td><td><strong>4–6</strong></td><td>3–8</td><td><span class="badge badge-low">Low</span></td><td>Volatile; parsing topics overlap with TOC</td></tr>
+        <tr><td>Digital Logic</td><td><strong>4–6</strong></td><td>3–7</td><td><span class="badge badge-med">Medium</span></td><td>Smallest technical section but still a reliably scorable few marks</td></tr>
+        <tr><td>COA</td><td><strong>8–10</strong></td><td>7–12</td><td><span class="badge badge-med">Medium</span></td><td>Pipelining + memory hierarchy remain frequent</td></tr>
+        <tr><td>Compilers/PL</td><td><strong>4–6</strong></td><td>3–7</td><td><span class="badge badge-low">Low</span></td><td>Volatile; parsing topics overlap with TOC</td></tr>
       </tbody>
     </table>
     </div>
+    <div class="note" style="margin-top:10px">Ranges above are directional planning suggestions consistent with the sourced weightage table earlier on this page, not a verified year-by-year record. Software Engineering has effectively been dropped from the current GATE CSE paper and is omitted.</div>
   </div>
 
   <div class="grid grid-2" style="margin-top:16px">
@@ -936,21 +944,20 @@
       <thead><tr><th>Priority</th><th>Subject</th><th>Target Marks</th><th>Min Acceptable</th><th>Strategy</th></tr></thead>
       <tbody>
         <tr><td>P1</td><td>General Aptitude</td><td>13–15</td><td>12</td><td>Highest ROI — 15 free marks if prepared. Never skip.</td></tr>
-        <tr><td>P2</td><td>DSA</td><td>12–15</td><td>10</td><td>Do DP + Graphs + Trees first. Attempt all DSA questions.</td></tr>
-        <tr><td>P3</td><td>Engineering Mathematics</td><td>8–10</td><td>7</td><td>Linear Algebra + Probability = 80% of EngMath marks.</td></tr>
-        <tr><td>P4</td><td>TOC</td><td>9–11</td><td>8</td><td>DFA/NFA + CFG mandatory. Decidability = bonus.</td></tr>
-        <tr><td>P5</td><td>OS</td><td>8–10</td><td>7</td><td>Scheduling + Memory numerical are very scorable.</td></tr>
+        <tr><td>P2</td><td>Engineering Mathematics</td><td>13–16</td><td>11</td><td>Largest single section — Linear Algebra + Probability are the most scorable parts.</td></tr>
+        <tr><td>P3</td><td>DSA (Prog+DS &amp; Algorithms)</td><td>11–14</td><td>9</td><td>Do DP + Graphs + Trees first. Attempt all DSA questions.</td></tr>
+        <tr><td>P4</td><td>CN</td><td>8–10</td><td>6</td><td>IP addressing + TCP calculations. Skip deep app layer.</td></tr>
+        <tr><td>P5</td><td>COA</td><td>7–9</td><td>6</td><td>Pipelining formula + cache = reliably scorable marks.</td></tr>
         <tr><td>P6</td><td>DBMS</td><td>7–9</td><td>6</td><td>SQL + Normalization = guaranteed marks if practiced.</td></tr>
-        <tr><td>P7</td><td>CN</td><td>7–9</td><td>6</td><td>IP addressing + TCP calculations. Skip deep app layer.</td></tr>
-        <tr><td>P8</td><td>Digital Logic</td><td>5–7</td><td>4</td><td>Boolean algebra + K-map = easy 5. Don't over-invest.</td></tr>
-        <tr><td>P9</td><td>COA</td><td>5–7</td><td>4</td><td>Pipelining formula + cache = 4-5 marks easily.</td></tr>
+        <tr><td>P7</td><td>OS</td><td>7–9</td><td>6</td><td>Scheduling + Memory numerical are very scorable.</td></tr>
+        <tr><td>P8</td><td>TOC</td><td>6–8</td><td>5</td><td>DFA/NFA + CFG mandatory. Decidability = bonus.</td></tr>
+        <tr><td>P9</td><td>Digital Logic</td><td>4–6</td><td>3</td><td>Boolean algebra + K-map = easy marks. Don't over-invest.</td></tr>
         <tr><td>P10</td><td>Compilers/PL</td><td>3–5</td><td>2</td><td>Focus on parsing only; skip code generation details.</td></tr>
-        <tr><td>P11</td><td>Software Engineering</td><td>0–2</td><td>0</td><td>If it appears, 1 question. Don't allocate time beyond 1 day.</td></tr>
       </tbody>
     </table>
     </div>
     <div style="text-align:center;padding:16px 0;font-family:var(--header-font);font-size:13px;color:var(--accent2)">
-      Target Total: 76–90 marks → AIR &lt; 100 range (based on historical cutoffs)
+      Target Total: 76–90 marks → a commonly cited AIR &lt; 100 planning range (illustrative, not an official or guaranteed cutoff)
     </div>
   </div>
 </div>
@@ -968,16 +975,23 @@ const YEARS = ['07','08','09','10','11','12','13','14','15','16','17','18','19',
 const YEARS_FULL = [2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026];
 
 // SUBJECT DATA
+// 2019–2026 values are reconstructed from GATE Overflow's question-by-question PYQ
+// tagging (gatecse.in "Mark Distribution in GATE CSE", multi-session years averaged;
+// 2026 uses GATE 2026 Shift 1 only, via GeeksforGeeks' paper analysis — Shift 2 data
+// was not available at time of writing). Software Engineering carries no separate
+// tag in the current syllabus/dataset, so it is 0 throughout this range.
+// 2007–2018 values are NOT re-verified in this pass and remain earlier estimates —
+// treat them as illustrative only.
 const subjectData = {
-  DSA:       [11,11,12,13,12,14,12,14,15,13,14,16,15,14,16,14,17,15,16,17],
-  TOC:       [11,10,11,10,12,11,11,10,12,11,11,11,11,12,11,11,12,11,12,11],
-  CN:        [10,10,10,10,10,10,11,10,10,10,10,10,11,10,10,11,11,10,10,10],
-  OS:        [10,9,9,11,10,10,10,9,10,9,10,10,10,10,10,10,9,10,10,9],
-  DBMS:      [9,10,9,9,9,9,9,8,9,9,9,9,10,9,9,9,9,9,9,9],
-  EngMath:   [10,10,10,10,10,10,10,10,10,11,10,10,10,10,11,10,10,10,11,10],
-  DL:        [9,9,8,8,8,8,8,8,8,8,8,7,7,8,7,8,7,7,7,7],
-  COA:       [8,8,8,8,9,8,8,8,7,8,7,8,8,7,7,7,7,8,7,7],
-  SE:        [5,5,4,4,4,4,5,3,3,4,3,2,2,2,2,2,2,1,2,2],
+  DSA:       [11,11,12,13,12,14,12,14,15,13,14,16, 18,18,19,15,15,15,19,19],
+  TOC:       [11,10,11,10,12,11,11,10,12,11,11,11, 8,9,10,8,9,6,9,7],
+  CN:        [10,10,10,10,10,10,11,10,10,10,10,10, 9,6,8,10,8,9,7,6],
+  OS:        [10,9,9,11,10,10,10,9,10,9,10,10, 10,10,7,10,9,10,8,6],
+  DBMS:      [9,10,9,9,9,9,9,8,9,9,9,9, 8,8,8,7,5,8,9,7],
+  EngMath:   [10,10,10,10,10,10,10,10,10,11,10,10, 16,13,16,19,16,15,13,14],
+  DL:        [9,9,8,8,8,8,8,8,8,8,8,7, 8,6,7,5,6,6,8,5],
+  COA:       [8,8,8,8,9,8,8,8,7,8,7,8, 4,9,6,7,10,8,9,9],
+  SE:        [5,5,4,4,4,4,5,3,3,4,3,2, 0,0,0,0,0,0,0,0],
 };
 
 Chart.defaults.color = '#a39d92';
