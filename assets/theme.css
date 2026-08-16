@@ -42,7 +42,44 @@
   --radius-sm:9px;
 }
 
-*{box-sizing:border-box; margin:0; padding:0;}
+/* ============================================================
+   LIGHT MODE — same variable names, warm parchment/editorial
+   palette instead of obsidian. Toggled via [data-theme="light"]
+   on <html>, set by assets/site-nav.js (persisted in localStorage).
+   Because every rule below is written with var(--token), this
+   block is the only place that needs to change.
+   ============================================================ */
+[data-theme="light"]{
+  --bg:#faf7f1;
+  --bg-deep:#f1ebdf;
+  --panel:#ffffff;
+  --panel-alt:#f4efe4;
+  --glass:rgba(30,25,15,0.035);
+  --glass-hover:rgba(30,25,15,0.06);
+  --line:#e3dac8;
+  --line-soft:#ece4d4;
+  --grid-line:rgba(150,110,50,0.05);
+
+  --gold:#a9773b;
+  --gold-bright:#8a5f2a;
+  --gold-dim:#c9a877;
+  --copper:#a85a2c;
+  --rose:#b8483a;
+  --sage:#3f7d5c;
+  --violet:#6d4f96;
+
+  --text:#211d16;
+  --text-dim:#5c5346;
+  --text-faint:#8a8071;
+
+  --shadow-sm:0 2px 10px rgba(60,45,20,0.08);
+  --shadow-md:0 16px 40px -16px rgba(60,45,20,0.18);
+  --shadow-gold:0 0 0 1px rgba(169,119,59,0.18), 0 16px 34px -16px rgba(169,119,59,0.16);
+}
+[data-theme="light"] body::after{ opacity:0.015; }
+[data-theme="light"] ::selection{ background:var(--gold); color:#fff; }
+
+
 html{scroll-behavior:smooth;}
 body{
   background:

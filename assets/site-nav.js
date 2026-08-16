@@ -38,7 +38,19 @@
     '.gnav a.gnav-soon{opacity:.35;pointer-events:none;}',
     '.gnav .gnav-brand{font-family:"Fraunces",serif;font-weight:600;font-size:13.5px;',
     'color:#cba36b;letter-spacing:.01em;margin-right:12px;flex-shrink:0;text-decoration:none;}',
-    '.gnav .gnav-sep{width:1px;height:20px;background:#26272e;margin:0 8px;flex-shrink:0;}'
+    '.gnav .gnav-sep{width:1px;height:20px;background:#26272e;margin:0 8px;flex-shrink:0;}',
+    '.gnav-theme-btn{margin-left:auto;flex-shrink:0;background:rgba(255,255,255,0.05);',
+    'border:1px solid rgba(203,163,107,0.2);color:#a39d92;cursor:pointer;',
+    'width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;',
+    'font-size:14px;transition:background .18s,color .18s,border-color .18s;}',
+    '.gnav-theme-btn:hover{background:rgba(203,163,107,0.12);color:#e6c58e;border-color:rgba(203,163,107,0.4);}',
+    '[data-theme="light"] .gnav{background:rgba(250,247,241,0.85);border-bottom-color:rgba(169,119,59,0.18);}',
+    '[data-theme="light"] .gnav a{color:#5c5346;}',
+    '[data-theme="light"] .gnav a:hover{background:rgba(30,25,15,0.05);color:#211d16;}',
+    '[data-theme="light"] .gnav a.gnav-active{color:#8a5f2a;background:rgba(169,119,59,0.1);}',
+    '[data-theme="light"] .gnav .gnav-sep{background:#e3dac8;}',
+    '[data-theme="light"] .gnav-theme-btn{background:rgba(30,25,15,0.04);border-color:rgba(169,119,59,0.25);color:#5c5346;}',
+    '[data-theme="light"] .gnav-theme-btn:hover{background:rgba(169,119,59,0.12);color:#8a5f2a;}'
   ].join('');
   document.head.appendChild(style);
 
@@ -69,6 +81,28 @@
     if (s.status !== 'live') a.className = (a.className + ' gnav-soon').trim();
     bar.appendChild(a);
   });
+
+  // Theme toggle — reflects/updates the data-theme attribute set early by the
+  // blocking inline script in <head> (which prevents a flash of the wrong theme).
+  var themeBtn = document.createElement('button');
+  themeBtn.className = 'gnav-theme-btn';
+  themeBtn.type = 'button';
+  function currentTheme(){ return document.documentElement.getAttribute('data-theme') || 'dark'; }
+  function paintThemeBtn(){
+    var t = currentTheme();
+    themeBtn.textContent = t === 'light' ? '☀' : '☾';
+    themeBtn.title = t === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+    themeBtn.setAttribute('aria-label', themeBtn.title);
+  }
+  themeBtn.addEventListener('click', function(){
+    var next = currentTheme() === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('gate-theme', next); } catch(e) {}
+    paintThemeBtn();
+    window.dispatchEvent(new CustomEvent('gate-theme-change', { detail: { theme: next } }));
+  });
+  paintThemeBtn();
+  bar.appendChild(themeBtn);
 
   document.body.insertBefore(bar, document.body.firstChild);
 })();
